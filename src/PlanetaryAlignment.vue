@@ -237,10 +237,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, nextTick } from "vue";
+import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
+import { Color, Grids, Settings, WWTControl } from "@wwtelescope/engine";
 import { GotoRADecZoomParams, engineStore } from "@wwtelescope/engine-pinia";
-import { BackgroundImageset, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls } from "@cosmicds/vue-toolkit";
+import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls } from "@cosmicds/vue-toolkit";
 import { useDisplay } from "vuetify";
+
+import { resetAltAzGridText, makeAltAzGridText, setupConstellationFigures, renderOneFrame } from "./wwt-hacks";
 
 type SheetType = "text" | "video";
 type CameraParams = Omit<GotoRADecZoomParams, "instant">;
@@ -276,6 +279,45 @@ const positionSet = ref(false);
 const accentColor = ref("#ffffff");
 const buttonColor = ref("#ffffff");
 const tab = ref(0);
+const showHorizon = ref(true);
+const showAltAzGrid = ref(true);
+// const showControls = ref(smAndUp.value);
+const showConstellations = ref(true);
+
+const selectedLocation = ref<LocationDeg>({
+  longitudeDeg: -71.1056,
+  latitudeDeg: 42.3581,
+});
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const wwtSettings: Settings = Settings.get_active();
+
+function doWWTModifications() {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  Grids._makeAltAzGridText = makeAltAzGridText;
+
+  // We need to render one frame ahead of time
+  // as there's a lot of setup done on the first frame
+  // render that we need to use
+  WWTControl.singleton.renderOneFrame();
+
+  const boundRenderOneFrame = renderOneFrame.bind(WWTControl.singleton);
+  const newFrameRender = function() { 
+    boundRenderOneFrame(
+      showHorizon.value,
+      showHorizon.value
+    );
+  };
+
+  // as well as our custom text overlays
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  WWTControl.singleton.renderOneFrame = newFrameRender;
+  setupConstellationFigures();
+
+}
 
 onMounted(() => {
   store.waitForReady().then(async () => {
@@ -287,6 +329,15 @@ onMounted(() => {
 
     // If there are layers to set up, do that here!
     layersLoaded.value = true;
+
+    store.applySetting(["localHorizonMode", true]);
+    store.applySetting(["showAltAzGrid", showAltAzGrid.value]);
+    store.applySetting(["showAltAzGridText", showAltAzGrid.value]);
+    store.applySetting(["altAzGridColor", Color.fromArgb(180, 133, 201, 254)]);
+    store.applySetting(["showConstellationLabels", showConstellations.value]);
+    store.applySetting(["showConstellationFigures", showConstellations.value]);
+
+    doWWTModifications();
   });
 });
 
@@ -294,6 +345,9 @@ const ready = computed(() => layersLoaded.value && positionSet.value);
 
 /* `isLoading` is a bit redundant here, but it could potentially have independent logic */
 const isLoading = computed(() => !ready.value);
+
+// It doesn't really matter which one we note here
+const inNorthernHemisphere = computed(() => selectedLocation.value.latitudeDeg > 0);
 
 /* Properties related to device/screen characteristics */
 const smallSize = computed(() => smAndDown);
@@ -353,6 +407,20 @@ function selectSheet(sheetType: SheetType | null) {
     sheet.value = sheetType;
   }
 }
+
+function setWWTLocation(location: LocationDeg) {
+  wwtSettings.set_locationLat(location.latitudeDeg);
+  wwtSettings.set_locationLng(location.longitudeDeg);
+  console.log("Setting location to", location);
+}
+
+
+watch(selectedLocation, (location: LocationDeg) => {
+  setWWTLocation(location);
+  WWTControl.singleton.renderOneFrame();
+});
+
+watch(inNorthernHemisphere, (_inNorth: boolean) => resetAltAzGridText());
 </script>
 
 <style lang="less">
