@@ -238,7 +238,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
-import { Color, Grids, Settings, WWTControl } from "@wwtelescope/engine";
+import { Color, Grids, Planets, Settings, WWTControl } from "@wwtelescope/engine";
 import { GotoRADecZoomParams, engineStore } from "@wwtelescope/engine-pinia";
 import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls } from "@cosmicds/vue-toolkit";
 import { useDisplay } from "vuetify";
@@ -279,7 +279,7 @@ const positionSet = ref(false);
 const accentColor = ref("#ffffff");
 const buttonColor = ref("#ffffff");
 const tab = ref(0);
-const showHorizon = ref(true);
+const showHorizon = ref(false);
 const showAltAzGrid = ref(true);
 // const showControls = ref(smAndUp.value);
 const showConstellations = ref(true);
@@ -294,6 +294,7 @@ const selectedLocation = ref<LocationDeg>({
 const wwtSettings: Settings = Settings.get_active();
 
 function doWWTModifications() {
+
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   Grids._makeAltAzGridText = makeAltAzGridText;
@@ -316,6 +317,10 @@ function doWWTModifications() {
   // @ts-ignore
   WWTControl.singleton.renderOneFrame = newFrameRender;
   setupConstellationFigures();
+
+  for (let i = 0; i < Planets._planetScales.length; i++) {
+    Planets._planetScales[i] *= 6;
+  }
 
 }
 
