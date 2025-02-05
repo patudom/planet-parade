@@ -300,7 +300,7 @@ import { useDisplay } from "vuetify";
 import { formatInTimeZone } from "date-fns-tz";
 
 import { useTimezone } from "./timezones";
-import { resetAltAzGridText, makeAltAzGridText, setupConstellationFigures, renderOneFrame } from "./wwt-hacks";
+import { resetAltAzGridText, makeAltAzGridText, renderOneFrame } from "./wwt-hacks";
 
 const SECONDS_PER_DAY = 60 * 60 * 24;
 const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
@@ -342,12 +342,12 @@ const positionSet = ref(false);
 const accentColor = ref("#ffffff");
 const buttonColor = ref("#ffffff");
 const tab = ref(0);
-const showHorizon = ref(false);
+const showHorizon = ref(true);
 const showAltAzGrid = ref(true);
 const showLocationSelector = ref(false);
 const playing = ref(true);
 // const showControls = ref(smAndUp.value);
-const showConstellations = ref(false);
+const showConstellations = ref(true);
 
 const selectedLocation = ref<LocationDeg>({
   longitudeDeg: -71.1056,
@@ -383,7 +383,6 @@ function doWWTModifications() {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   WWTControl.singleton.renderOneFrame = newFrameRender;
-  setupConstellationFigures();
 
   const originalUpdatePlanetLocations = Planets.updatePlanetLocations;
   function newUpdatePlanetLocations(threeD: boolean) {
