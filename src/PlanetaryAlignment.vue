@@ -105,6 +105,7 @@
               v-model="selectedLocation"
             />
             <geolocation-button
+              id="location"
               :debug="false"
               size="30px"
               density="default"
@@ -794,5 +795,16 @@ video {
 .map-container {
   width: 60vw;
   height: 60vh;
+}
+
+#geolocation-wrapper\+location {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 1000;
+}
+
+#geolocation-wrapper\+location .v-btn {
+  background-color: black;
 }
 </style>
