@@ -347,7 +347,7 @@ const showAltAzGrid = ref(true);
 const showLocationSelector = ref(false);
 const playing = ref(true);
 // const showControls = ref(smAndUp.value);
-const showConstellations = ref(true);
+const showConstellations = ref(false);
 
 const selectedLocation = ref<LocationDeg>({
   longitudeDeg: -71.1056,

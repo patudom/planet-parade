@@ -128,6 +128,7 @@ function drawConstellations(renderContext, showOnlySelected, focusConstellation,
 
 
 export function setupConstellationFigures() {
+  console.log(WWTControl.constellationsFigures);
   WWTControl.constellationsFigures._drawSingleConstellation = drawSingleConstellation.bind(WWTControl.constellationsFigures);
   WWTControl.constellationsFigures.draw = drawConstellations.bind(WWTControl.constellationsFigures);
 }
@@ -270,11 +271,9 @@ export function renderOneFrame(showHorizon=true,
   Planets.drawPlanets(this.renderContext, 1);
   this._drawSkyOverlays();
 
-  if (this.blazeOverlay === undefined || this.alphaOverlay === undefined) {
-    const textOverlays = makeTextOverlays();
-    textOverlays.forEach(useCustomGlyphs);
-    [this.blazeOverlay, this.alphaOverlay] = textOverlays;
-  }
+  const textOverlays = makeTextOverlays();
+  useCustomGlyphs(textOverlays);
+  textOverlays.draw(this.renderContext, 1, "#ffffff");
 
   if (showHorizon) {
     drawHorizon(this.renderContext, { opacity: 0.95, color: "#01362C" });

@@ -3,34 +3,43 @@
 
 /* eslint-disable */
 
-import { Coordinates, Text3d, Text3dBatch, Vector3d } from "@wwtelescope/engine";
+import { Coordinates, Place, Text3d, Text3dBatch, Vector3d } from "@wwtelescope/engine";
+import { Classification, SolarSystemObjects } from "@wwtelescope/engine-types";
 
-export function makeTextOverlays(): Text3dBatch[] {
-  const glyphHeight = 75 * 0.5;
+function placeForObject(object: SolarSystemObjects): Place {
+  const place = new Place();
+  // For creating a place based on a name, WWT requires that the name be capitalized
+  let name = SolarSystemObjects[object];
+  name = name.charAt(0).toUpperCase() + name.slice(1);
+  place.set_names([name]);
+  place.set_classification(Classification.solarSystem);
+  place.set_target(object);
+  return place;
+}
+
+function textOverlayForSolarSystemObject(object: SolarSystemObjects, text: string, glyphHeight: number): Text3d {
   const scale = 0.00018;
-  const textItems = [
-    ["T CrB, aka", "Blaze Star"],
-    ["Alphecca", "(Nova will", "become roughly", "this bright)"],
-  ];
   const up = Vector3d.create(0, 1, 0);
-  const locations = [
-    [
-      Coordinates.raDecTo3d(15 + 59 / 60 + 30.1622 / 3600, 24 + 55 / 60 + 12.613 / 3600),
-      Coordinates.raDecTo3d(15 + 59 / 60 + 30.1622 / 3600, 23 + 40 / 60 + 12.613 / 3600),
-    ],
-    [
-      Coordinates.raDecTo3d(15 + 24 / 60 + 41.268 / 3600, 25 + 42 / 60 + 52.89 / 3600),
-      Coordinates.raDecTo3d(15 + 24 / 60 + 41.268 / 3600, 24 + 17 / 60 + 52.89 / 3600),
-      Coordinates.raDecTo3d(15 + 24 / 60 + 41.268 / 3600, 23 + 2 / 60 + 52.89 / 3600),
-      Coordinates.raDecTo3d(15 + 24 / 60 + 41.268 / 3600, 21 + 47 / 60 + 52.89 / 3600),
-    ]
-  ];
-  const batches = textItems.map(items => new Text3dBatch(glyphHeight));
-  textItems.forEach((items, index) => {
-    const batch = batches[index];
-    const locs = locations[index];
-    items.forEach((item, idx) => batch.add(new Text3d(locs[idx], up, item, glyphHeight, scale)));
-  });
 
-  return batches;
+  const place = placeForObject(object);
+  const ra = place.get_RA();
+  const location = Coordinates.raDecTo3d(place.get_RA(), place.get_dec());
+  return new Text3d(location, up, text, glyphHeight, scale);
+
+}
+
+export function makeTextOverlays(): Text3dBatch {
+  console.log("makeTextOverlays");
+  const glyphHeight = 75 * 0.5;
+  const batch = new Text3dBatch(glyphHeight);
+  const values = Object.keys(SolarSystemObjects).filter(key => !isNaN(Number(key)))
+  console.log(values);
+  values.forEach(object => {
+    console.log(object);
+    if (Number(object) >= SolarSystemObjects.earth) {
+      return;
+    }
+    batch.add(textOverlayForSolarSystemObject(object, glyphHeight));
+  });
+  return batch;
 }
