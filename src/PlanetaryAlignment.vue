@@ -124,6 +124,25 @@
     <!-- This block contains the elements (e.g. the project icons) displayed along the bottom of the screen -->
 
     <div id="bottom-content">
+      <div id="slider">
+        <v-slider
+          v-model='selectedTime'
+          :max="maxTime"
+          :min="minTime"
+          :color="accentColor"
+          :ripple="false"
+          hide-details
+          track-size="8px"
+          thumb-size="20px"
+          thumb-label="always"
+          :step="millisecondsPerInterval"
+          @mousedown="() => {playing = false;}"
+          >
+          <template v-slot:thumb-label="item">
+            {{ toTimeString(new Date(item.modelValue))  }}
+          </template>
+        </v-slider>
+      </div>
       <div id="body-logos" v-if= "!smallSize">
         <credit-logos/>
       </div>
@@ -281,6 +300,13 @@ import { useDisplay } from "vuetify";
 
 import { resetAltAzGridText, makeAltAzGridText, setupConstellationFigures, renderOneFrame } from "./wwt-hacks";
 
+const SECONDS_PER_DAY = 60 * 60 * 24;
+const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
+const millisecondsPerInterval = MILLISECONDS_PER_DAY;
+const minTime = Date.UTC(2025, 1, 11);
+const maxTime = Date.UTC(2025, 1, 18);
+const selectedTime = ref(minTime);
+
 type SheetType = "text" | "video";
 type CameraParams = Omit<GotoRADecZoomParams, "instant">;
 export interface PlanetaryAlignmentProps {
@@ -318,6 +344,7 @@ const tab = ref(0);
 const showHorizon = ref(false);
 const showAltAzGrid = ref(true);
 const showLocationSelector = ref(false);
+const playing = ref(true);
 // const showControls = ref(smAndUp.value);
 const showConstellations = ref(true);
 
