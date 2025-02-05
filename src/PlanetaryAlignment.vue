@@ -117,6 +117,28 @@
         </v-dialog>
       </div>
       <div id="right-buttons">
+        <div id="controls" class="control-icon-wrapper">
+          <div id="controls-top-row">
+            <font-awesome-icon
+              size="lg"
+              class="tab-focusable"
+              :icon="showControls ? `chevron-down` : `gear`"
+              @click="showControls = !showControls" 
+              @keyup.enter="showControls = !showControls"
+              tabindex="0" />
+          </div>
+        
+          <div v-if="showControls" id="control-checkboxes">
+            <v-checkbox :color="accentColor" v-model="showAltAzGrid" @keyup.enter="showAltAzGrid = !showAltAzGrid"
+              label="Sky Grid" hide-details />
+            <v-checkbox :color="accentColor" v-model="showHorizon" @keyup.enter="showHorizon = !showHorizon"
+              label="Horizon" hide-details />
+            <v-checkbox :color="accentColor" v-model="showConstellations" @keyup.enter="showConstellations = !showConstellations"
+              label="Constellations" hide-details />
+            <v-checkbox :color="accentColor" v-model="showPlanetLabels" @keyup.enter="showPlanetLabels = !showPlanetLabels"
+              label="Planet Labels" hide-details />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -321,7 +343,7 @@ const store = engineStore();
 useWWTKeyboardControls(store);
 
 const touchscreen = supportsTouchscreen();
-const { smAndDown } = useDisplay();
+const { smAndDown, smAndUp } = useDisplay();
 
 const props = withDefaults(defineProps<PlanetaryAlignmentProps>(), {
   wwtNamespace: "planetary-alignment",
@@ -347,8 +369,9 @@ const showHorizon = ref(false);
 const showAltAzGrid = ref(true);
 const showLocationSelector = ref(false);
 const playing = ref(true);
-// const showControls = ref(smAndUp.value);
+const showControls = ref(smAndUp.value);
 const showConstellations = ref(false);
+const showPlanetLabels = ref(true);
 
 const selectedLocation = ref<LocationDeg>({
   longitudeDeg: -71.1056,
@@ -376,7 +399,8 @@ function doWWTModifications() {
   const newFrameRender = function() { 
     boundRenderOneFrame(
       showHorizon.value,
-      showHorizon.value
+      showHorizon.value,
+      showPlanetLabels.value,
     );
   };
 
@@ -408,12 +432,10 @@ onMounted(() => {
     layersLoaded.value = true;
 
     store.applySetting(["localHorizonMode", true]);
-    store.applySetting(["showAltAzGrid", showAltAzGrid.value]);
-    store.applySetting(["showAltAzGridText", showAltAzGrid.value]);
     store.applySetting(["altAzGridColor", Color.fromArgb(180, 133, 201, 254)]);
-    store.applySetting(["showConstellationLabels", showConstellations.value]);
-    store.applySetting(["showConstellationFigures", showConstellations.value]);
     store.applySetting(["actualPlanetScale", false]);
+    updateAltAzGrid(showAltAzGrid.value);
+    updateConstellations(showConstellations.value);
 
     doWWTModifications();
 
@@ -520,11 +542,23 @@ function toTimeString(date: Date | null, seconds = false, utc = false) {
   return formatInTimeZone(date, utc ? 'UTC' : selectedTimezone.value, 'h:mm aaa (zzz)');
 }
 
+function updateAltAzGrid(show: boolean) {
+  store.applySetting(["showAltAzGrid", show]);
+  store.applySetting(["showAltAzGridText", show]);
+}
+
+function updateConstellations(show: boolean) {
+  store.applySetting(["showConstellationFigures", show]);
+  store.applySetting(["showConstellationLabels", show]);
+}
 
 watch(selectedLocation, (location: LocationDeg) => {
   setWWTLocation(location);
   WWTControl.singleton.renderOneFrame();
 });
+
+watch(showAltAzGrid, updateAltAzGrid);
+watch(showConstellations, updateConstellations);
 
 watch(dateTime, (dt: Date) => {
   store.setTime(dt);
@@ -648,8 +682,7 @@ body {
   width: calc(100% - 2rem);
   pointer-events: none;
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: flex-start;
 }
 
@@ -664,6 +697,91 @@ body {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
+}
+
+#right-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+  height: auto;
+}
+
+#controls {
+  pointer-events: auto;
+
+  background: black;
+  padding-block: 0.5em;
+  padding-right: 0.5em;
+  border-radius: 5px;
+  border: solid 1px var(--accent-color);
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+
+  .v-label {
+    color: var(--accent-color);
+    opacity: 1;
+    font-size: var(--default-font-size);
+  }
+
+  #control-checkboxes {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    // padding-left: calc(0.5 * var(--default-line-height));
+
+    .v-checkbox .v-selection-control {
+      font-size: calc(1.1 * var(--default-font-size));
+      height: calc(1.2 * var(--default-line-height));
+      min-height: calc(1.2 * var(--default-line-height));
+    }
+    
+    .v-selection-control .v-label {
+      white-space: nowrap;
+    }
+
+    .v-checkbox .v-selection-control__input {
+      width: calc(1.2 * var(--default-line-height));
+      height: calc(1.2 * var(--default-line-height));
+    }
+
+    .v-checkbox .v-selection-control__wrapper {
+      width: calc(1.2 * var(--default-line-height));
+      height: calc(1.2 * var(--default-line-height));
+    }
+
+    .v-selection-control--focused .v-selection-control__input {
+      outline: 9px double black;
+      box-shadow: 0 0 0 6px white !important;
+    }
+
+    .v-btn {
+      align-self: center;
+      padding-left: 5px;
+      padding-right: 5px;
+      border: solid 1px #899499;
+
+      &:focus {
+        border: 2px solid white;
+      }
+    }
+
+    .v-btn__content {
+      color: black;
+      font-weight: 900;
+      white-space: break-spaces;
+      width: 150px;
+    }
+  }
+  
+  #controls-top-row {
+    padding-left: 0.5em;
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
 }
 
 #bottom-content {

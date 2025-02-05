@@ -74,7 +74,8 @@ export function useCustomGlyphs(batch: Text3dBatch) {
 }
 
 export function renderOneFrame(showHorizon=true,
-                               showSky=true) {
+                               showSky=true,
+                               showPlanetLabels=true) {
   if (this.renderContext.get_backgroundImageset() != null) {
     this.renderType = this.renderContext.get_backgroundImageset().get_dataSetType();
   } else {
@@ -195,12 +196,12 @@ export function renderOneFrame(showHorizon=true,
   Planets.drawPlanets(this.renderContext, 1);
   this._drawSkyOverlays();
 
-  this._planetTextOverlays = makeTextOverlays();
-  useCustomGlyphs(this._planetTextOverlays);
-  this._planetTextOverlays.viewTransform = Grids._altAzTextBatch?.viewTransform;
-  this._planetTextOverlays.draw(this.renderContext, 1, Color.fromArgb(255, 255, 255, 255));
-  console.log(this._planetTextOverlays);
-  console.log([this._planetTextOverlays.draw, this.renderContext, Color.fromArgb(255, 255, 255, 255)]);
+  if (showPlanetLabels) {
+    this._planetTextOverlays = makeTextOverlays();
+    useCustomGlyphs(this._planetTextOverlays);
+    this._planetTextOverlays.viewTransform = Grids._altAzTextBatch?.viewTransform;
+    this._planetTextOverlays.draw(this.renderContext, 1, Color.fromArgb(255, 255, 255, 255));
+  }
 
   if (showHorizon) {
     drawHorizon(this.renderContext, { opacity: 0.95, color: "#01362C" });

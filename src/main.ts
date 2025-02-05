@@ -12,6 +12,8 @@ import { WWTComponent, wwtPinia } from "@wwtelescope/engine-pinia";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faBookOpen,
+  faChevronDown,
+  faGear,
   faLocationDot,
   faTimes,
   faVideo,
@@ -19,6 +21,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faBookOpen);
+library.add(faChevronDown);
+library.add(faGear);
 library.add(faLocationDot);
 library.add(faTimes);
 library.add(faVideo);
