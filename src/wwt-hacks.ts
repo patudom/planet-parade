@@ -53,11 +53,8 @@ export function makeAltAzGridText() {
   }
 }
 
-
-export function useCustomGlyphs(batch: Text3dBatch) {
-  batch.prepareBatch();
-  const cache = batch._glyphCache;
-  cache._glyphItems = {};
+const GLYPH_CACHE = function(): GlyphCache {
+  const cache = new GlyphCache();
   let href = window.location.href;
   if (href.endsWith("/")) {
     href = href.slice(0, href.length - 1);
@@ -68,6 +65,13 @@ export function useCustomGlyphs(batch: Text3dBatch) {
   cache._webFile = new WebFile(xmlUrl);
   cache._webFile.onStateChange = GlyphCache.prototype._glyphXmlReady.bind(cache);
   cache._webFile.send();
+
+  return cache;
+}();
+
+export function useCustomGlyphs(batch: Text3dBatch) {
+  batch._glyphCache = GLYPH_CACHE;
+  batch.prepareBatch();
 }
 
 export function renderOneFrame(showHorizon=true,
@@ -192,12 +196,12 @@ export function renderOneFrame(showHorizon=true,
   Planets.drawPlanets(this.renderContext, 1);
   this._drawSkyOverlays();
 
-  const textOverlays = makeTextOverlays();
-  useCustomGlyphs(textOverlays);
-  textOverlays.viewTransform = Grids._altAzTextBatch?.viewTransform;
-  textOverlays.draw(this.renderContext, 1, Color.fromArgb(255, 255, 255, 255));
-  console.log(textOverlays);
-  console.log([textOverlays.draw, this.renderContext, Color.fromArgb(255, 255, 255, 255)]);
+  this._planetTextOverlays = makeTextOverlays();
+  useCustomGlyphs(this._planetTextOverlays);
+  this._planetTextOverlays.viewTransform = Grids._altAzTextBatch?.viewTransform;
+  this._planetTextOverlays.draw(this.renderContext, 1, Color.fromArgb(255, 255, 255, 255));
+  console.log(this._planetTextOverlays);
+  console.log([this._planetTextOverlays.draw, this.renderContext, Color.fromArgb(255, 255, 255, 255)]);
 
   if (showHorizon) {
     drawHorizon(this.renderContext, { opacity: 0.95, color: "#01362C" });

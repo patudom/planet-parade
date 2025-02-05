@@ -40,8 +40,9 @@ export function makeTextOverlays(): Text3dBatch {
     if (Number(object) >= SolarSystemObjects.earth) {
       return;
     }
-    const text = nameForObject(object);
-    batch.add(textOverlayForSolarSystemObject(object, text, glyphHeight));
+    const name = nameForObject(object);
+    const text = textOverlayForSolarSystemObject(object, name, glyphHeight);
+    batch.add(text);
   });
   return batch;
 }
