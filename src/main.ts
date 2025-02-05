@@ -9,9 +9,6 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 import { WWTComponent, wwtPinia } from "@wwtelescope/engine-pinia";
 
-import VueSlider from "vue-slider-component";
-import 'vue-slider-component/theme/default.css';
-
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faBookOpen,
@@ -58,7 +55,6 @@ createApp(PlanetaryAlignment, {
   // Components
   .component("WorldWideTelescope", WWTComponent)
   .component('font-awesome-icon', FontAwesomeIcon)
-  .component('vue-slider', VueSlider)
   .component('credit-logos', CreditLogos)
   .component('funding-acknowledgement', FundingAcknowledgement)
   .component('geolocation-button', GeolocationButton)

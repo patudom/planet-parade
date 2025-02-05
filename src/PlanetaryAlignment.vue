@@ -126,9 +126,9 @@
     <div id="bottom-content">
       <div id="slider">
         <v-slider
-          v-model='selectedTime'
-          :max="maxTime"
+          v-model="selectedTime"
           :min="minTime"
+          :max="maxTime"
           :color="accentColor"
           :ripple="false"
           hide-details
@@ -143,7 +143,7 @@
           </template>
         </v-slider>
       </div>
-      <div id="body-logos" v-if= "!smallSize">
+      <div id="body-logos" v-if="!smallSize">
         <credit-logos/>
       </div>
     </div>
@@ -297,15 +297,16 @@ import { Color, Grids, Planets, Settings, WWTControl } from "@wwtelescope/engine
 import { GotoRADecZoomParams, engineStore } from "@wwtelescope/engine-pinia";
 import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls } from "@cosmicds/vue-toolkit";
 import { useDisplay } from "vuetify";
+import { formatInTimeZone } from "date-fns-tz";
 
+import { useTimezone } from "./timezones";
 import { resetAltAzGridText, makeAltAzGridText, setupConstellationFigures, renderOneFrame } from "./wwt-hacks";
 
 const SECONDS_PER_DAY = 60 * 60 * 24;
 const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
-const millisecondsPerInterval = MILLISECONDS_PER_DAY;
+const millisecondsPerInterval = MILLISECONDS_PER_DAY / 24;
 const minTime = Date.UTC(2025, 1, 11);
 const maxTime = Date.UTC(2025, 1, 18);
-const selectedTime = ref(minTime);
 
 type SheetType = "text" | "video";
 type CameraParams = Omit<GotoRADecZoomParams, "instant">;
@@ -352,6 +353,8 @@ const selectedLocation = ref<LocationDeg>({
   longitudeDeg: -71.1056,
   latitudeDeg: 42.3581,
 });
+const selectedTime = ref(minTime);
+const { selectedTimezone } = useTimezone(selectedLocation);
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -413,6 +416,20 @@ onMounted(() => {
     store.applySetting(["actualPlanetScale", false]);
 
     doWWTModifications();
+
+    setInterval(() => {
+      if (playing.value) {
+        const time = store.currentTime;
+        selectedTime.value = time.getTime();
+      }
+    }, 500);
+
+    window.addEventListener("keyup", (event: KeyboardEvent) => {
+      if (["Esc", "Escape"].includes(event.key) && showVideoSheet.value) {
+        showVideoSheet.value = false;
+      }
+    });
+
   });
 });
 
@@ -424,8 +441,10 @@ const isLoading = computed(() => !ready.value);
 // It doesn't really matter which one we note here
 const inNorthernHemisphere = computed(() => selectedLocation.value.latitudeDeg > 0);
 
+const dateTime = computed(() => new Date(selectedTime.value));
+
 /* Properties related to device/screen characteristics */
-const smallSize = computed(() => smAndDown);
+const smallSize = computed(() => smAndDown.value);
 
 /* This lets us inject component data into element CSS */
 const cssVars = computed(() => {
@@ -489,10 +508,26 @@ function setWWTLocation(location: LocationDeg) {
   console.log("Setting location to", location);
 }
 
+function toTimeString(date: Date | null, seconds = false, utc = false) {
+  // return this.toLocaleTimeString(date);
+  if (date === null) {
+    return "";
+  }
+  
+  if (seconds) {
+    return formatInTimeZone(date, utc ? 'UTC' : selectedTimezone.value, 'h:mm:ss aaa (zzz)');
+  }
+  return formatInTimeZone(date, utc ? 'UTC' : selectedTimezone.value, 'h:mm aaa (zzz)');
+}
+
 
 watch(selectedLocation, (location: LocationDeg) => {
   setWWTLocation(location);
   WWTControl.singleton.renderOneFrame();
+});
+
+watch(dateTime, (dt: Date) => {
+  store.setTime(dt);
 });
 
 watch(inNorthernHemisphere, (_inNorth: boolean) => resetAltAzGridText());
@@ -833,5 +868,64 @@ video {
 
 #geolocation-wrapper\+location .v-btn {
   background-color: black;
+}
+
+// Styling the slider
+#slider .v-slider {
+  pointer-events: auto;
+
+  .v-slider-track {
+    // --v-slider-track-size: 4px !important;
+
+    .v-slider-track__background {
+      background-color: #CCC !important;
+    }
+
+    .v-slider-track__fill {
+      background-color: rgb(255 193 203)!important;
+      height: var(--v-slider-track-size) !important;
+    }
+
+    .v-slider-track__background--opacity {
+      opacity: 1 !important;
+    }
+  }
+
+  .v-slider-thumb {
+    
+    .v-slider-thumb__surface {
+      border: 1px solid black !important;
+    }
+  }
+  
+
+  .v-slider-thumb__label {
+    min-width: fit-content;
+    white-space: nowrap;
+    color: black;
+    padding-inline: 0.7rem;
+    background-color: var(--accent-color);
+
+    font-size: var(--default-font-size);
+    padding-block: calc(0.5 * var(--default-line-height));
+
+    @media (max-width: 600px) {
+      font-size: calc(1 * var(--default-font-size));
+      padding-block: 0;
+      padding-inline: 0.3rem;
+      height: 15px;
+    }
+  }
+  
+  .v-slider-thumb__label::before {
+    color: var(--accent-color);
+  }
+}
+
+#slider {
+  width: 100% !important;
+  margin-left: 5px;
+  margin-right: 0;
+  position: relative;
 }
 </style>
