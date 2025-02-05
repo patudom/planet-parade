@@ -294,6 +294,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
 import { Color, Grids, Planets, Settings, WWTControl } from "@wwtelescope/engine";
+import { SolarSystemObjects } from "@wwtelescope/engine-types";
 import { GotoRADecZoomParams, engineStore } from "@wwtelescope/engine-pinia";
 import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls } from "@cosmicds/vue-toolkit";
 import { useDisplay } from "vuetify";
@@ -347,7 +348,7 @@ const showAltAzGrid = ref(true);
 const showLocationSelector = ref(false);
 const playing = ref(true);
 // const showControls = ref(smAndUp.value);
-const showConstellations = ref(true);
+const showConstellations = ref(false);
 
 const selectedLocation = ref<LocationDeg>({
   longitudeDeg: -71.1056,
@@ -387,7 +388,7 @@ function doWWTModifications() {
   const originalUpdatePlanetLocations = Planets.updatePlanetLocations;
   function newUpdatePlanetLocations(threeD: boolean) {
     originalUpdatePlanetLocations(threeD);
-    for (let i = 0; i < Planets._planetScales.length; i++) {
+    for (let i = 0; i <= SolarSystemObjects.moon; i++) {
       Planets._planetScales[i] *= 5;
     }
   }

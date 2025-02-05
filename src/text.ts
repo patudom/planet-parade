@@ -28,6 +28,7 @@ function textOverlayForSolarSystemObject(object: SolarSystemObjects, text: strin
 
   const place = placeForObject(object);
   const location = Coordinates.raDecTo3d(place.get_RA(), place.get_dec());
+  location.y -= 0.025;
   return new Text3d(location, up, text, glyphHeight, scale);
 
 }
@@ -37,12 +38,11 @@ export function makeTextOverlays(): Text3dBatch {
   const batch = new Text3dBatch(glyphHeight);
   const values = Object.keys(SolarSystemObjects).filter(key => !isNaN(Number(key)))
   values.forEach(object => {
-    if (Number(object) >= SolarSystemObjects.earth) {
-      return;
+    if (Number(object) <= SolarSystemObjects.moon) {
+      const name = nameForObject(object);
+      const text = textOverlayForSolarSystemObject(object, name, glyphHeight);
+      batch.add(text);
     }
-    const name = nameForObject(object);
-    const text = textOverlayForSolarSystemObject(object, name, glyphHeight);
-    batch.add(text);
   });
   return batch;
 }

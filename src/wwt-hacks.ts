@@ -13,7 +13,6 @@ import {
   Planets,
   RenderTriangle,
   Settings,
-  SimpleLineList,
   SpaceTimeController,
   Text3d,
   Text3dBatch,
