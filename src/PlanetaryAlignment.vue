@@ -418,6 +418,10 @@ function doWWTModifications() {
   }
   Planets.updatePlanetLocations = newUpdatePlanetLocations;
 
+  // Recall that zoom = 6 * FOV, in WWT
+  const maxFOV = 90;
+  WWTControl.singleton.set_zoomMax(maxFOV * 6);
+
 }
 
 onMounted(() => {
