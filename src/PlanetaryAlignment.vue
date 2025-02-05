@@ -146,24 +146,38 @@
     <!-- This block contains the elements (e.g. the project icons) displayed along the bottom of the screen -->
 
     <div id="bottom-content">
-      <div id="slider">
-        <v-slider
-          v-model="selectedTime"
-          :min="minTime"
-          :max="maxTime"
+      <div id="time-controls">
+        <icon-button
+          id="play-pause-button"
+          :fa-icon="playing ? 'pause' : 'play'"
+          @activate="() => { playing = !playing }"
           :color="accentColor"
-          :ripple="false"
-          hide-details
-          track-size="8px"
-          thumb-size="20px"
-          thumb-label="always"
-          :step="millisecondsPerInterval"
-          @mousedown="() => {playing = false;}"
-          >
-          <template v-slot:thumb-label="item">
-            {{ toTimeString(new Date(item.modelValue))  }}
-          </template>
-        </v-slider>
+          :focus-color="accentColor"
+          :tooltip="playing ? 'Pause' : 'Play'"
+          tooltip-location="top"
+          tooltip-offset="5px"
+          faSize="1x"
+          :show-tooltip="!mobile"
+        ></icon-button>
+        <div id="slider">
+          <v-slider
+            v-model="selectedTime"
+            :min="minTime"
+            :max="maxTime"
+            :color="accentColor"
+            :ripple="false"
+            hide-details
+            track-size="8px"
+            thumb-size="20px"
+            thumb-label="always"
+            :step="millisecondsPerInterval"
+            @mousedown="() => { playing = false; }"
+            >
+            <template v-slot:thumb-label="item">
+              {{ toTimeString(new Date(item.modelValue))  }}
+            </template>
+          </v-slider>
+        </div>
       </div>
       <div id="body-logos" v-if="!smallSize">
         <credit-logos/>
@@ -327,7 +341,7 @@ import { resetAltAzGridText, makeAltAzGridText, renderOneFrame } from "./wwt-hac
 
 const SECONDS_PER_DAY = 60 * 60 * 24;
 const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
-const millisecondsPerInterval = MILLISECONDS_PER_DAY / 24;
+const millisecondsPerInterval = MILLISECONDS_PER_DAY / 48;
 const minTime = Date.UTC(2025, 1, 11);
 const maxTime = Date.UTC(2025, 1, 18);
 
@@ -368,7 +382,7 @@ const tab = ref(0);
 const showHorizon = ref(false);
 const showAltAzGrid = ref(true);
 const showLocationSelector = ref(false);
-const playing = ref(true);
+const playing = ref(false);
 const showControls = ref(smAndUp.value);
 const showConstellations = ref(false);
 const showPlanetLabels = ref(true);
@@ -440,6 +454,10 @@ onMounted(() => {
     store.applySetting(["actualPlanetScale", false]);
     updateAltAzGrid(showAltAzGrid.value);
     updateConstellations(showConstellations.value);
+    updateWWTLocation(selectedLocation.value);
+
+    store.setClockSync(false);
+    store.setClockRate(1800);
 
     doWWTModifications();
 
@@ -471,6 +489,8 @@ const dateTime = computed(() => new Date(selectedTime.value));
 
 /* Properties related to device/screen characteristics */
 const smallSize = computed(() => smAndDown.value);
+
+const mobile = computed(() => smallSize.value && touchscreen);
 
 /* This lets us inject component data into element CSS */
 const cssVars = computed(() => {
@@ -528,12 +548,6 @@ function selectSheet(sheetType: SheetType | null) {
   }
 }
 
-function setWWTLocation(location: LocationDeg) {
-  wwtSettings.set_locationLat(location.latitudeDeg);
-  wwtSettings.set_locationLng(location.longitudeDeg);
-  console.log("Setting location to", location);
-}
-
 function toTimeString(date: Date | null, seconds = false, utc = false) {
   // return this.toLocaleTimeString(date);
   if (date === null) {
@@ -544,6 +558,11 @@ function toTimeString(date: Date | null, seconds = false, utc = false) {
     return formatInTimeZone(date, utc ? 'UTC' : selectedTimezone.value, 'h:mm:ss aaa (zzz)');
   }
   return formatInTimeZone(date, utc ? 'UTC' : selectedTimezone.value, 'h:mm aaa (zzz)');
+}
+
+function updateWWTLocation(location: LocationDeg) {
+  wwtSettings.set_locationLat(location.latitudeDeg);
+  wwtSettings.set_locationLng(location.longitudeDeg);
 }
 
 function updateAltAzGrid(show: boolean) {
@@ -557,8 +576,12 @@ function updateConstellations(show: boolean) {
 }
 
 watch(selectedLocation, (location: LocationDeg) => {
-  setWWTLocation(location);
+  updateWWTLocation(location);
   WWTControl.singleton.renderOneFrame();
+});
+
+watch(playing, (play) => {
+  store.setClockSync(play);
 });
 
 watch(showAltAzGrid, updateAltAzGrid);
@@ -992,6 +1015,10 @@ video {
   background-color: black;
 }
 
+#slider {
+  flex-grow: 1;
+}
+
 // Styling the slider
 #slider .v-slider {
   pointer-events: auto;
@@ -1044,7 +1071,9 @@ video {
   }
 }
 
-#slider {
+#time-controls {
+  display: flex;
+  gap: 10px;
   width: 100% !important;
   margin-left: 5px;
   margin-right: 0;

@@ -15,6 +15,8 @@ import {
   faChevronDown,
   faGear,
   faLocationDot,
+  faPlay,
+  faPause,
   faTimes,
   faVideo,
   faXmark,
@@ -24,6 +26,8 @@ library.add(faBookOpen);
 library.add(faChevronDown);
 library.add(faGear);
 library.add(faLocationDot);
+library.add(faPlay);
+library.add(faPause);
 library.add(faTimes);
 library.add(faVideo);
 library.add(faXmark);
