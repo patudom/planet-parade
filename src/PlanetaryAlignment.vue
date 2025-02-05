@@ -343,7 +343,7 @@ const SECONDS_PER_DAY = 60 * 60 * 24;
 const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
 const millisecondsPerInterval = MILLISECONDS_PER_DAY / 48;
 const minTime = Date.UTC(2025, 1, 11);
-const maxTime = Date.UTC(2025, 1, 18);
+const maxTime = Date.UTC(2025, 2, 1);
 
 type SheetType = "text" | "video";
 type CameraParams = Omit<GotoRADecZoomParams, "instant">;
@@ -365,7 +365,7 @@ const props = withDefaults(defineProps<PlanetaryAlignmentProps>(), {
     return {
       raRad: 0,
       decRad: 0,
-      zoomDeg: 60
+      zoomDeg: 360
     };
   }
 });
