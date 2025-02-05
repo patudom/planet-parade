@@ -1,6 +1,6 @@
 import Vue, { createApp, type Plugin } from "vue";
 
-import { FundingAcknowledgement, IconButton, CreditLogos } from "@cosmicds/vue-toolkit";
+import { CreditLogos, FundingAcknowledgement, GeolocationButton, IconButton, LocationSelector } from "@cosmicds/vue-toolkit";
 import PlanetaryAlignment from "./PlanetaryAlignment.vue";
 
 import vuetify from "../plugins/vuetify";
@@ -12,13 +12,17 @@ import { WWTComponent, wwtPinia } from "@wwtelescope/engine-pinia";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faBookOpen,
+  faLocationDot,
   faTimes,
   faVideo,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faBookOpen);
+library.add(faLocationDot);
 library.add(faTimes);
 library.add(faVideo);
+library.add(faXmark);
 
 /** v-hide directive taken from https://www.ryansouthgate.com/2020/01/30/vue-js-v-hide-element-whilst-keeping-occupied-space/ */
 // Extract the function out, up here, so I'm not writing it twice
@@ -51,9 +55,11 @@ createApp(PlanetaryAlignment, {
   // Components
   .component("WorldWideTelescope", WWTComponent)
   .component('font-awesome-icon', FontAwesomeIcon)
-  .component('icon-button', IconButton)
-  .component('funding-acknowledgement', FundingAcknowledgement)
   .component('credit-logos', CreditLogos)
+  .component('funding-acknowledgement', FundingAcknowledgement)
+  .component('geolocation-button', GeolocationButton)
+  .component('icon-button', IconButton)
+  .component('location-selector', LocationSelector)
 
   // Mount
   .mount("#app");

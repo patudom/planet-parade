@@ -79,6 +79,41 @@
         </icon-button>
       </div>
       <div id="center-buttons">
+        <icon-button
+          v-model="showLocationSelector"
+          fa-icon="location-dot"
+          :color="buttonColor"
+          tooltip-text="Select Location"
+          tooltip-location="start"
+        ></icon-button>
+        <v-dialog
+          v-model="showLocationSelector"
+          max-width="fit-content"
+          transition="slide-y-transition"
+        >
+          <v-card>
+            <font-awesome-icon
+              style="position: absolute; right: 12px; top: 12px; cursor: pointer; padding: 1em; margin: -1em; z-index: 1000;"
+              icon="xmark"
+              size="xl"
+              @click="showLocationSelector = false"
+              @keyup.enter="showLocationSelector = false"
+              tabindex="0"
+              color="black"
+            ></font-awesome-icon>
+            <location-selector
+              v-model="selectedLocation"
+            />
+            <geolocation-button
+              :debug="false"
+              size="30px"
+              density="default"
+              elevation="5"
+              color="black"
+              @location="selectedLocation = {longitudeDeg: $event.longitude, latitudeDeg: $event.latitude}"
+            />
+          </v-card>
+        </v-dialog>
       </div>
       <div id="right-buttons">
       </div>
@@ -281,6 +316,7 @@ const buttonColor = ref("#ffffff");
 const tab = ref(0);
 const showHorizon = ref(false);
 const showAltAzGrid = ref(true);
+const showLocationSelector = ref(false);
 // const showControls = ref(smAndUp.value);
 const showConstellations = ref(true);
 
@@ -560,6 +596,13 @@ body {
   gap: 10px;
 }
 
+#center-buttons {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 #bottom-content {
   display: flex;
   flex-direction: column;
@@ -745,5 +788,11 @@ video {
   .v-tabs:not(.v-tabs--vertical).v-tabs--right>.v-slide-group--is-overflowing.v-tabs-bar--is-mobile:not(.v-slide-group--has-affixes) .v-slide-group__next, .v-tabs:not(.v-tabs--vertical):not(.v-tabs--right)>.v-slide-group--is-overflowing.v-tabs-bar--is-mobile:not(.v-slide-group--has-affixes) .v-slide-group__prev {
     display: none;
   }
+
+}
+
+.map-container {
+  width: 60vw;
+  height: 60vh;
 }
 </style>
