@@ -318,9 +318,14 @@ function doWWTModifications() {
   WWTControl.singleton.renderOneFrame = newFrameRender;
   setupConstellationFigures();
 
-  for (let i = 0; i < Planets._planetScales.length; i++) {
-    Planets._planetScales[i] *= 6;
+  const originalUpdatePlanetLocations = Planets.updatePlanetLocations;
+  function newUpdatePlanetLocations(threeD: boolean) {
+    originalUpdatePlanetLocations(threeD);
+    for (let i = 0; i < Planets._planetScales.length; i++) {
+      Planets._planetScales[i] *= 5;
+    }
   }
+  Planets.updatePlanetLocations = newUpdatePlanetLocations;
 
 }
 
@@ -341,6 +346,7 @@ onMounted(() => {
     store.applySetting(["altAzGridColor", Color.fromArgb(180, 133, 201, 254)]);
     store.applySetting(["showConstellationLabels", showConstellations.value]);
     store.applySetting(["showConstellationFigures", showConstellations.value]);
+    store.applySetting(["actualPlanetScale", false]);
 
     doWWTModifications();
   });
