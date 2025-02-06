@@ -412,8 +412,7 @@ const _props = withDefaults(defineProps<PlanetaryAlignmentProps>(), {
 });
 
 const splash = new URLSearchParams(window.location.search).get("splash")?.toLowerCase() !== "false";
-// const showSplashScreen = ref(splash);
-const showSplashScreen = ref(false);
+const showSplashScreen = ref(splash);
 const backgroundImagesets = reactive<BackgroundImageset[]>([]);
 const sheet = ref<SheetType | null>(null);
 const layersLoaded = ref(false);
@@ -553,16 +552,14 @@ const cssVars = computed(() => {
   computed wrappers around modifying/querying that which can be used as
   dialog v-model values
 */
-// const showTextSheet = computed({
-//   get() {
-//     return sheet.value === "text";
-//   },
-//   set(_value: boolean) {
-//     selectSheet("text");
-//   }
-// });
-
-const showTextSheet = ref(true);
+const showTextSheet = computed({
+  get() {
+    return sheet.value === "text";
+  },
+  set(_value: boolean) {
+    selectSheet("text");
+  }
+});
 
 const showVideoSheet = computed({
   get() {
