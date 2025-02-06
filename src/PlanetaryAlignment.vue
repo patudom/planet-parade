@@ -136,7 +136,7 @@
             <font-awesome-icon
               size="lg"
               class="tab-focusable"
-              style="color: var(--accent-color);"
+              :color="accentColor"
               :icon="showControls ? `chevron-down` : `gear`"
               @click="showControls = !showControls" 
               @keyup.enter="showControls = !showControls"
