@@ -147,7 +147,7 @@
             <v-checkbox :color="accentColor" v-model="showAltAzGrid" @keyup.enter="showAltAzGrid = !showAltAzGrid"
               label="Sky Grid" hide-details />
             <v-checkbox :color="accentColor" v-model="showHorizon" @keyup.enter="showHorizon = !showHorizon"
-              label="Horizon" hide-details />
+              label="Horizon/Sky" hide-details />
               <v-checkbox :color="accentColor" v-model="showPlanetLabels" @keyup.enter="showPlanetLabels = !showPlanetLabels"
               label="Planet Labels" hide-details />
               <v-checkbox :color="accentColor" v-model="showEcliptic" @keyup.enter="showEcliptic = !showEcliptic"
@@ -272,7 +272,39 @@
           <v-window-item>
             <v-card class="no-bottom-border-radius scrollable">
               <v-card-text class="info-text no-bottom-border-radius">
-                Information goes here
+                <h4>What is the planet parade?</h4>
+                <p>
+                  During February 2025, seven planets&#8212;Mercury, Saturn, Neptune, Venus, Uranus, Jupiter, and Mars&#8212;will be visible in the night sky all at once!
+                </p> 
+                <h4>Cool! How do I see it?</h4>
+                <p>
+                  The best time to see it will be shortly after it gets dark, maybe 20-30 minutes after sunset. In the Northern Hemisphere, you'll want a clear view towards the southern half of the sky, from west to east. 
+                </p>
+                <p>
+                  You can use this resource to simulate the planet parade where you. Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. 
+                </p>
+                <p>
+                  The display defaults to the current date and time. Use the time controls to advance time until the Sun sets.
+                  <ul>
+                    <li>
+                      If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun go below the horizon, and the sky will turn dark. 
+                    </li>
+                    <li>
+                      Display the cardinal directions in the view to help orient yourself by checking <span style="color: var(--accent-color)">Sky Grid</span>.
+                    </li>
+                  </ul>
+                </p>
+                <h4>Which planets will I be able to see?</h4>
+                <p>
+                  The planets that will be visible to your eye depends on how dark your night sky is. People in reasonably dark skies will be able to see Mercury, Saturn, Venus, Jupiter, and Mars by eye. Binoculars will help for seeing Uranus. A small telescope may be needed to see Neptune. 
+                </p>
+                <h4>What is the significance of the planet parade?</h4>
+                <p>
+                  The planet parade happens when all the planets happen to be on the same side of their orbits around the Sun as Earth, so they all are on Earth's night-time side. (When a planet is on the opposite side of the Sun during Earth, that means it is up in the sky during the day when the Sun outshines it.) 
+                </p>
+                <p>
+                  The planets are also not really all in a line. It only appears that way from Earth because we all orbit the Sun in roughly the same plane. Any object in this same plane appears to follow the same circle that the Sun appears to travel around the sky, called the "ecliptic."
+                </p>
               </v-card-text>
             </v-card>
           </v-window-item>
@@ -380,7 +412,8 @@ const _props = withDefaults(defineProps<PlanetaryAlignmentProps>(), {
 });
 
 const splash = new URLSearchParams(window.location.search).get("splash")?.toLowerCase() !== "false";
-const showSplashScreen = ref(splash);
+// const showSplashScreen = ref(splash);
+const showSplashScreen = ref(false);
 const backgroundImagesets = reactive<BackgroundImageset[]>([]);
 const sheet = ref<SheetType | null>(null);
 const layersLoaded = ref(false);
@@ -520,14 +553,16 @@ const cssVars = computed(() => {
   computed wrappers around modifying/querying that which can be used as
   dialog v-model values
 */
-const showTextSheet = computed({
-  get() {
-    return sheet.value === "text";
-  },
-  set(_value: boolean) {
-    selectSheet("text");
-  }
-});
+// const showTextSheet = computed({
+//   get() {
+//     return sheet.value === "text";
+//   },
+//   set(_value: boolean) {
+//     selectSheet("text");
+//   }
+// });
+
+const showTextSheet = ref(true);
 
 const showVideoSheet = computed({
   get() {
@@ -758,6 +793,20 @@ body {
       font-size: 150%;
     }
   }
+}
+
+h4 {
+  margin-top: 20px;
+  margin-bottom: 6px;
+}
+
+p {
+  margin-block: 10px;
+}
+
+li {
+  margin-left: 20px;
+  margin-block: 5px;
 }
 
 #top-content {
@@ -1205,5 +1254,10 @@ video {
   margin-left: 5px;
   margin-right: 0;
   position: relative;
+}
+
+.bullet-icon {
+  color: var(--accent-color);
+  width: 1.5em;
 }
 </style>
