@@ -25,11 +25,11 @@
         v-click-outside="closeSplashScreen"
         :style="cssVars"
       >
-        <div
+        <font-awesome-icon
           id="close-splash-button"
           @click="closeSplashScreen"
-          >&times;
-        </div>
+          icon="xmark"
+          />
         <div id="splash-screen-text">
           <p>Splash Screen Content</p>
         </div>
@@ -376,10 +376,10 @@ const backgroundImagesets = reactive<BackgroundImageset[]>([]);
 const sheet = ref<SheetType | null>(null);
 const layersLoaded = ref(false);
 const positionSet = ref(false);
-const accentColor = ref("#ffffff");
-const buttonColor = ref("#ffffff");
+const accentColor = ref("#f4ba3e");
+const buttonColor = ref("#f4ba3e");
 const tab = ref(0);
-const showHorizon = ref(false);
+const showHorizon = ref(true);
 const showAltAzGrid = ref(true);
 const showLocationSelector = ref(false);
 const playing = ref(false);
@@ -843,7 +843,7 @@ body {
   font-family: 'Highway Gothic Narrow', 'Roboto', sans-serif;
   font-size: min(8vw, 7vh);
 
-  border-radius: 10%;
+  border-radius: 30px;
   border: min(1.2vw, 0.9vh) solid var(--accent-color);
   overflow: auto;
   padding-top: 4rem;
@@ -871,17 +871,43 @@ body {
 
   #close-splash-button {
     position: absolute;
-    top: 0.5rem;
-    right: 1.75rem;
+    top: 20px;
+    right: 20px;
     text-align: end;
     color: var(--accent-color);
-    font-size: min(8vw, 5vh);
+    font-size: min(5vw, 4vh);
 
     &:hover {
       cursor: pointer;
     }
   }
+
+  #splash-screen-acknowledgements {
+    margin-top: 3rem;
+    font-size: calc(1.7 * var(--default-font-size));
+    line-height: calc(1.5 * var(--default-line-height));
+    width: 60%; 
+  }
+  #splash-screen-logos {
+    margin-block: 0.75em;
+    img {
+    height: 5vmin;
+    vertical-align: middle;
+    margin: 2px;
+    }
+    @media only screen and (max-width: 600px) {
+      img {
+        height: 24px;
+      }
+    }
+    svg {
+      vertical-align: middle;
+      height: 24px;
+    }
+  }
 }
+
+
 
 .video-wrapper {
   height: 100%;
