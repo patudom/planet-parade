@@ -31,7 +31,8 @@
           icon="xmark"
           />
         <div id="splash-screen-text">
-          <p>Splash Screen Content</p>
+          <pp>Want to see the</pp>
+          <p class="highlight">Planetary Parade?</p>
         </div>
         <div>
             <v-btn
@@ -390,6 +391,7 @@ const sheet = ref<SheetType | null>(null);
 const layersLoaded = ref(false);
 const positionSet = ref(false);
 const accentColor = ref("#f4ba3e");
+const accentColor2 = ref("#6793ff");
 const buttonColor = ref("#f4ba3e");
 const tab = ref(0);
 const showHorizon = ref(true);
@@ -511,6 +513,7 @@ const xSmallSize = computed(() => xs.value);
 const cssVars = computed(() => {
   return {
     "--accent-color": accentColor.value,
+    "--accent-color2": accentColor2.value,
     "--app-content-height": showTextSheet.value ? "66%" : "100%",
   };
 });
@@ -858,6 +861,18 @@ body {
   font-family: 'Highway Gothic Narrow', 'Roboto', sans-serif;
   font-size: min(8vw, 7vh);
 
+  p {
+    font-family: 'Highway Gothic Narrow', 'Roboto', sans-serif;
+    font-weight: bold;
+    vertical-align: middle;
+  }
+    
+  .highlight {
+    color: var(--accent-color2);
+    text-transform: uppercase;
+    font-weight: bolder;
+  }
+
   border-radius: 30px;
   border: min(1.2vw, 0.9vh) solid var(--accent-color);
   overflow: auto;
@@ -901,8 +916,7 @@ body {
     // in the grid, the text is in the 2nd column
     display: flex;
     flex-direction: column;
-    line-height: 130%;
-    
+    line-height: 130%;    
   }
 
   .splash-get-started {
