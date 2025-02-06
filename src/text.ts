@@ -3,7 +3,7 @@
 
 /* eslint-disable */
 
-import { Coordinates, Place, Text3d, Text3dBatch, Vector3d } from "@wwtelescope/engine";
+import { Coordinates, Place, SpaceTimeController, Text3d, Text3dBatch, Vector3d } from "@wwtelescope/engine";
 import { Classification, SolarSystemObjects } from "@wwtelescope/engine-types";
 
 function nameForObject(object: SolarSystemObjects): string {
@@ -24,7 +24,8 @@ function placeForObject(object: SolarSystemObjects): Place {
 
 function textOverlayForSolarSystemObject(object: SolarSystemObjects, text: string, glyphHeight: number): Text3d {
   const scale = 0.00018;
-  const up = Vector3d.create(0, 1, 0);
+  const sign = SpaceTimeController.get_location().get_lat() < 0 ? -1 : 1;
+  const up = Vector3d.create(0, sign, 0);
 
   const place = placeForObject(object);
   const location = Coordinates.raDecTo3d(place.get_RA(), place.get_dec());
