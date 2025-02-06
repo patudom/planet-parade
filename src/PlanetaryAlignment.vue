@@ -346,14 +346,15 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
-import { Color, Grids, Planets, Settings, WWTControl } from "@wwtelescope/engine";
-import { SolarSystemObjects } from "@wwtelescope/engine-types";
-import { GotoRADecZoomParams, engineStore } from "@wwtelescope/engine-pinia";
-import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls } from "@cosmicds/vue-toolkit";
+import { Color, Grids, Place, Planets, Settings, WWTControl } from "@wwtelescope/engine";
+import { Classification, SolarSystemObjects } from "@wwtelescope/engine-types";
+import { engineStore } from "@wwtelescope/engine-pinia";
+import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, D2R } from "@cosmicds/vue-toolkit";
 import { useDisplay } from "vuetify";
 import { formatInTimeZone } from "date-fns-tz";
 
 import { useTimezone } from "./timezones";
+import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, renderOneFrame } from "./wwt-hacks";
 
 const SECONDS_PER_DAY = 60 * 60 * 24;
@@ -363,10 +364,8 @@ const minTime = Date.UTC(2025, 1, 11);
 const maxTime = Date.UTC(2025, 2, 1);
 
 type SheetType = "text" | "video";
-type CameraParams = Omit<GotoRADecZoomParams, "instant">;
 export interface PlanetaryAlignmentProps {
   wwtNamespace?: string;
-  initialCameraParams?: CameraParams;
 }
 
 const store = engineStore();
@@ -376,15 +375,8 @@ useWWTKeyboardControls(store);
 const touchscreen = supportsTouchscreen();
 const { smAndDown, smAndUp, xs } = useDisplay();
 
-const props = withDefaults(defineProps<PlanetaryAlignmentProps>(), {
+const _props = withDefaults(defineProps<PlanetaryAlignmentProps>(), {
   wwtNamespace: "planetary-alignment",
-  initialCameraParams: () => {
-    return {
-      raRad: 0,
-      decRad: 0,
-      zoomDeg: 360
-    };
-  }
 });
 
 const splash = new URLSearchParams(window.location.search).get("splash")?.toLowerCase() !== "false";
@@ -410,7 +402,7 @@ const selectedLocation = ref<LocationDeg>({
   longitudeDeg: -71.1056,
   latitudeDeg: 42.3581,
 });
-const selectedTime = ref(minTime);
+const selectedTime = ref(Date.now());
 const { selectedTimezone } = useTimezone(selectedLocation);
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -460,10 +452,6 @@ function doWWTModifications() {
 onMounted(() => {
   store.waitForReady().then(async () => {
     skyBackgroundImagesets.forEach(iset => backgroundImagesets.push(iset));
-    store.gotoRADecZoom({
-      ...props.initialCameraParams,
-      instant: true
-    }).then(() => positionSet.value = true);
 
     // If there are layers to set up, do that here!
     layersLoaded.value = true;
@@ -481,6 +469,7 @@ onMounted(() => {
     store.setClockRate(1800);
 
     doWWTModifications();
+    resetCamera().then(() => positionSet.value = true);
 
     setInterval(() => {
       if (playing.value) {
@@ -584,6 +573,44 @@ function toTimeString(date: Date | null, seconds = false, utc = false) {
   return formatInTimeZone(date, utc ? 'UTC' : selectedTimezone.value, 'h:mm aaa (zzz)');
 }
 
+async function resetCamera(): Promise<void> {
+  const time = store.currentTime;
+
+  const sunPlace = new Place();
+  sunPlace.set_names(["Sun"]);
+  sunPlace.set_classification(Classification.solarSystem);
+  sunPlace.set_target(SolarSystemObjects.sun);
+
+  const latRad = selectedLocation.value.latitudeDeg * D2R;
+  const lonRad = selectedLocation.value.longitudeDeg * D2R;
+
+  const sunAltAz = equatorialToHorizontal(
+    sunPlace.get_RA() * 15 * D2R,
+    sunPlace.get_dec() * D2R,
+    latRad,
+    lonRad,
+    time,
+  );
+
+  const sunAz = sunAltAz.azRad;
+  const startAlt = 25 * D2R;
+  const startRADec = horizontalToEquatorial(
+    startAlt,
+    sunAz,
+    latRad,
+    lonRad,
+    time,
+  );
+
+  return store.gotoRADecZoom({
+    raRad: startRADec.raRad,
+    decRad: startRADec.decRad,
+    zoomDeg: 360,
+    instant: true,
+  });
+  
+}
+
 function updateWWTLocation(location: LocationDeg) {
   wwtSettings.set_locationLat(location.latitudeDeg);
   wwtSettings.set_locationLng(location.longitudeDeg);
@@ -606,6 +633,7 @@ function updateConstellations(show: boolean) {
 
 watch(selectedLocation, (location: LocationDeg) => {
   updateWWTLocation(location);
+  resetCamera();
   WWTControl.singleton.renderOneFrame();
 });
 
