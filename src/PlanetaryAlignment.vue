@@ -33,6 +33,19 @@
         <div id="splash-screen-text">
           <p>Splash Screen Content</p>
         </div>
+        <div>
+            <v-btn
+              class="splash-get-started"
+              @click="closeSplashScreen"
+              :color="accentColor"
+              :density="xSmallSize ? 'compact' : 'default'"
+              size="x-large"
+              variant="elevated"
+              rounded="lg"
+            >
+              Get Started
+            </v-btn>
+          </div>
         <div id="splash-screen-acknowledgements" class="small">
           This Data Story is brought to you by <a href="https://www.cosmicds.cfa.harvard.edu/" target="_blank" rel="noopener noreferrer">Cosmic Data Stories</a> and <a href="https://www.worldwidetelescope.org/home/" target="_blank" rel="noopener noreferrer">WorldWide Telescope</a>.
           
@@ -357,7 +370,7 @@ const store = engineStore();
 useWWTKeyboardControls(store);
 
 const touchscreen = supportsTouchscreen();
-const { smAndDown, smAndUp } = useDisplay();
+const { smAndDown, smAndUp, xs } = useDisplay();
 
 const props = withDefaults(defineProps<PlanetaryAlignmentProps>(), {
   wwtNamespace: "planetary-alignment",
@@ -491,6 +504,8 @@ const dateTime = computed(() => new Date(selectedTime.value));
 const smallSize = computed(() => smAndDown.value);
 
 const mobile = computed(() => smallSize.value && touchscreen);
+
+const xSmallSize = computed(() => xs.value);
 
 /* This lets us inject component data into element CSS */
 const cssVars = computed(() => {
@@ -879,6 +894,38 @@ body {
 
     &:hover {
       cursor: pointer;
+    }
+  }
+
+  #splash-screen-text {
+    // in the grid, the text is in the 2nd column
+    display: flex;
+    flex-direction: column;
+    line-height: 130%;
+    
+  }
+
+  .splash-get-started {
+    border: 2px solid white;
+    font-size: calc(1.8 * var(--default-font-size));
+    margin-top: 5%;
+    margin-bottom: 2%;
+    font-weight: bold !important;
+  }
+
+  #splash-screen-guide {
+    margin-block: 1.5em;
+    font-size: min(5vw, 4vh);
+    line-height: 140%;
+    width: 75%;
+
+    .v-col{
+      padding: 0;
+    }
+    
+    .svg-inline--fa {
+      color:var(--accent-color);
+      margin: 0 10px;
     }
   }
 
