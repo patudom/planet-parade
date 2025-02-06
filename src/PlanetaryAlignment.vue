@@ -25,14 +25,28 @@
         v-click-outside="closeSplashScreen"
         :style="cssVars"
       >
-        <div
+        <font-awesome-icon
           id="close-splash-button"
           @click="closeSplashScreen"
-          >&times;
-        </div>
+          icon="xmark"
+          />
         <div id="splash-screen-text">
-          <p>Splash Screen Content</p>
+          <pp>Want to see the</pp>
+          <p class="highlight">Planetary Parade?</p>
         </div>
+        <div>
+            <v-btn
+              class="splash-get-started"
+              @click="closeSplashScreen"
+              :color="accentColor"
+              :density="xSmallSize ? 'compact' : 'default'"
+              size="x-large"
+              variant="elevated"
+              rounded="lg"
+            >
+              Get Started
+            </v-btn>
+          </div>
         <div id="splash-screen-acknowledgements" class="small">
           This Data Story is brought to you by <a href="https://www.cosmicds.cfa.harvard.edu/" target="_blank" rel="noopener noreferrer">Cosmic Data Stories</a> and <a href="https://www.worldwidetelescope.org/home/" target="_blank" rel="noopener noreferrer">WorldWide Telescope</a>.
           
@@ -69,14 +83,14 @@
           tooltip-location="start"
         >
         </icon-button>
-        <icon-button
+        <!-- <icon-button
           v-model="showVideoSheet"
           fa-icon="video"
           :color="buttonColor"
           tooltip-text="Watch video"
           tooltip-location="start"
         >
-        </icon-button>
+        </icon-button> -->
       </div>
       <div id="center-buttons">
         <icon-button
@@ -122,6 +136,7 @@
             <font-awesome-icon
               size="lg"
               class="tab-focusable"
+              :color="accentColor"
               :icon="showControls ? `chevron-down` : `gear`"
               @click="showControls = !showControls" 
               @keyup.enter="showControls = !showControls"
@@ -133,10 +148,13 @@
               label="Sky Grid" hide-details />
             <v-checkbox :color="accentColor" v-model="showHorizon" @keyup.enter="showHorizon = !showHorizon"
               label="Horizon" hide-details />
-            <v-checkbox :color="accentColor" v-model="showConstellations" @keyup.enter="showConstellations = !showConstellations"
-              label="Constellations" hide-details />
-            <v-checkbox :color="accentColor" v-model="showPlanetLabels" @keyup.enter="showPlanetLabels = !showPlanetLabels"
+              <v-checkbox :color="accentColor" v-model="showPlanetLabels" @keyup.enter="showPlanetLabels = !showPlanetLabels"
               label="Planet Labels" hide-details />
+              <v-checkbox :color="accentColor" v-model="showEcliptic" @keyup.enter="showEcliptic = !showEcliptic"
+              label="Ecliptic" hide-details />
+              <v-checkbox :color="accentColor" v-model="showConstellations" @keyup.enter="showConstellations = !showConstellations"
+              label="Constellations" hide-details />
+
           </div>
         </div>
       </div>
@@ -293,13 +311,12 @@
                       <div class="credits">
                       <h3>Credits:</h3>
                       <h4><a href="https://www.cosmicds.cfa.harvard.edu/" target="_blank" rel="noopener noreferrer">CosmicDS</a> Vue Data Stories Team:</h4>
-                      John Lewis<br>
                       Jon Carifio<br>
                       Pat Udomprasert<br>
+                      John Lewis<br>
                       Alyssa Goodman<br>
                       Mary Dussault<br>
                       Harry Houghton<br>
-                      Anna Nolin<br>
                       Evaluator: Sue Sunbury<br>
                       <br>
                       <h4>WorldWide Telescope Team:</h4>
@@ -357,7 +374,7 @@ const store = engineStore();
 useWWTKeyboardControls(store);
 
 const touchscreen = supportsTouchscreen();
-const { smAndDown, smAndUp } = useDisplay();
+const { smAndDown, smAndUp, xs } = useDisplay();
 
 const props = withDefaults(defineProps<PlanetaryAlignmentProps>(), {
   wwtNamespace: "planetary-alignment",
@@ -376,11 +393,13 @@ const backgroundImagesets = reactive<BackgroundImageset[]>([]);
 const sheet = ref<SheetType | null>(null);
 const layersLoaded = ref(false);
 const positionSet = ref(false);
-const accentColor = ref("#ffffff");
-const buttonColor = ref("#ffffff");
+const accentColor = ref("#f4ba3e");
+const accentColor2 = ref("#6793ff");
+const buttonColor = ref("#f4ba3e");
 const tab = ref(0);
-const showHorizon = ref(false);
+const showHorizon = ref(true);
 const showAltAzGrid = ref(true);
+const showEcliptic = ref(false);
 const showLocationSelector = ref(false);
 const playing = ref(false);
 const showControls = ref(smAndUp.value);
@@ -451,8 +470,10 @@ onMounted(() => {
 
     store.applySetting(["localHorizonMode", true]);
     store.applySetting(["altAzGridColor", Color.fromArgb(180, 133, 201, 254)]);
+    store.applySetting(["eclipticColor", Color.fromArgb(180, 255, 255, 255)]);
     store.applySetting(["actualPlanetScale", false]);
     updateAltAzGrid(showAltAzGrid.value);
+    updateEcliptic(showEcliptic.value);
     updateConstellations(showConstellations.value);
     updateWWTLocation(selectedLocation.value);
 
@@ -492,10 +513,13 @@ const smallSize = computed(() => smAndDown.value);
 
 const mobile = computed(() => smallSize.value && touchscreen);
 
+const xSmallSize = computed(() => xs.value);
+
 /* This lets us inject component data into element CSS */
 const cssVars = computed(() => {
   return {
     "--accent-color": accentColor.value,
+    "--accent-color2": accentColor2.value,
     "--app-content-height": showTextSheet.value ? "66%" : "100%",
   };
 });
@@ -570,6 +594,11 @@ function updateAltAzGrid(show: boolean) {
   store.applySetting(["showAltAzGridText", show]);
 }
 
+function updateEcliptic(show: boolean) {
+  store.applySetting(["showEcliptic", show]);
+  // store.applySetting(["showEclipticOverviewText", show]);
+}
+
 function updateConstellations(show: boolean) {
   store.applySetting(["showConstellationFigures", show]);
   store.applySetting(["showConstellationLabels", show]);
@@ -585,6 +614,7 @@ watch(playing, (play) => {
 });
 
 watch(showAltAzGrid, updateAltAzGrid);
+watch(showEcliptic, updateEcliptic);
 watch(showConstellations, updateConstellations);
 
 watch(dateTime, (dt: Date) => {
@@ -843,7 +873,19 @@ body {
   font-family: 'Highway Gothic Narrow', 'Roboto', sans-serif;
   font-size: min(8vw, 7vh);
 
-  border-radius: 10%;
+  p {
+    font-family: 'Highway Gothic Narrow', 'Roboto', sans-serif;
+    font-weight: bold;
+    vertical-align: middle;
+  }
+    
+  .highlight {
+    color: var(--accent-color2);
+    text-transform: uppercase;
+    font-weight: bolder;
+  }
+
+  border-radius: 30px;
   border: min(1.2vw, 0.9vh) solid var(--accent-color);
   overflow: auto;
   padding-top: 4rem;
@@ -871,17 +913,74 @@ body {
 
   #close-splash-button {
     position: absolute;
-    top: 0.5rem;
-    right: 1.75rem;
+    top: 20px;
+    right: 20px;
     text-align: end;
     color: var(--accent-color);
-    font-size: min(8vw, 5vh);
+    font-size: min(5vw, 4vh);
 
     &:hover {
       cursor: pointer;
     }
   }
+
+  #splash-screen-text {
+    // in the grid, the text is in the 2nd column
+    display: flex;
+    flex-direction: column;
+    line-height: 130%;    
+  }
+
+  .splash-get-started {
+    border: 2px solid white;
+    font-size: calc(1.8 * var(--default-font-size));
+    margin-top: 5%;
+    margin-bottom: 2%;
+    font-weight: bold !important;
+  }
+
+  #splash-screen-guide {
+    margin-block: 1.5em;
+    font-size: min(5vw, 4vh);
+    line-height: 140%;
+    width: 75%;
+
+    .v-col{
+      padding: 0;
+    }
+    
+    .svg-inline--fa {
+      color:var(--accent-color);
+      margin: 0 10px;
+    }
+  }
+
+  #splash-screen-acknowledgements {
+    margin-top: 3rem;
+    font-size: calc(1.7 * var(--default-font-size));
+    line-height: calc(1.5 * var(--default-line-height));
+    width: 60%; 
+  }
+  #splash-screen-logos {
+    margin-block: 0.75em;
+    img {
+    height: 5vmin;
+    vertical-align: middle;
+    margin: 2px;
+    }
+    @media only screen and (max-width: 600px) {
+      img {
+        height: 24px;
+      }
+    }
+    svg {
+      vertical-align: middle;
+      height: 24px;
+    }
+  }
 }
+
+
 
 .video-wrapper {
   height: 100%;
