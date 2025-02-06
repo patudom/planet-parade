@@ -83,14 +83,14 @@
           tooltip-location="start"
         >
         </icon-button>
-        <icon-button
+        <!-- <icon-button
           v-model="showVideoSheet"
           fa-icon="video"
           :color="buttonColor"
           tooltip-text="Watch video"
           tooltip-location="start"
         >
-        </icon-button>
+        </icon-button> -->
       </div>
       <div id="center-buttons">
         <icon-button
@@ -136,6 +136,7 @@
             <font-awesome-icon
               size="lg"
               class="tab-focusable"
+              style="color: var(--accent-color);"
               :icon="showControls ? `chevron-down` : `gear`"
               @click="showControls = !showControls" 
               @keyup.enter="showControls = !showControls"
@@ -147,10 +148,13 @@
               label="Sky Grid" hide-details />
             <v-checkbox :color="accentColor" v-model="showHorizon" @keyup.enter="showHorizon = !showHorizon"
               label="Horizon" hide-details />
-            <v-checkbox :color="accentColor" v-model="showConstellations" @keyup.enter="showConstellations = !showConstellations"
-              label="Constellations" hide-details />
-            <v-checkbox :color="accentColor" v-model="showPlanetLabels" @keyup.enter="showPlanetLabels = !showPlanetLabels"
+              <v-checkbox :color="accentColor" v-model="showPlanetLabels" @keyup.enter="showPlanetLabels = !showPlanetLabels"
               label="Planet Labels" hide-details />
+              <v-checkbox :color="accentColor" v-model="showEcliptic" @keyup.enter="showEcliptic = !showEcliptic"
+              label="Ecliptic" hide-details />
+              <v-checkbox :color="accentColor" v-model="showConstellations" @keyup.enter="showConstellations = !showConstellations"
+              label="Constellations" hide-details />
+
           </div>
         </div>
       </div>
@@ -307,13 +311,12 @@
                       <div class="credits">
                       <h3>Credits:</h3>
                       <h4><a href="https://www.cosmicds.cfa.harvard.edu/" target="_blank" rel="noopener noreferrer">CosmicDS</a> Vue Data Stories Team:</h4>
-                      John Lewis<br>
                       Jon Carifio<br>
                       Pat Udomprasert<br>
+                      John Lewis<br>
                       Alyssa Goodman<br>
                       Mary Dussault<br>
                       Harry Houghton<br>
-                      Anna Nolin<br>
                       Evaluator: Sue Sunbury<br>
                       <br>
                       <h4>WorldWide Telescope Team:</h4>
@@ -396,6 +399,7 @@ const buttonColor = ref("#f4ba3e");
 const tab = ref(0);
 const showHorizon = ref(true);
 const showAltAzGrid = ref(true);
+const showEcliptic = ref(false);
 const showLocationSelector = ref(false);
 const playing = ref(false);
 const showControls = ref(smAndUp.value);
@@ -466,8 +470,10 @@ onMounted(() => {
 
     store.applySetting(["localHorizonMode", true]);
     store.applySetting(["altAzGridColor", Color.fromArgb(180, 133, 201, 254)]);
+    store.applySetting(["eclipticColor", Color.fromArgb(180, 255, 255, 255)]);
     store.applySetting(["actualPlanetScale", false]);
     updateAltAzGrid(showAltAzGrid.value);
+    updateEcliptic(showEcliptic.value);
     updateConstellations(showConstellations.value);
     updateWWTLocation(selectedLocation.value);
 
@@ -588,6 +594,11 @@ function updateAltAzGrid(show: boolean) {
   store.applySetting(["showAltAzGridText", show]);
 }
 
+function updateEcliptic(show: boolean) {
+  store.applySetting(["showEcliptic", show]);
+  // store.applySetting(["showEclipticOverviewText", show]);
+}
+
 function updateConstellations(show: boolean) {
   store.applySetting(["showConstellationFigures", show]);
   store.applySetting(["showConstellationLabels", show]);
@@ -603,6 +614,7 @@ watch(playing, (play) => {
 });
 
 watch(showAltAzGrid, updateAltAzGrid);
+watch(showEcliptic, updateEcliptic);
 watch(showConstellations, updateConstellations);
 
 watch(dateTime, (dt: Date) => {
