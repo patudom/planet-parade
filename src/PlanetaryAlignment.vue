@@ -281,7 +281,7 @@
                   The best time to see it will be shortly after it gets dark, maybe 20-30 minutes after sunset. In the Northern Hemisphere, you'll want a clear view towards the southern half of the sky, from west to east. 
                 </p>
                 <p>
-                  You can use this resource to simulate the planet parade where you. Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. 
+                  You can use this resource to simulate the planet parade where you are. Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. 
                 </p>
                 <p>
                   The display defaults to the current date and time. Use the time controls to advance time until the Sun sets.
@@ -305,6 +305,15 @@
                 <p>
                   The planets are also not really all in a line. It only appears that way from Earth because we all orbit the Sun in roughly the same plane. Any object in this same plane appears to follow the same circle that the Sun appears to travel around the sky, called the "ecliptic."
                 </p>
+                <h4>Will the planets be this big in my sky?</h4>
+                <p>
+                  Unfortunately, no. We scaled up the size of the planet images so you would be able to see them when zoomed out to a large swath of sky. In reality, the planets will appear in the sky as very small discs or points of light.
+                </p>
+                <h4>Why are there dark blobs on Jupiter?</h4>
+                <p>
+                  Jupiter is orbited by many moons, four of which are displayed in this visualization. They appear as dark shadows (or blobs) in front of Jupiter if one or more of the moons happens to pass between Earth and Jupiter. (The dark shadows do not appear all the time because sometimes the moons are behind or to the left or right of Jupiter from our perspective.)
+                </p>
+
               </v-card-text>
             </v-card>
           </v-window-item>
