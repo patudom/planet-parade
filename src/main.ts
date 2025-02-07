@@ -1,7 +1,7 @@
 import Vue, { createApp, type Plugin } from "vue";
 
 import { CreditLogos, FundingAcknowledgement, GeolocationButton, IconButton, LocationSelector } from "@cosmicds/vue-toolkit";
-import PlanetaryAlignment from "./PlanetaryAlignment.vue";
+import PlanetParade from "./PlanetParade.vue";
 
 import vuetify from "../plugins/vuetify";
 
@@ -36,8 +36,8 @@ library.add(faXmark);
 // Extract the function out, up here, so I'm not writing it twice
 const update = (el: HTMLElement, binding: Vue.DirectiveBinding) => el.style.visibility = (binding.value) ? "hidden" : "";
 
-createApp(PlanetaryAlignment, {
-  wwtNamespace: "planetary-alignment"
+createApp(PlanetParade, {
+  wwtNamespace: "planet-parade"
 })
  
   // Plugins
