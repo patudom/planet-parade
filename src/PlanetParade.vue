@@ -401,7 +401,7 @@ const minTime = Date.UTC(2025, 1, 11);
 const maxTime = Date.UTC(2025, 2, 1);
 
 type SheetType = "text" | "video";
-export interface PlanetaryAlignmentProps {
+export interface PlanetParadeProps {
   wwtNamespace?: string;
 }
 
@@ -412,8 +412,8 @@ useWWTKeyboardControls(store);
 const touchscreen = supportsTouchscreen();
 const { smAndDown, smAndUp, xs } = useDisplay();
 
-const _props = withDefaults(defineProps<PlanetaryAlignmentProps>(), {
-  wwtNamespace: "planetary-alignment",
+const _props = withDefaults(defineProps<PlanetParadeProps>(), {
+  wwtNamespace: "planet-parade",
 });
 
 const splash = new URLSearchParams(window.location.search).get("splash")?.toLowerCase() !== "false";
