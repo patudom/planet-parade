@@ -230,8 +230,8 @@ export function renderOneFrame(showHorizon=true,
     }
   }
   this.constellation = Constellations.containment.findConstellationForPoint(this.renderContext.viewCamera.get_RA(), this.renderContext.viewCamera.get_dec());
-  Planets.drawPlanets(this.renderContext, 1);
   this._drawSkyOverlays();
+  Planets.drawPlanets(this.renderContext, 1);
 
   if (showPlanetLabels) {
     this._planetTextOverlays = makeTextOverlays();
