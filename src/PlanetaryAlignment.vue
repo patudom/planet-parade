@@ -303,15 +303,15 @@
                   The planet parade happens when all the planets happen to be on the same side of their orbits around the Sun as Earth, so they all are on Earth's night-time side. (When a planet is on the opposite side of the Sun during Earth, that means it is up in the sky during the day when the Sun outshines it.) 
                 </p>
                 <p>
-                  The planets are also not really all in a line. It only appears that way from Earth because we all orbit the Sun in roughly the same plane. Any object in this same plane appears to follow the same circle that the Sun appears to travel around the sky, called the "ecliptic."
+                  The planets are also not really all in a line. It only appears that way from Earth because Earth and the other planets all orbit the Sun in roughly the same plane (as if they were on a vinyl record). From Earth's point of view, all the other solar system objects appear to move along a circular path around the sky, which ancient astronomers called the "ecliptic." Check <span style="color: var(--accent-color)">Ecliptic</span> in the control box display this path in the virtual sky. 
                 </p>
                 <h4>Will the planets be this big in my sky?</h4>
                 <p>
                   Unfortunately, no. We scaled up the size of the planet images so you would be able to see them when zoomed out to a large swath of sky. In reality, the planets will appear in the sky as very small discs or points of light.
                 </p>
-                <h4>Why are there dark blobs on Jupiter?</h4>
+                <h4>What are the dark spots that sometimes appear on top of Jupiter?</h4>
                 <p>
-                  Jupiter is orbited by many moons, four of which are displayed in this visualization. They appear as dark shadows (or blobs) in front of Jupiter if one or more of the moons happens to pass between Earth and Jupiter. (The dark shadows do not appear all the time because sometimes the moons are behind or to the left or right of Jupiter from our perspective.)
+                  Jupiter is orbited by many moons, four of which are displayed in this visualization. They appear as dark shadows (or spots) in front of Jupiter if one or more of the moons happens to pass between Earth and Jupiter. (The dark shadows do not appear all the time because sometimes the moons are behind or to the left or right of Jupiter from our perspective.)
                 </p>
 
                 <v-spacer class="end-spacer"></v-spacer>
