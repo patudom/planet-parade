@@ -392,7 +392,7 @@ import { formatInTimeZone } from "date-fns-tz";
 
 import { useTimezone } from "./timezones";
 import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
-import { resetAltAzGridText, makeAltAzGridText, renderOneFrame } from "./wwt-hacks";
+import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame } from "./wwt-hacks";
 
 const SECONDS_PER_DAY = 60 * 60 * 24;
 const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
@@ -479,6 +479,7 @@ function doWWTModifications() {
     }
   }
   Planets.updatePlanetLocations = newUpdatePlanetLocations;
+  Planets.drawPlanets = drawPlanets;
 
   // Recall that zoom = 6 * FOV, in WWT
   const maxFOV = 90;
