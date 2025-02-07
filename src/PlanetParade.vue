@@ -357,7 +357,7 @@ import { formatInTimeZone } from "date-fns-tz";
 
 import { useTimezone } from "./timezones";
 import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
-import { resetAltAzGridText, makeAltAzGridText, renderOneFrame } from "./wwt-hacks";
+import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame } from "./wwt-hacks";
 
 const SECONDS_PER_DAY = 60 * 60 * 24;
 const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
@@ -366,7 +366,7 @@ const minTime = Date.UTC(2025, 1, 11);
 const maxTime = Date.UTC(2025, 2, 1);
 
 type SheetType = "text" | "video";
-export interface PlanetaryAlignmentProps {
+export interface PlanetParadeProps {
   wwtNamespace?: string;
 }
 
@@ -377,8 +377,8 @@ useWWTKeyboardControls(store);
 const touchscreen = supportsTouchscreen();
 const { smAndDown, smAndUp, xs } = useDisplay();
 
-const _props = withDefaults(defineProps<PlanetaryAlignmentProps>(), {
-  wwtNamespace: "planetary-alignment",
+const _props = withDefaults(defineProps<PlanetParadeProps>(), {
+  wwtNamespace: "planet-parade",
 });
 
 const splash = new URLSearchParams(window.location.search).get("splash")?.toLowerCase() !== "false";
@@ -444,6 +444,7 @@ function doWWTModifications() {
     }
   }
   Planets.updatePlanetLocations = newUpdatePlanetLocations;
+  Planets.drawPlanets = drawPlanets;
 
   // Recall that zoom = 6 * FOV, in WWT
   const maxFOV = 90;
