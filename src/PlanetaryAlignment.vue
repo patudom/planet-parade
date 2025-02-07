@@ -314,6 +314,7 @@
                   Jupiter is orbited by many moons, four of which are displayed in this visualization. They appear as dark shadows (or blobs) in front of Jupiter if one or more of the moons happens to pass between Earth and Jupiter. (The dark shadows do not appear all the time because sometimes the moons are behind or to the left or right of Jupiter from our perspective.)
                 </p>
 
+                <v-spacer class="end-spacer"></v-spacer>
               </v-card-text>
             </v-card>
           </v-window-item>
