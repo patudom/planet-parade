@@ -117,6 +117,15 @@
               tabindex="0"
               color="black"
             ></font-awesome-icon>
+            <location-search
+              small
+              button-size="xl"
+              :accent-color="accentColor"
+              :search-provider="searchProvider"
+              @set-location="setLocationFromFeature"
+              @error="searchErrorMessage = $event"
+            >
+            </location-search>
             <location-selector
               v-model="selectedLocation"
             />
@@ -395,6 +404,7 @@ import { formatInTimeZone } from "date-fns-tz";
 import { useTimezone } from "./timezones";
 import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame } from "./wwt-hacks";
+import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 
 const SECONDS_PER_DAY = 60 * 60 * 24;
 const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
@@ -437,10 +447,18 @@ const showControls = ref(smAndUp.value);
 const showConstellations = ref(false);
 const showPlanetLabels = ref(true);
 
+const geocodingOptions = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  access_token: process.env.VUE_APP_MAPBOX_ACCESS_TOKEN ?? "", 
+};
+
 const selectedLocation = ref<LocationDeg>({
   longitudeDeg: -71.1056,
   latitudeDeg: 42.3581,
 });
+const selectedLocationText = ref("");
+updateSelectedLocationText();
+const searchErrorMessage = ref<string | null>(null);
 const selectedTime = ref(Date.now());
 const { selectedTimezone } = useTimezone(selectedLocation);
 
@@ -613,6 +631,28 @@ function toTimeString(date: Date | null, seconds = false, utc = false) {
   return formatInTimeZone(date, utc ? 'UTC' : selectedTimezone.value, 'h:mm aaa (zzz)');
 }
 
+function getTextForLocation(longitudeDeg: number, latitudeDeg: number): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  return textForLocation(longitudeDeg, latitudeDeg, geocodingOptions);
+}
+
+function setLocationFromFeature(feature: MapBoxFeature) {
+  selectedLocation.value = { longitudeDeg: feature.center[0], latitudeDeg: feature.center[1] };
+  getTextForLocation(feature.center[0], feature.center[1]).then(text => {
+    selectedLocationText.value = text;
+  }).catch(_err => {
+    searchErrorMessage.value = "An error occurred while searching";
+  });
+}
+
+async function updateSelectedLocationText() {
+  selectedLocationText.value = await getTextForLocation(selectedLocation.value.longitudeDeg, selectedLocation.value.latitudeDeg);
+}
+
+function searchProvider(text: string): Promise<MapBoxFeatureCollection> {
+  return geocodingInfoForSearch(text, geocodingOptions);
+}
+
 async function resetCamera(): Promise<void> {
   const time = store.currentTime;
 
@@ -672,6 +712,7 @@ function updateConstellations(show: boolean) {
 }
 
 watch(selectedLocation, (location: LocationDeg) => {
+  updateSelectedLocationText();
   updateWWTLocation(location);
   resetCamera();
   WWTControl.singleton.renderOneFrame();

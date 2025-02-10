@@ -1,6 +1,7 @@
 import Vue, { createApp, type Plugin } from "vue";
 
 import { CreditLogos, FundingAcknowledgement, GeolocationButton, IconButton, LocationSelector } from "@cosmicds/vue-toolkit";
+import LocationSearch from "./LocationSearch.vue";
 import PlanetParade from "./PlanetParade.vue";
 
 import vuetify from "../plugins/vuetify";
@@ -68,6 +69,7 @@ createApp(PlanetParade, {
   .component('geolocation-button', GeolocationButton)
   .component('icon-button', IconButton)
   .component('location-selector', LocationSelector)
+  .component('location-search', LocationSearch)
 
   // Mount
   .mount("#app");

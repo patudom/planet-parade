@@ -70,8 +70,9 @@
 </template> 
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { MapBoxFeatureCollection } from "@cosmicds/vue-toolkit/src/mapbox";
+import { computed, ref } from "vue";
+import { MapBoxFeature, MapBoxFeatureCollection } from "@cosmicds/vue-toolkit/src/mapbox";
+import { watch } from "vue";
 
 type SearchProvider = (searchText: string) => Promise<MapBoxFeatureCollection | null>;
 
@@ -95,9 +96,74 @@ const props = withDefaults(defineProps<LocationSearchProps>(), {
   buttonSize: "1x",
 });
 
+const emit = defineEmits<{
+  (e: "error", message: string): void
+  (e: "set-location", feature: MapBoxFeature): void
+  (e: "update:modelValue", value: boolean): void
+}>();
+
 const searchOpen = ref(props.modelValue || props.stayOpen);
 const searchText = ref<string | null>(null);
 const searchResults = ref<MapBoxFeatureCollection | null>(null);
 const searchErrorMessage = ref<string | null>(null);
 const locationJustUpdated = ref(false);
+
+const cssStyles = computed(() => {
+  return {
+    "--accent-color": props.accentColor,
+    "--bg-color": "black",
+    "--fg-container-padding": searchOpen.value ? (props.small ? "0px 5px 0px 0px" : "5px 10px 12px 10px") : "0px",
+    "--border-radius": searchOpen.value ? "7px" : "20px",
+  };
+});
+
+function performForwardGeocodingSearch() {
+  const search = searchText.value;
+  if (search === null || search.length < 3) {
+    return;
+  }
+
+  props.searchProvider(search).then(info => {
+    if (info !== null && info.features.length === 1) {
+      setLocationFromSearchFeature(info.features[0]);
+    } else if (info !== null && info.features.length === 0) {
+      searchErrorMessage.value = "No matching places were found";
+      emit("error", searchErrorMessage.value); 
+    } else {
+      searchResults.value = info;
+    }
+  });
+}
+
+function setLocationFromSearchFeature(feature: MapBoxFeature) {
+  timedJustUpdatedLocation();
+  clearSearchData();
+  emit("set-location", feature);
+}
+
+function clearSearchData() {
+  searchResults.value = null;
+  searchText.value = null;
+  searchErrorMessage.value = null;
+}
+
+function timedJustUpdatedLocation() {
+  locationJustUpdated.value = true;
+  setTimeout(() => {
+    locationJustUpdated.value = false;
+  }, 5000);
+}
+
+watch(() => props.modelValue, (value: boolean) => { searchOpen.value = value; });
+
+watch(searchOpen, (value: boolean) => emit("update:modelValue", value));
+
+watch(searchText, function(text: string | null) {
+  if (searchErrorMessage.value) {
+    searchErrorMessage.value = null;
+  }
+  if (!text || text.length === 0) {
+    searchResults.value = null;
+  }
+});
 </script>
