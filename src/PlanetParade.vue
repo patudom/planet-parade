@@ -1321,7 +1321,7 @@ video {
   height: fit-content;
   position: absolute;
   z-index: 600;
-  right: 1.5em;
+  right: 2em;
   top: 1em;
 }
 </style>
