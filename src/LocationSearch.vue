@@ -112,7 +112,7 @@ const cssStyles = computed(() => {
   return {
     "--accent-color": props.accentColor,
     "--bg-color": "black",
-    "--fg-container-padding": searchOpen.value ? (props.small ? "1px 7px 1px 7px" : "5px 10px 12px 10px") : "0px",
+    "--fg-container-padding": searchOpen.value ? (props.small ? "0px 5px 0px 0px" : "5px 10px 12px 10px") : "0px",
     "--border-radius": searchOpen.value ? "7px" : "20px",
   };
 });
@@ -175,12 +175,16 @@ watch(searchText, function(text: string | null) {
   color: var(--accent-color);
   background-color: black;
   border: 2px solid var(--accent-color);
-  border-radius: 20px;
+  border-radius: 7px;
   padding: var(--fg-container-padding);
 
   .v-text-field {
     min-width: 150px;
     width: min(200px, 20vw);
+  }
+
+  .forward-geocoding-input > .v-input__control > .v-field {
+    border-radius: var(--border-radius);
   }
   
   .forward-geocoding-input.geocode-success label {
@@ -214,14 +218,20 @@ watch(searchText, function(text: string | null) {
     left: -1px;
     width: calc(100% + 2px);
     background: black;
-    border: 1px solid var(--accent-color);
+    border: 2px solid var(--accent-color);
     border-top: 0px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     padding: 0px 10px;
 
+    &.results-small {
+      top: 37px;
+      width: calc(100% + 4px);
+      left: -2px;
+    }
+
     .forward-geocoding-result {
-      border-top: 1px solid var(--accent-color);
+      border-top: 2px solid var(--accent-color);
       font-size: 12pt;
       pointer-events: auto;
 
