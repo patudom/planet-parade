@@ -474,10 +474,22 @@ function doWWTModifications() {
   WWTControl.singleton.renderOneFrame = newFrameRender;
 
   const originalUpdatePlanetLocations = Planets.updatePlanetLocations;
+  const planetScales = [
+    1.25,  // Sun
+    1.25,  // Mercury
+    1.25,  // Venus
+    1.25,  // Mars
+    1.25,  // Jupiter
+    1.25,  // Saturn
+    1.25,  // Uranus
+    1.25,  // Neptune
+    1.25,  // Pluto
+    1.25,  // Moon
+  ];
   function newUpdatePlanetLocations(threeD: boolean) {
     originalUpdatePlanetLocations(threeD);
     for (let i = 0; i <= SolarSystemObjects.moon; i++) {
-      Planets._planetScales[i] *= 5;
+      Planets._planetScales[i] = planetScales[i];
     }
   }
   Planets.updatePlanetLocations = newUpdatePlanetLocations;
