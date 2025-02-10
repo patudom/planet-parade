@@ -112,7 +112,7 @@ const cssStyles = computed(() => {
   return {
     "--accent-color": props.accentColor,
     "--bg-color": "black",
-    "--fg-container-padding": searchOpen.value ? (props.small ? "0px 5px 0px 0px" : "5px 10px 12px 10px") : "0px",
+    "--fg-container-padding": searchOpen.value ? (props.small ? "1px 7px 1px 7px" : "5px 10px 12px 10px") : "0px",
     "--border-radius": searchOpen.value ? "7px" : "20px",
   };
 });
