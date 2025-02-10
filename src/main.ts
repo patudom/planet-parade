@@ -14,8 +14,10 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faBookOpen,
   faChevronDown,
+  faCircleXmark,
   faGear,
   faLocationDot,
+  faMagnifyingGlass,
   faPlay,
   faPause,
   faTimes,
@@ -25,8 +27,10 @@ import {
 
 library.add(faBookOpen);
 library.add(faChevronDown);
+library.add(faCircleXmark);
 library.add(faGear);
 library.add(faLocationDot);
+library.add(faMagnifyingGlass);
 library.add(faPlay);
 library.add(faPause);
 library.add(faTimes);

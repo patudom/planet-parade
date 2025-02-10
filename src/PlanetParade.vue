@@ -118,6 +118,7 @@
               color="black"
             ></font-awesome-icon>
             <location-search
+              :class="['location-search']"
               small
               button-size="xl"
               :accent-color="accentColor"
@@ -1314,5 +1315,13 @@ video {
 .bullet-icon {
   color: var(--accent-color);
   width: 1.5em;
+}
+
+.location-search {
+  height: fit-content;
+  position: absolute;
+  z-index: 600;
+  right: 1.5em;
+  top: 1em;
 }
 </style>

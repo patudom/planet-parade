@@ -167,3 +167,68 @@ watch(searchText, function(text: string | null) {
   }
 });
 </script>
+
+<style lang="less">
+.forward-geocoding-container {
+  position: relative;
+  width: fit-content;
+  color: var(--accent-color);
+  background-color: black;
+  border: 2px solid var(--accent-color);
+  border-radius: 20px;
+  padding: var(--fg-container-padding);
+
+  .v-text-field {
+    min-width: 150px;
+    width: min(200px, 20vw);
+  }
+  
+  .forward-geocoding-input.geocode-success label {
+    color: var(--accent-color);
+    opacity: 1;
+  }
+
+  .forward-geocoding-input-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .geocoding-search-icon {
+    padding-inline: calc(0.3 * var(--default-line-height));
+    padding-block: calc(0.4 * var(--default-line-height));
+  }
+
+  .geocoding-search-icon:hover, .geocoding-close-icon:hover {
+    cursor: pointer;
+  }
+
+  // For some reason setting width: 100% makes the search results 2px too small
+  // It's probably some Vuetify styling thing
+  // Maybe there's a better workaround, but this gets the job done for now
+  .forward-geocoding-results {
+    position: absolute;
+    top: 42px;
+    left: -1px;
+    width: calc(100% + 2px);
+    background: black;
+    border: 1px solid var(--accent-color);
+    border-top: 0px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 0px 10px;
+
+    .forward-geocoding-result {
+      border-top: 1px solid var(--accent-color);
+      font-size: 12pt;
+      pointer-events: auto;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
+</style>
