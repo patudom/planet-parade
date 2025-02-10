@@ -31,30 +31,44 @@ const gMin = Math.log(minFactor/ (1 - minFactor));
 const b = (gMax - gMin) / (maxFOV - minFOV);
 const a = gMax - b * maxFOV;
 
-const planetTextOffsets = [
-  -0.035,  // Sun
-  -0.035,  // Mercury
-  -0.035,  // Venus
-  -0.035,  // Mars
-  -0.035,  // Jupiter
-  -0.035,  // Saturn
-  -0.035,  // Uranus
-  -0.035,  // Neptune
-  -0.035,  // Pluto
-  -0.035,  // Moon
+const planetTextOffsetsY = [
+  115,  // Sun
+  -60,  // Mercury
+  85,  // Venus
+  100,  // Mars
+  100,  // Jupiter
+  120,  // Saturn
+  90,  // Uranus
+  90,  // Neptune
+  100,  // Pluto
+  -70,  // Moon
+];
+
+const planetTextOffsetsX = [
+  85,  // Sun
+  -275,  // Mercury
+  0,  // Venus
+  0,  // Mars
+  0,  // Jupiter
+  0,  // Saturn
+  0,  // Uranus
+  0,  // Neptune
+  0,  // Pluto
+  0,  // Moon
 ];
 
 function textOverlayForSolarSystemObject(renderContext: RenderContext, object: SolarSystemObjects, text: string, glyphHeight: number): Text3d {
   const zoom = renderContext.viewCamera.zoom;
   const fov = zoom / 6;
   const exp = Math.exp(a + b * fov);
-  const scale = 0.00018 * ((1.4 * exp / (1 + exp)) + 1);
+  const scale = 0.0002 * ((1.4 * exp / (1 + exp)) + 1);
   const sign = SpaceTimeController.get_location().get_lat() < 0 ? -1 : 1;
   const up = Vector3d.create(0, sign, 0);
 
   const place = placeForObject(object);
   const location = Coordinates.raDecTo3d(place.get_RA(), place.get_dec());
-  location.y -= planetTextOffsets[object] ?? -0.035;
+  location.y -= planetTextOffsetsY[object] * scale ?? 0.035;
+  location.x -= planetTextOffsetsX[object] * scale ?? 0;
   return new Text3d(location, up, text, glyphHeight, scale);
 }
 
