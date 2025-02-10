@@ -9,6 +9,9 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 import { WWTComponent, wwtPinia } from "@wwtelescope/engine-pinia";
 
+import TimeDisplay from "./TimeDisplay.vue";
+import DateTimePicker from "./DateTimePicker.vue";
+
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faBookOpen,
@@ -68,6 +71,9 @@ createApp(PlanetParade, {
   .component('geolocation-button', GeolocationButton)
   .component('icon-button', IconButton)
   .component('location-selector', LocationSelector)
+  .component('time-display', TimeDisplay)
+  .component('date-time-picker', DateTimePicker)
+  
 
   // Mount
   .mount("#app");

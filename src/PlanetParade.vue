@@ -166,6 +166,39 @@
     <!-- This block contains the elements (e.g. the project icons) displayed along the bottom of the screen -->
 
     <div id="bottom-content">
+      <div id="date-picker">
+        <v-overlay 
+          activator="parent"
+          location-strategy="connected"
+          location="top end"
+          origin="bottom end"
+          :scrim="false"
+          :style="cssVars"
+        >
+        <template #activator="{props}">
+          <!-- any props added are passed directly to v-card -->
+          <v-card 
+            v-bind="props"
+            class="td__card"
+            width="fit-content"
+            rounded="lg"
+            tabindex="0"
+            @keyup.enter="props.onClick"
+            >
+            <time-display class="bsn__time" :date="localSelectedDate" ampm :short-time-date="smAndDown" show-timezone :timezone="shortTimezone" />
+            <v-icon class="td__icon"  >mdi-cursor-default-click</v-icon>
+          </v-card>
+        </template>
+          <v-card width="fit-content" elevation="5">
+            <date-time-picker v-model="localSelectedDate" :editable-time="true">
+              <!-- <button class="dtp__button" @click="() => {playbackControl.pause(); set9pm(); goToTCrB()}" name="set-9pm" aria-label="Set time to 9pm">9pm</button>
+              <button class="dtp__button" @click="() => {playbackControl.pause(); setMidnight(); goToTCrB()}" name="set-midnight" aria-label="Set time to Midnight">Midnight</button>
+              <button class="dtp__button" @click="() => {playbackControl.pause(); selectedDate = new Date(); goToTCrB()}" name="set-now" aria-label="Set time to Now">Now</button> -->
+            </date-time-picker>
+          </v-card>
+        </v-overlay>
+      </div>
+
       <div id="time-controls">
         <icon-button
           id="play-pause-button"
@@ -180,6 +213,7 @@
           :show-tooltip="!mobile"
         ></icon-button>
         <div id="slider">
+          <div>Feb 10</div>
           <v-slider
             v-model="selectedTime"
             :min="minTime"
@@ -197,6 +231,7 @@
               {{ toTimeString(new Date(item.modelValue))  }}
             </template>
           </v-slider>
+          <div>Feb 28</div>
         </div>
       </div>
       <div id="body-logos" v-if="!smallSize">
@@ -442,7 +477,31 @@ const selectedLocation = ref<LocationDeg>({
   latitudeDeg: 42.3581,
 });
 const selectedTime = ref(Date.now());
-const { selectedTimezone } = useTimezone(selectedLocation);
+const { selectedTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
+
+
+const { shortTimezone, selectedTimezoneOffset, } = useTimezone(selectedLocation);
+
+
+// faking localization because
+// <date-time-picker> and <time-display> are not timezone aware
+const localSelectedDate = computed({
+  // if you console log this date it will still say the local timezone 
+  // as determined by the browser Intl.DateTimeFormat().resolvedOptions().timeZone
+  // but we have manually offset it so the hours are correct for the selected timezone
+  get: () => {
+    const time = selectedTime.value;
+    const fakeUTC = time + browserTimezoneOffset;
+    return new Date(fakeUTC + selectedTimezoneOffset.value);
+  },
+  set: (value: Date) => {
+    // get local time
+    const time = value.getTime();
+    // undo fake localization
+    const newTime = time - selectedTimezoneOffset.value - browserTimezoneOffset;
+    selectedTime.value = new Date(newTime).getTime();
+  }
+});
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -925,7 +984,7 @@ li {
 
 #bottom-content {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   position: absolute;
   bottom: 1rem;
   right: 1rem;
@@ -1206,7 +1265,11 @@ video {
 }
 
 #slider {
+  display: flex;
+  flex-direction: row;
   flex-grow: 1;
+  gap: 0.5em;
+  align-items: center;
 }
 
 // Styling the slider
@@ -1274,4 +1337,50 @@ video {
   color: var(--accent-color);
   width: 1.5em;
 }
+
+#date-picker {
+  margin: 1rem;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+
+.dtp__button {
+  background-color: var(--accent-color);
+  font-size: 0.85em;
+  color: black;
+  border-radius: 5px;
+  padding: 4px;
+  margin: 4px;
+  cursor: pointer;
+}
+
+.td__card {
+  border: 1px solid var(--accent-color);
+  text-align: right;
+  position: relative;
+  overflow: visible;
+}
+
+.td__icon {
+  position: absolute;
+  bottom: -4px;
+  right: 0px;
+  z-index: 10000;
+}
+
+.bsn__time .td__time_time {
+  font-size: var(--default-font-size);
+}
+
+.bsn__time .td__date_date {
+  font-size: calc(0.85 * var(--default-font-size));
+}
+
+.bsn__time .td__timezone_tz {
+  font-size: calc(0.85 * var(--default-font-size));
+}
+
 </style>
