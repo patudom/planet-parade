@@ -192,8 +192,8 @@
           <v-card width="fit-content" elevation="5">
             <date-time-picker v-model="localSelectedDate" :editable-time="true">
               <!-- <button class="dtp__button" @click="() => {playbackControl.pause(); set9pm(); goToTCrB()}" name="set-9pm" aria-label="Set time to 9pm">9pm</button>
-              <button class="dtp__button" @click="() => {playbackControl.pause(); setMidnight(); goToTCrB()}" name="set-midnight" aria-label="Set time to Midnight">Midnight</button>
-              <button class="dtp__button" @click="() => {playbackControl.pause(); selectedDate = new Date(); goToTCrB()}" name="set-now" aria-label="Set time to Now">Now</button> -->
+              <button class="dtp__button" @click="() => {playbackControl.pause(); setMidnight(); goToTCrB()}" name="set-midnight" aria-label="Set time to Midnight">Midnight</button>-->
+              <button class="dtp__button" @click="() => {selectedTime = Date.now()}" name="set-now" aria-label="Set time to Now">Now</button> 
             </date-time-picker>
           </v-card>
         </v-overlay>
@@ -204,6 +204,7 @@
         :color="accentColor" 
         :defaultRate="500"
         :useInline="xs"
+        @reset="()=>{selectedTime = Date.now()}"
         />
       
       <div v-if="false" id="time-controls">
