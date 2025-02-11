@@ -362,29 +362,30 @@
               <v-card-text class="info-text no-bottom-border-radius">
                 <h3>What is the planet parade?</h3>
                 <p>
-                  During February 2025, seven planets&#8212;Mercury, Saturn, Neptune, Venus, Uranus, Jupiter, and Mars&#8212;will be visible in the night sky all at once! From a reasonably dark, clear sky, you should be able to see five of the seven planets by eye.
+                  During February 2025, seven planets&#8212;Mercury, Saturn, Neptune, Venus, Uranus, Jupiter, and Mars&#8212;will be visible in the night sky all at once! 
+                </p>
+                <p> 
+                  The planets that will be visible to your eye depends on how dark your night sky is. For most of the month, from a reasonably dark, clear sky, you should be able to see four of the seven planets (Saturn, Venus, Jupiter, and Mars) by eye. Uranus and Neptune will also be up, but you will likely need binoculars or a small telescope to see them.
                 </p> 
+                <p>
+                  At the end of February, Mercury, which is usually difficult to spot, will move far enough away from the Sun to also be visible.
+                </p>
                 <h3>Cool! How do I see the planet parade?</h3>
                 <p>
-                  The best time to see it will be at the end of February, shortly after it gets dark, maybe 20-30 minutes after sunset. In the Northern Hemisphere, you'll want a clear view towards the southern half of the sky, from west to east. 
+                  The best time to see the planet parade will be shortly after it gets dark, maybe 20-30 minutes after sunset. In the Northern Hemisphere, you'll want a clear view towards the southern half of the sky, from west to east. 
                 </p>
                 <p>
-                  You can use this resource to simulate the planet parade where you are. Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. 
-                </p>
-                <p>
-                  The display defaults to the current date and time. Use the time controls to advance time until the Sun sets.
+                  You can use this resource to simulate the planet parade where you are.
                   <ul>
+                    <li>Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. (The default location is Cambridge, MA.)</li>
+                    <li>The display defaults to the current date and time. If you are viewing this app during the day, use the time controls to advance time until just after sunset.</li>
                     <li>
-                      If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun go below the horizon, and the sky will turn dark. 
+                      If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun rise above the horizon in the morning and set in the evening. The sky will lighten and darken with the Sun's changing position. 
                     </li>
                     <li>
                       Display the cardinal directions in the view to help orient yourself by checking <span style="color: var(--accent-color)">Sky Grid</span>.
                     </li>
                   </ul>
-                </p>
-                <h3>Which planets will I be able to see?</h3>
-                <p>
-                  The planets that will be visible to your eye depends on how dark your night sky is. People in reasonably dark skies will be able to see Mercury, Saturn, Venus, Jupiter, and Mars by eye. Binoculars will help for seeing Uranus. A small telescope may be needed to see Neptune. 
                 </p>
                 <h3>How do I find my way around the sky?</h3>
                 <p>
@@ -412,15 +413,15 @@
                   The planet parade happens when all the planets happen to be on the same side of their orbits around the Sun as Earth, so they all are on Earth's night-time side. (When a planet is on the opposite side of the Sun during Earth, that means it is up in the sky during the day when the Sun outshines it.) 
                 </p>
                 <p>
-                  The planets are also not really all in a line. It only appears that way from Earth because Earth and the other planets all orbit the Sun in roughly the same plane (as if they were on a vinyl record). From Earth's point of view, all the other solar system objects appear to move along a circular path around the sky, which ancient astronomers called the "ecliptic." Check <span style="color: var(--accent-color)">Ecliptic</span> in the control box to display this path in the virtual sky. 
+                  <strong>The planets are not really all in a line.</strong> It only appears that way from Earth because Earth and the other planets all orbit the Sun in roughly the same plane (as if they were on a vinyl record). From Earth's point of view, all the other solar system objects appear to move along a circular path around the sky, which ancient astronomers called the "ecliptic." Check <span style="color: var(--accent-color)">Ecliptic</span> in the control box to display this path in the virtual sky. 
                 </p>
                 <h3>What else can I do to learn more?</h3>
                 <p>
-                  Take your own images of the planets using <a href="https://mo-www.cfa.harvard.edu/OWN/todays_solar_system.html#SS" target="_blank" rel="noopener noreferrer">MicroObservatory's Observing With NASA</a> program!
+                  Take your own images of the planets using <strong><a href="https://mo-www.cfa.harvard.edu/OWN/todays_solar_system.html#SS" target="_blank" rel="noopener noreferrer">MicroObservatory's Observing With NASA</a></strong> program!
                 </p>
                 <h3>Will the planets be this big in my sky?</h3>
                 <p>
-                  Unfortunately, no. We scaled up the size of the planet images so you would be able to see them when zoomed out to a large swath of sky. In reality, the planets will appear in the sky as very small discs or points of light.
+                  Unfortunately, no. In this visualization, we scaled up the size of the solar system objects so you would be able to see them when zoomed out to a large swath of sky. In reality, the planets will appear in the sky as points of light (or very small disks through binoculars or a telescope).
                 </p>
                 <v-spacer class="end-spacer"></v-spacer>
               </v-card-text>
