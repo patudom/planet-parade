@@ -175,7 +175,7 @@ import { supportsTouchscreen } from "@cosmicds/vue-toolkit";
 
 // import { storeToRefs } from 'pinia';
 import { engineStore } from "@wwtelescope/engine-pinia";
-import {usePlaybackControl } from './wwt_playback_control';
+import {usePlaybackControl } from '../wwt_playback_control';
 
 interface Props {
   color: string,

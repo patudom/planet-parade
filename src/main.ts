@@ -9,10 +9,10 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 import { WWTComponent, wwtPinia } from "@wwtelescope/engine-pinia";
 
-import TimeDisplay from "./TimeDisplay.vue";
-import DateTimePicker from "./DateTimePicker.vue";
-import PlaybackControl from './PlaybackControl.vue';
-import SpeedControl from "./SpeedControl.vue";
+import TimeDisplay from "./components/TimeDisplay.vue";
+import DateTimePicker from "./components/DateTimePicker.vue";
+import PlaybackControl from './components/PlaybackControl.vue';
+import SpeedControl from "./components/SpeedControl.vue";
 
 
 import { library } from "@fortawesome/fontawesome-svg-core";
