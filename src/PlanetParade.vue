@@ -1402,5 +1402,11 @@ video {
   position: fixed;
   right: 0.5em;
   bottom: 0.5em;
+
+  img {
+    height: 35px;
+    vertical-align: middle;
+    margin: 2px;
+  }
 }
 </style>
