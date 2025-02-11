@@ -206,7 +206,7 @@
         :useInline="xs"
         />
       
-      <div id="time-controls">
+      <div v-if="false" id="time-controls">
         <icon-button
           id="play-pause-button"
           :fa-icon="playing ? 'pause' : 'play'"
@@ -1397,4 +1397,9 @@ video {
   font-size: calc(0.85 * var(--default-font-size));
 }
 
+#body-logos {
+  position: fixed;
+  right: 0.5em;
+  bottom: 0.5em;
+}
 </style>
