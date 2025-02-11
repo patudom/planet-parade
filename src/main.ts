@@ -11,6 +11,9 @@ import { WWTComponent, wwtPinia } from "@wwtelescope/engine-pinia";
 
 import TimeDisplay from "./TimeDisplay.vue";
 import DateTimePicker from "./DateTimePicker.vue";
+import PlaybackControl from './PlaybackControl.vue';
+import SpeedControl from "./SpeedControl.vue";
+
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -23,6 +26,10 @@ import {
   faTimes,
   faVideo,
   faXmark,
+  faGaugeHigh,
+  faAnglesLeft,
+  faAnglesRight,
+  faRotate,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faBookOpen);
@@ -34,6 +41,10 @@ library.add(faPause);
 library.add(faTimes);
 library.add(faVideo);
 library.add(faXmark);
+library.add(faGaugeHigh);
+library.add(faAnglesLeft);
+library.add(faAnglesRight);
+library.add(faRotate);
 
 /** v-hide directive taken from https://www.ryansouthgate.com/2020/01/30/vue-js-v-hide-element-whilst-keeping-occupied-space/ */
 // Extract the function out, up here, so I'm not writing it twice
@@ -73,7 +84,8 @@ createApp(PlanetParade, {
   .component('location-selector', LocationSelector)
   .component('time-display', TimeDisplay)
   .component('date-time-picker', DateTimePicker)
-  
+  .component('speed-control', SpeedControl)
+  .component('playback-control', PlaybackControl)
 
   // Mount
   .mount("#app");

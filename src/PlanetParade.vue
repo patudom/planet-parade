@@ -198,7 +198,14 @@
           </v-card>
         </v-overlay>
       </div>
-
+      
+      <!-- eslint-disable-next-line vue/no-v-model-argument -->
+      <speed-control v-model:playing="playing" 
+        :color="accentColor" 
+        :defaultRate="500"
+        :useInline="xs"
+        />
+      
       <div id="time-controls">
         <icon-button
           id="play-pause-button"
@@ -992,6 +999,13 @@ li {
   pointer-events: none;
   align-items: center;
   gap: 5px;
+}
+
+@media (max-width: 600px) {
+  #bottom-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
 
 #splash-overlay {
