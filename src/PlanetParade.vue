@@ -1041,6 +1041,7 @@ li {
     padding-block: 2px;
     border-radius: 1em;
     color: black;
+    font-size: var(--default-font-size);
   }
 }
 
