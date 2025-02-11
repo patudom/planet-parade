@@ -563,12 +563,22 @@ const selectedLocation = ref<LocationDeg>({
 const selectedLocationText = ref("");
 updateSelectedLocationText();
 const searchErrorMessage = ref<string | null>(null);
-const selectedTime = ref(Date.now());
-const { selectedTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
+const { selectedTimezone, selectedTimezoneOffset, shortTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
 
-
-const { shortTimezone, selectedTimezoneOffset, } = useTimezone(selectedLocation);
-
+const todayAt4pm = computed(() => {
+  const now = Date.now();
+  const date = new Date(now);
+  console.log(date);
+  date.setUTCMilliseconds(0);
+  date.setUTCSeconds(0);
+  date.setUTCMinutes(0);
+  console.log(selectedTimezoneOffset.value);
+  const msToHours = 1000 * 60 * 60;
+  date.setUTCHours(16 - selectedTimezoneOffset.value / msToHours);
+  console.log(date);
+  return date.getTime();
+});
+const selectedTime = ref(todayAt4pm.value);
 
 // faking localization because
 // <date-time-picker> and <time-display> are not timezone aware
@@ -846,6 +856,8 @@ watch(selectedLocation, (location: LocationDeg) => {
   WWTControl.singleton.renderOneFrame();
 });
 
+watch(selectedTime, (value) => {
+  console.log(value);});
 watch(playing, (play) => {
   store.setClockSync(play);
 });
