@@ -307,11 +307,11 @@
           <v-window-item>
             <v-card class="no-bottom-border-radius scrollable">
               <v-card-text class="info-text no-bottom-border-radius">
-                <h4>What is the planet parade?</h4>
+                <h3>What is the planet parade?</h3>
                 <p>
-                  During February 2025, seven planets&#8212;Mercury, Saturn, Neptune, Venus, Uranus, Jupiter, and Mars&#8212;will be visible in the night sky all at once!
+                  During February 2025, seven planets&#8212;Mercury, Saturn, Neptune, Venus, Uranus, Jupiter, and Mars&#8212;will be visible in the night sky all at once! From a reasonably dark, clear sky, you should be able to see five of the seven planets by eye.
                 </p> 
-                <h4>Cool! How do I see it?</h4>
+                <h3>Cool! How do I see the planet parade?</h3>
                 <p>
                   The best time to see it will be shortly after it gets dark, maybe 20-30 minutes after sunset. In the Northern Hemisphere, you'll want a clear view towards the southern half of the sky, from west to east. 
                 </p>
@@ -329,18 +329,43 @@
                     </li>
                   </ul>
                 </p>
-                <h4>Which planets will I be able to see?</h4>
+                <h3>Which planets will I be able to see?</h3>
                 <p>
                   The planets that will be visible to your eye depends on how dark your night sky is. People in reasonably dark skies will be able to see Mercury, Saturn, Venus, Jupiter, and Mars by eye. Binoculars will help for seeing Uranus. A small telescope may be needed to see Neptune. 
                 </p>
-                <h4>What is the significance of the planet parade?</h4>
+                <h3>How do I find my way around the sky?</h3>
+                <p>
+                  Here are some tips for finding the planets in the sky from the Northern Hemisphere.
+                  <ul>
+                    <li>
+                      Venus is the brightest planet and should be easiest to spot above the western horizon.
+                    </li>
+                    <li>
+                      Once you've found Venus, look down toward the horizon to find Saturn.
+                    </li>
+                    <li>
+                       Imagine a line between Saturn and Venus that points along a big arc towards Jupiter (which is above and to the right of Orion).
+                    </li>
+                    <li> 
+                      Keep following that path to a bright, red object, which is Mars.
+                    </li>
+                    <li>
+                      Mercury's position will change throughout the month, but it will be near the horizon, close to Venus and Saturn.
+                    </li>
+                  </ul> 
+                </p>
+                <h3>What is the significance of the planet parade?</h3>
                 <p>
                   The planet parade happens when all the planets happen to be on the same side of their orbits around the Sun as Earth, so they all are on Earth's night-time side. (When a planet is on the opposite side of the Sun during Earth, that means it is up in the sky during the day when the Sun outshines it.) 
                 </p>
                 <p>
                   The planets are also not really all in a line. It only appears that way from Earth because Earth and the other planets all orbit the Sun in roughly the same plane (as if they were on a vinyl record). From Earth's point of view, all the other solar system objects appear to move along a circular path around the sky, which ancient astronomers called the "ecliptic." Check <span style="color: var(--accent-color)">Ecliptic</span> in the control box to display this path in the virtual sky. 
                 </p>
-                <h4>Will the planets be this big in my sky?</h4>
+                <h3>What else can I do to learn more?</h3>
+                <p>
+                  Take your own images of the planets using <a href="https://mo-www.cfa.harvard.edu/OWN/todays_solar_system.html#SS" target="_blank" rel="noopener noreferrer">MicroObservatory's Observing With NASA</a> program!
+                </p>
+                <h3>Will the planets be this big in my sky?</h3>
                 <p>
                   Unfortunately, no. We scaled up the size of the planet images so you would be able to see them when zoomed out to a large swath of sky. In reality, the planets will appear in the sky as very small discs or points of light.
                 </p>
@@ -840,18 +865,13 @@ body {
   }
 }
 
-h4 {
-  margin-top: 20px;
-  margin-bottom: 6px;
-}
-
 p {
   margin-block: 10px;
 }
 
 li {
   margin-left: 20px;
-  margin-block: 5px;
+  margin-block: 8px;
 }
 
 #top-content {
@@ -1191,7 +1211,11 @@ video {
       text-decoration: none;
     }
 
-
+    & h3 {
+      margin-top: 20px;
+      margin-bottom: 6px;
+      color: var(--accent-color);
+    }
   }
   
   .close-icon {
