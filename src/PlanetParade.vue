@@ -564,6 +564,10 @@ const selectedLocationText = ref("");
 updateSelectedLocationText();
 
 const { geolocation, geolocate} = useGeolocation();
+function useGeolocated(val=null) {
+  if (!geolocation.value) {return;}
+  selectedLocation.value = { latitudeDeg: geolocation.value.latitude, longitudeDeg: geolocation.value.longitude };
+}
 watch(
   geolocation,
   (location) => {
@@ -677,7 +681,11 @@ onMounted(() => {
 
     doWWTModifications();
     resetCamera().then(() => positionSet.value = true);
-    geolocate();
+    geolocate().then(() => {
+      console.log('got location');
+      useGeolocated(); 
+      selectedTime.value = todayAt4pm.value;
+    });
 
     setInterval(() => {
       if (playing.value) {
@@ -862,6 +870,7 @@ function updateConstellations(show: boolean) {
 }
 
 watch(selectedLocation, (location: LocationDeg) => {
+  console.log('selectedLocation changed', location);
   updateSelectedLocationText();
   updateWWTLocation(location);
   resetCamera();
