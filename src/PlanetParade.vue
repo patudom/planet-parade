@@ -118,14 +118,14 @@
           tooltip-location="start"
         >
         </icon-button>
-        <!-- <icon-button
+        <icon-button
           v-model="showVideoSheet"
           fa-icon="video"
           :color="buttonColor"
           tooltip-text="Watch video"
           tooltip-location="start"
         >
-        </icon-button> -->
+        </icon-button>
       </div>
       <div id="center-buttons">
         <icon-button
@@ -313,7 +313,7 @@
           controls
           id="info-video"
         >
-          <source src="" type="video/mp4">
+          <source src="CosmicDS Planet Parade Overhead View.mp4" type="video/mp4">
         </video>
       </div>
     </v-dialog>
@@ -1291,6 +1291,9 @@ button:focus-visible,
   background: black;
   text-align: center;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   #video-close-icon {
     position: absolute;
@@ -1310,22 +1313,23 @@ button:focus-visible,
 }
 
 video {
-  height: 100%;
-  width: auto;
-  max-width: 100%;
+  // height: 100%;
+  // width: auto;
+  // max-width: 100%;
   object-fit: contain;
 }
 
 #info-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  // position: absolute;
+  // top: 0;
+  // left: 0;
+  width: 95%;
+  height: auto;
   max-width: 100%;
   overflow: hidden;
   padding: 0px;
   z-index: 10;
+  border: 1px solid white;
 }
 
 #introduction-overlay {
