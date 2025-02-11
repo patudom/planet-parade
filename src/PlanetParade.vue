@@ -377,7 +377,7 @@
                 <p>
                   You can use this resource to simulate the planet parade where you are.
                   <ul>
-                    <li>Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. (The default location is Cambridge, MA.)</li>
+                    <li>Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. (The default location is Cambridge, MA if location services are not enabled in your browser.)</li>
                     <li>The display defaults to the current date and time. If you are viewing this app during the day, use the time controls to advance time until just after sunset.</li>
                     <li>
                       If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun rise above the horizon in the morning and set in the evening. The sky will lighten and darken with the Sun's changing position. 
