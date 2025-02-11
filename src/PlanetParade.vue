@@ -81,8 +81,8 @@
           <div class="intro-text">
             <h3 style="color: #f4ba3e" class="mb-2">Quick Start</h3>
             <ol>
-              <li>Set desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> (top-center)</li>
-              <li>Set date and time (bottom-left)</li>
+              <li>Set the desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> (top-center).</li>
+              <li>Set the date and time (bottom-left). Soon after sunset is optimal.</li>
               <li>Go outside and find the planet parade!</li>
             </ol>
           </div>
