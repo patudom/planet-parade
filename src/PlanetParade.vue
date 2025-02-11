@@ -644,7 +644,7 @@ onMounted(() => {
 
     store.applySetting(["localHorizonMode", true]);
     store.applySetting(["altAzGridColor", Color.fromArgb(180, 133, 201, 254)]);
-    store.applySetting(["eclipticColor", Color.fromArgb(180, 255, 255, 255)]);
+    store.applySetting(["eclipticColor", Color.fromArgb(255, 255, 0, 255)]);
     store.applySetting(["actualPlanetScale", false]);
     updateAltAzGrid(showAltAzGrid.value);
     updateEcliptic(showEcliptic.value);
