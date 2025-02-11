@@ -1,6 +1,7 @@
 import Vue, { createApp, type Plugin } from "vue";
 
 import { CreditLogos, FundingAcknowledgement, GeolocationButton, IconButton, LocationSelector } from "@cosmicds/vue-toolkit";
+import LocationSearch from "./LocationSearch.vue";
 import PlanetParade from "./PlanetParade.vue";
 
 import vuetify from "../plugins/vuetify";
@@ -19,8 +20,10 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faBookOpen,
   faChevronDown,
+  faCircleXmark,
   faGear,
   faLocationDot,
+  faMagnifyingGlass,
   faPlay,
   faPause,
   faTimes,
@@ -34,8 +37,10 @@ import {
 
 library.add(faBookOpen);
 library.add(faChevronDown);
+library.add(faCircleXmark);
 library.add(faGear);
 library.add(faLocationDot);
+library.add(faMagnifyingGlass);
 library.add(faPlay);
 library.add(faPause);
 library.add(faTimes);
@@ -82,6 +87,7 @@ createApp(PlanetParade, {
   .component('geolocation-button', GeolocationButton)
   .component('icon-button', IconButton)
   .component('location-selector', LocationSelector)
+  .component('location-search', LocationSearch)
   .component('time-display', TimeDisplay)
   .component('date-time-picker', DateTimePicker)
   .component('speed-control', SpeedControl)
