@@ -58,6 +58,39 @@
         </div>
       </div>
     </v-overlay>
+    <v-dialog
+      v-model="inIntro"
+    >
+      <div v-if="inIntro" id="introduction-overlay">
+        <v-card class="info-card elevation-5">
+
+          <div id="intro-window-close-button">
+            <font-awesome-icon
+              size="xl"
+              class="ma-1"
+              :color="accentColor"
+              icon='xmark'
+              @click="inIntro = !inIntro"
+              @keyup.enter="inIntro = !inIntro"
+              tabindex="0"
+              tooltip-location="start"
+            /> 
+          </div>
+
+
+          <div class="intro-text">
+            <h3 style="color: #f4ba3e" class="mb-2">Quick Start</h3>
+            <ol>
+              <li>Set desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> (top-center)</li>
+              <li>Set date and time</li>
+              <li>Go outside and find the planet parade!</li>
+            </ol>
+          </div>
+
+        </v-card>
+      </div>
+
+    </v-dialog>
 
     <transition name="fade">
       <div
@@ -436,6 +469,7 @@ const playing = ref(false);
 const showControls = ref(smAndUp.value);
 const showConstellations = ref(false);
 const showPlanetLabels = ref(true);
+const inIntro = ref(false);
 
 const selectedLocation = ref<LocationDeg>({
   longitudeDeg: -71.1056,
@@ -690,6 +724,12 @@ watch(dateTime, (dt: Date) => {
 });
 
 watch(inNorthernHemisphere, (_inNorth: boolean) => resetAltAzGridText());
+
+watch(showSplashScreen, (show: boolean) => {
+  if (!show) {
+    inIntro.value = true;
+  }
+});
 </script>
 
 <style lang="less">
@@ -1063,15 +1103,15 @@ li {
 }
 
 // From Sara Soueidan (https://www.sarasoueidan.com/blog/focus-indicators/) & Erik Kroes (https://www.erikkroes.nl/blog/the-universal-focus-state/)
-:focus-visible,
+:focus-visible:not(.v-overlay__content),
 button:focus-visible,
 .focus-visible,
-.v-selection-control--focus-visible .v-selection-control__input {
+.v-selection-control--focus-visible .v-selection-control__input,
+#intro-window-close-button:focus-visible {
   outline: 9px double white !important;
   box-shadow: 0 0 0 6px black !important;
   border-radius: .125rem;
 }
-
 
 .video-wrapper {
   height: 100%;
@@ -1115,6 +1155,20 @@ video {
   z-index: 10;
 }
 
+#introduction-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.info-card {
+  height: fit-content;
+  padding-inline: 30px;
+  padding-block: 20px;
+  width: 80%;
+  max-width: 400px;
+}
+
 .bottom-sheet {
   .v-overlay__content {
     align-self: flex-end;
@@ -1136,6 +1190,8 @@ video {
     & a {
       text-decoration: none;
     }
+
+
   }
   
   .close-icon {
@@ -1268,6 +1324,16 @@ video {
   margin-left: 5px;
   margin-right: 0;
   position: relative;
+}
+
+#intro-window-close-button {
+    position: absolute;
+    top: 0.25em;
+    right: 0.25em;
+
+    &:hover {
+      cursor: pointer;
+    }
 }
 
 .bullet-icon {
