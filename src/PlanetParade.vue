@@ -561,15 +561,15 @@ function doWWTModifications() {
 
   const originalUpdatePlanetLocations = Planets.updatePlanetLocations;
   const planetScales = [
-    1.25,  // Sun
+    8,  // Sun
     1.25,  // Mercury
     1.25,  // Venus
     1.25,  // Mars
-    1.25,  // Jupiter
-    1.25,  // Saturn
-    1.25,  // Uranus
-    1.25,  // Neptune
-    1.25,  // Pluto
+    2.5,  // Jupiter
+    4.5,  // Saturn
+    2,  // Uranus
+    2,  // Neptune
+    1,  // Pluto
     1.25,  // Moon
   ];
   function newUpdatePlanetLocations(threeD: boolean) {
