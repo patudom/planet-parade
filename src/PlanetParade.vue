@@ -173,6 +173,7 @@
             />
           </v-card>
         </v-dialog>
+        <span id="my-location-label">Current location: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
       </div>
       <div id="right-buttons">
         <div id="controls" class="control-icon-wrapper">
@@ -507,7 +508,7 @@ import { useTimezone } from "./timezones";
 import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
-
+import { useGeolocation } from "@cosmicds/vue-toolkit";
 const SECONDS_PER_DAY = 60 * 60 * 24;
 const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
 const millisecondsPerInterval = MILLISECONDS_PER_DAY / 48;
@@ -561,6 +562,17 @@ const selectedLocation = ref<LocationDeg>({
 });
 const selectedLocationText = ref("");
 updateSelectedLocationText();
+
+const { geolocation, geolocate} = useGeolocation();
+watch(
+  geolocation,
+  (location) => {
+    if (location) {
+      selectedLocation.value = { latitudeDeg: location?.latitude, longitudeDeg: location?.longitude };
+    }
+  }
+);
+
 const searchErrorMessage = ref<string | null>(null);
 const { selectedTimezone, selectedTimezoneOffset, shortTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
 
@@ -665,6 +677,7 @@ onMounted(() => {
 
     doWWTModifications();
     resetCamera().then(() => positionSet.value = true);
+    geolocate();
 
     setInterval(() => {
       if (playing.value) {
@@ -1017,6 +1030,18 @@ li {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  
+  #my-location-label {
+    background-color: #ccc;
+    padding-inline: 5px;
+    padding-block: 2px;
+    border-radius: 1em;
+    color: black;
+  }
 }
 
 #right-buttons {
