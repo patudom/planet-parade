@@ -234,7 +234,7 @@ export function renderOneFrame(showHorizon=true,
   Planets.drawPlanets(this.renderContext, 1);
 
   if (showPlanetLabels) {
-    this._planetTextOverlays = makeTextOverlays();
+    this._planetTextOverlays = makeTextOverlays(this.renderContext);
     useCustomGlyphs(this._planetTextOverlays);
     this._planetTextOverlays.viewTransform = Grids._altAzTextBatch?.viewTransform;
     this._planetTextOverlays.draw(this.renderContext, 1, Color.fromArgb(255, 255, 255, 255));
