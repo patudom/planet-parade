@@ -150,6 +150,16 @@
               tabindex="0"
               color="black"
             ></font-awesome-icon>
+            <location-search
+              :class="['location-search']"
+              small
+              button-size="xl"
+              :accent-color="accentColor"
+              :search-provider="searchProvider"
+              @set-location="setLocationFromFeature"
+              @error="searchErrorMessage = $event"
+            >
+            </location-search>
             <location-selector
               v-model="selectedLocation"
             />
@@ -159,7 +169,7 @@
               size="30px"
               density="default"
               elevation="5"
-              color="black"
+              :color="accentColor"
               @location="selectedLocation = {longitudeDeg: $event.longitude, latitudeDeg: $event.latitude}"
             />
           </v-card>
@@ -199,7 +209,48 @@
     <!-- This block contains the elements (e.g. the project icons) displayed along the bottom of the screen -->
 
     <div id="bottom-content">
-      <div id="time-controls">
+      <div id="date-picker">
+        <v-overlay 
+          activator="parent"
+          location-strategy="connected"
+          location="top end"
+          origin="bottom end"
+          :scrim="false"
+          :style="cssVars"
+        >
+        <template #activator="{props}">
+          <!-- any props added are passed directly to v-card -->
+          <v-card 
+            v-bind="props"
+            class="td__card"
+            width="fit-content"
+            rounded="lg"
+            tabindex="0"
+            @keyup.enter="props.onClick"
+            >
+            <time-display class="bsn__time" :date="localSelectedDate" ampm :short-time-date="smAndDown" show-timezone :timezone="shortTimezone" />
+            <v-icon class="td__icon"  >mdi-cursor-default-click</v-icon>
+          </v-card>
+        </template>
+          <v-card width="fit-content" elevation="5">
+            <date-time-picker v-model="localSelectedDate" :editable-time="true">
+              <!-- <button class="dtp__button" @click="() => {playbackControl.pause(); set9pm(); goToTCrB()}" name="set-9pm" aria-label="Set time to 9pm">9pm</button>
+              <button class="dtp__button" @click="() => {playbackControl.pause(); setMidnight(); goToTCrB()}" name="set-midnight" aria-label="Set time to Midnight">Midnight</button>-->
+              <button class="dtp__button" @click="() => {selectedTime = Date.now()}" name="set-now" aria-label="Set time to Now">Now</button> 
+            </date-time-picker>
+          </v-card>
+        </v-overlay>
+      </div>
+      
+      <!-- eslint-disable-next-line vue/no-v-model-argument -->
+      <speed-control v-model:playing="playing" 
+        :color="accentColor" 
+        :defaultRate="500"
+        :useInline="xs"
+        @reset="()=>{selectedTime = Date.now()}"
+        />
+      
+      <div v-if="false" id="time-controls">
         <icon-button
           id="play-pause-button"
           :fa-icon="playing ? 'pause' : 'play'"
@@ -213,6 +264,7 @@
           :show-tooltip="!mobile"
         ></icon-button>
         <div id="slider">
+          <div>Feb 10</div>
           <v-slider
             v-model="selectedTime"
             :min="minTime"
@@ -230,6 +282,7 @@
               {{ toTimeString(new Date(item.modelValue))  }}
             </template>
           </v-slider>
+          <div>Feb 28</div>
         </div>
       </div>
       <div id="body-logos" v-if="!smallSize">
@@ -453,6 +506,7 @@ import { formatInTimeZone } from "date-fns-tz";
 import { useTimezone } from "./timezones";
 import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame } from "./wwt-hacks";
+import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 
 const SECONDS_PER_DAY = 60 * 60 * 24;
 const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
@@ -496,12 +550,44 @@ const showConstellations = ref(false);
 const showPlanetLabels = ref(true);
 const inIntro = ref(false);
 
+const geocodingOptions = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  access_token: process.env.VUE_APP_MAPBOX_ACCESS_TOKEN ?? "", 
+};
+
 const selectedLocation = ref<LocationDeg>({
   longitudeDeg: -71.1056,
   latitudeDeg: 42.3581,
 });
+const selectedLocationText = ref("");
+updateSelectedLocationText();
+const searchErrorMessage = ref<string | null>(null);
 const selectedTime = ref(Date.now());
-const { selectedTimezone } = useTimezone(selectedLocation);
+const { selectedTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
+
+
+const { shortTimezone, selectedTimezoneOffset, } = useTimezone(selectedLocation);
+
+
+// faking localization because
+// <date-time-picker> and <time-display> are not timezone aware
+const localSelectedDate = computed({
+  // if you console log this date it will still say the local timezone 
+  // as determined by the browser Intl.DateTimeFormat().resolvedOptions().timeZone
+  // but we have manually offset it so the hours are correct for the selected timezone
+  get: () => {
+    const time = selectedTime.value;
+    const fakeUTC = time + browserTimezoneOffset;
+    return new Date(fakeUTC + selectedTimezoneOffset.value);
+  },
+  set: (value: Date) => {
+    // get local time
+    const time = value.getTime();
+    // undo fake localization
+    const newTime = time - selectedTimezoneOffset.value - browserTimezoneOffset;
+    selectedTime.value = new Date(newTime).getTime();
+  }
+});
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -672,6 +758,28 @@ function toTimeString(date: Date | null, seconds = false, utc = false) {
   return formatInTimeZone(date, utc ? 'UTC' : selectedTimezone.value, 'h:mm aaa (zzz)');
 }
 
+function getTextForLocation(longitudeDeg: number, latitudeDeg: number): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  return textForLocation(longitudeDeg, latitudeDeg, geocodingOptions);
+}
+
+function setLocationFromFeature(feature: MapBoxFeature) {
+  selectedLocation.value = { longitudeDeg: feature.center[0], latitudeDeg: feature.center[1] };
+  getTextForLocation(feature.center[0], feature.center[1]).then(text => {
+    selectedLocationText.value = text;
+  }).catch(_err => {
+    searchErrorMessage.value = "An error occurred while searching";
+  });
+}
+
+async function updateSelectedLocationText() {
+  selectedLocationText.value = await getTextForLocation(selectedLocation.value.longitudeDeg, selectedLocation.value.latitudeDeg);
+}
+
+function searchProvider(text: string): Promise<MapBoxFeatureCollection> {
+  return geocodingInfoForSearch(text, geocodingOptions);
+}
+
 async function resetCamera(): Promise<void> {
   const time = store.currentTime;
 
@@ -731,6 +839,7 @@ function updateConstellations(show: boolean) {
 }
 
 watch(selectedLocation, (location: LocationDeg) => {
+  updateSelectedLocationText();
   updateWWTLocation(location);
   resetCamera();
   WWTControl.singleton.renderOneFrame();
@@ -985,7 +1094,7 @@ li {
 
 #bottom-content {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   position: absolute;
   bottom: 1rem;
   right: 1rem;
@@ -993,6 +1102,13 @@ li {
   pointer-events: none;
   align-items: center;
   gap: 5px;
+}
+
+@media (max-width: 600px) {
+  #bottom-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
 
 #splash-overlay {
@@ -1286,7 +1402,11 @@ video {
 }
 
 #slider {
+  display: flex;
+  flex-direction: row;
   flex-grow: 1;
+  gap: 0.5em;
+  align-items: center;
 }
 
 // Styling the slider
@@ -1363,5 +1483,69 @@ video {
 .bullet-icon {
   color: var(--accent-color);
   width: 1.5em;
+}
+
+.location-search {
+  height: fit-content;
+  position: absolute;
+  z-index: 600;
+  right: 2em;
+  top: 1em;
+}
+
+#date-picker {
+  margin: 1rem;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dtp__button {
+  background-color: var(--accent-color);
+  font-size: 0.85em;
+  color: black;
+  border-radius: 5px;
+  padding: 4px;
+  margin: 4px;
+  cursor: pointer;
+}
+
+.td__card {
+  border: 1px solid var(--accent-color);
+  text-align: right;
+  position: relative;
+  overflow: visible;
+}
+
+.td__icon {
+  position: absolute;
+  bottom: -4px;
+  right: 0px;
+  z-index: 10000;
+}
+
+.bsn__time .td__time_time {
+  font-size: var(--default-font-size);
+}
+
+.bsn__time .td__date_date {
+  font-size: calc(0.85 * var(--default-font-size));
+}
+
+.bsn__time .td__timezone_tz {
+  font-size: calc(0.85 * var(--default-font-size));
+}
+
+#body-logos {
+  position: fixed;
+  right: 0.5em;
+  bottom: 0.5em;
+
+  img {
+    height: 35px;
+    vertical-align: middle;
+    margin: 2px;
+  }
 }
 </style>
