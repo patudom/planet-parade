@@ -165,12 +165,11 @@
             />
             <geolocation-button
               id="location"
-              :debug="false"
               size="30px"
               density="default"
               elevation="5"
               :color="accentColor"
-              @location="selectedLocation = {longitudeDeg: $event.longitude, latitudeDeg: $event.latitude}"
+              @geolocation="selectedLocation = {longitudeDeg: $event.longitude, latitudeDeg: $event.latitude}"
             />
           </v-card>
         </v-dialog>
