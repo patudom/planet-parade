@@ -136,7 +136,7 @@
               size="30px"
               density="default"
               elevation="5"
-              color="black"
+              :color="accentColor"
               @location="selectedLocation = {longitudeDeg: $event.longitude, latitudeDeg: $event.latitude}"
             />
           </v-card>
