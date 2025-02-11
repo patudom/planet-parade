@@ -82,7 +82,7 @@
             <h3 style="color: #f4ba3e" class="mb-2">Quick Start</h3>
             <ol>
               <li>Set desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> (top-center)</li>
-              <li>Set date and time</li>
+              <li>Set date and time (bottom-left)</li>
               <li>Go outside and find the planet parade!</li>
             </ol>
           </div>
@@ -366,7 +366,7 @@
                 </p> 
                 <h3>Cool! How do I see the planet parade?</h3>
                 <p>
-                  The best time to see it will be shortly after it gets dark, maybe 20-30 minutes after sunset. In the Northern Hemisphere, you'll want a clear view towards the southern half of the sky, from west to east. 
+                  The best time to see it will be at the end of February, shortly after it gets dark, maybe 20-30 minutes after sunset. In the Northern Hemisphere, you'll want a clear view towards the southern half of the sky, from west to east. 
                 </p>
                 <p>
                   You can use this resource to simulate the planet parade where you are. Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. 
