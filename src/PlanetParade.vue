@@ -1550,12 +1550,12 @@ video {
   font-size: calc(0.85 * var(--default-font-size));
 }
 
-#body-logos {
+#body-logos  {
   position: fixed;
   right: 0.5em;
   bottom: 0.5em;
 
-  img {
+  #icons-container img {
     height: 35px;
     vertical-align: middle;
     margin: 2px;
