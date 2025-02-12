@@ -8,12 +8,16 @@ import {
   Color,
   Constellations,
   Coordinates,
+  CT,
+  DT,
   GlyphCache,
   Grids,
+  Matrix3d,
   Planets,
   RenderContext,
   RenderTriangle,
   Settings,
+  SimpleLineList,
   SpaceTimeController,
   Text3d,
   Text3dBatch,
@@ -284,3 +288,61 @@ export function renderOneFrame(showHorizon=true,
     }
   }
 }
+
+export function drawEcliptic(renderContext: RenderContext, opacity: number, drawColor: Color, drawCircle: boolean = true) {
+    var col = drawColor;
+    var year = SpaceTimeController.get_now().getUTCFullYear();
+    if (Grids._eclipticOverviewLineList == null || year !== Grids._eclipticYear) {
+        if (Grids._eclipticOverviewLineList != null) {
+            Grids._eclipticOverviewLineList.clear();
+            Grids._eclipticOverviewLineList = null;
+        }
+        Grids._eclipticYear = year;
+        var obliquity = Coordinates.meanObliquityOfEcliptic(SpaceTimeController.get_jNow());
+        var mat = Matrix3d._rotationX((-obliquity / 360 * (Math.PI * 2)));
+        var daysPerYear = 365.25;
+        if (DT.isLeap(year, true)) {
+            Grids._monthDays[1] = 29;
+            daysPerYear = 366;
+        } else {
+            Grids._monthDays[1] = 28;
+            daysPerYear = 365;
+        }
+        var count = 2 * daysPerYear;
+        Grids._eclipticCount = daysPerYear;
+        var jYear = SpaceTimeController.utcToJulian(new Date(year, 0, 1, 12, 0, 0));
+        var index = 0;
+        var d = 0;
+        var dPrev = 0;
+        var dStart = 0;
+        Grids._eclipticOverviewLineList = new SimpleLineList();
+        Grids._eclipticOverviewLineList.set_depthBuffered(false);
+        for (var m = 0; m < 12; m++) {
+            var daysThisMonth = Grids._monthDays[m];
+            for (var i = 0; i < daysThisMonth; i++) {
+                var sunRaDec = Planets.getPlanetLocationJD('Sun', jYear);
+                var sunEcliptic = CT.eq2Ec(sunRaDec.RA, sunRaDec.dec, obliquity);
+                d = sunEcliptic.x;
+                if (i == 0 && m == 0) {
+                  dStart = d;
+                }
+                var width = 0.005;
+                if (!i) {
+                    width = 0.01;
+                }
+                var dd = d;
+                Grids._eclipticOverviewLineList.addLine(Vector3d._transformCoordinate(Vector3d.create(Math.cos((dd * Math.PI * 2) / 360), width, Math.sin((dd * Math.PI * 2) / 360)), mat), Vector3d._transformCoordinate(Vector3d.create(Math.cos((dd * Math.PI * 2) / 360), -width, Math.sin((dd * Math.PI * 2) / 360)), mat));
+                if (drawCircle && !(i == 0 && m == 0)) {
+                  Grids._eclipticOverviewLineList.addLine(Vector3d._transformCoordinate(Vector3d.create(Math.cos((dd * Math.PI * 2) / 360), 0, Math.sin((dd * Math.PI * 2) / 360)), mat), Vector3d._transformCoordinate(Vector3d.create(Math.cos((dPrev * Math.PI * 2) / 360), 0, Math.sin((dPrev * Math.PI * 2) / 360)), mat));
+                }
+                index++;
+                jYear += 1;
+                dPrev = d;
+            }
+            d += Grids._monthDays[m];
+        }
+        Grids._eclipticOverviewLineList.addLine(Vector3d._transformCoordinate(Vector3d.create(Math.cos((dStart * Math.PI * 2) / 360), 0, Math.sin((dStart * Math.PI * 2) / 360)), mat), Vector3d._transformCoordinate(Vector3d.create(Math.cos((dd * Math.PI * 2) / 360), 0, Math.sin((dd * Math.PI * 2) / 360)), mat));
+    }
+    Grids._eclipticOverviewLineList.drawLines(renderContext, opacity, drawColor);
+    return true;
+};

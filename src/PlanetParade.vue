@@ -510,7 +510,7 @@ import { formatInTimeZone } from "date-fns-tz";
 
 import { useTimezone } from "./timezones";
 import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
-import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame } from "./wwt-hacks";
+import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame, drawEcliptic } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 // import { useGeolocation } from "@cosmicds/vue-toolkit";
 const SECONDS_PER_DAY = 60 * 60 * 24;
@@ -625,9 +625,9 @@ const wwtSettings: Settings = Settings.get_active();
 
 function doWWTModifications() {
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   Grids._makeAltAzGridText = makeAltAzGridText;
+  drawEcliptic;
+  Grids.drawEcliptic = drawEcliptic;
 
   // We need to render one frame ahead of time
   // as there's a lot of setup done on the first frame
