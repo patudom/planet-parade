@@ -84,6 +84,7 @@
               <li>Set the desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> (top-center).</li>
               <li>Set the date and time (bottom-left). Soon after sunset is optimal.</li>
               <li>Go outside and find the planet parade!</li>
+              <li>Learn more using <font-awesome-icon class="bullet-icon" icon="book-open" style="color: #f4ba3e" /> and <font-awesome-icon class="bullet-icon" icon="video" style="color: #f4ba3e" /> (upper-left).   </li>
             </ol>
           </div>
 
@@ -118,14 +119,14 @@
           tooltip-location="start"
         >
         </icon-button>
-        <!-- <icon-button
+        <icon-button
           v-model="showVideoSheet"
           fa-icon="video"
           :color="buttonColor"
           tooltip-text="Watch video"
           tooltip-location="start"
         >
-        </icon-button> -->
+        </icon-button>
       </div>
       <div id="center-buttons">
         <icon-button
@@ -313,7 +314,7 @@
           controls
           id="info-video"
         >
-          <source src="" type="video/mp4">
+          <source src="CosmicDS Planet Parade Overhead View.mp4" type="video/mp4">
         </video>
       </div>
     </v-dialog>
@@ -378,7 +379,7 @@
                   You can use this resource to simulate the planet parade where you are.
                   <ul>
                     <li>Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. (The default location is Cambridge, MA.)</li>
-                    <li>The display defaults to 4pm local time. Use the time controls to advance time until just after sunset.</li>
+                    <li>The display defaults to the current date and time. Use the time controls to advance time until just after sunset.</li>
                     <li>
                       If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun rise above the horizon in the morning and set in the evening. The sky will lighten and darken with the Sun's changing position. 
                     </li>
@@ -414,6 +415,9 @@
                 </p>
                 <p>
                   <strong>The planets are not really all in a line.</strong> It only appears that way from Earth because Earth and the other planets all orbit the Sun in roughly the same plane (as if they were on a vinyl record). From Earth's point of view, all the other solar system objects appear to move along a circular path around the sky, which ancient astronomers called the "ecliptic." Check <span style="color: var(--accent-color)">Ecliptic</span> in the control box to display this path in the virtual sky. 
+                </p>
+                <p>
+                  Click <font-awesome-icon class="bullet-icon" icon="video" style="color: #f4ba3e" /> in the upper left to watch a (silent) video showing an overhead view of the planets and how their positions lead to the planet parade.
                 </p>
                 <h3>What else can I do to learn more?</h3>
                 <p>
@@ -1314,6 +1318,9 @@ button:focus-visible,
   background: black;
   text-align: center;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   #video-close-icon {
     position: absolute;
@@ -1333,22 +1340,23 @@ button:focus-visible,
 }
 
 video {
-  height: 100%;
-  width: auto;
-  max-width: 100%;
+  // height: 100%;
+  // width: auto;
+  // max-width: 100%;
   object-fit: contain;
 }
 
 #info-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  // position: absolute;
+  // top: 0;
+  // left: 0;
+  width: 95%;
+  height: auto;
   max-width: 100%;
   overflow: hidden;
   padding: 0px;
   z-index: 10;
+  border: 1px solid white;
 }
 
 #introduction-overlay {
