@@ -563,19 +563,19 @@ const selectedLocation = ref<LocationDeg>({
 const selectedLocationText = ref("");
 updateSelectedLocationText();
 
-const { geolocation, geolocate} = useGeolocation();
-function useGeolocated() {
-  if (!geolocation.value) {return;}
-  selectedLocation.value = { latitudeDeg: geolocation.value.latitude, longitudeDeg: geolocation.value.longitude };
-}
-watch(
-  geolocation,
-  (location) => {
-    if (location) {
-      selectedLocation.value = { latitudeDeg: location?.latitude, longitudeDeg: location?.longitude };
-    }
-  }
-);
+// const { geolocation, geolocate} = useGeolocation();
+// function useGeolocated() {
+//   if (!geolocation.value) {return;}
+//   selectedLocation.value = { latitudeDeg: geolocation.value.latitude, longitudeDeg: geolocation.value.longitude };
+// }
+// watch(
+//   geolocation,
+//   (location) => {
+//     if (location) {
+//       selectedLocation.value = { latitudeDeg: location?.latitude, longitudeDeg: location?.longitude };
+//     }
+//   }
+// );
 
 const searchErrorMessage = ref<string | null>(null);
 const { selectedTimezone, selectedTimezoneOffset, shortTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
@@ -681,11 +681,12 @@ onMounted(() => {
 
     doWWTModifications();
     resetCamera().then(() => positionSet.value = true);
-    geolocate().then(() => {
-      console.log('got location');
-      useGeolocated(); 
-      selectedTime.value = todayAt4pm.value;
-    });
+    // geolocate().then(() => {
+    //   console.log('got location');
+    //   useGeolocated(); 
+    //   selectedTime.value = todayAt4pm.value;
+    //   resetCamera();
+    // });
 
     setInterval(() => {
       if (playing.value) {
