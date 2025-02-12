@@ -508,7 +508,7 @@ import { useTimezone } from "./timezones";
 import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
-import { useGeolocation } from "@cosmicds/vue-toolkit";
+// import { useGeolocation } from "@cosmicds/vue-toolkit";
 const SECONDS_PER_DAY = 60 * 60 * 24;
 const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
 const millisecondsPerInterval = MILLISECONDS_PER_DAY / 48;
@@ -593,7 +593,7 @@ const todayAt4pm = computed(() => {
   console.log(date);
   return date.getTime();
 });
-const selectedTime = ref(todayAt4pm.value);
+const selectedTime = ref(Date.now());
 
 // faking localization because
 // <date-time-picker> and <time-display> are not timezone aware
@@ -687,7 +687,7 @@ onMounted(() => {
     updateEcliptic(showEcliptic.value);
     updateConstellations(showConstellations.value);
     updateWWTLocation(selectedLocation.value);
-
+    // store.setTime(new Date(selectedTime.value));
     store.setClockSync(false);
     store.setClockRate(1800);
 
