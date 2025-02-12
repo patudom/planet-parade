@@ -564,7 +564,7 @@ const selectedLocationText = ref("");
 updateSelectedLocationText();
 
 const { geolocation, geolocate} = useGeolocation();
-function useGeolocated(val=null) {
+function useGeolocated() {
   if (!geolocation.value) {return;}
   selectedLocation.value = { latitudeDeg: geolocation.value.latitude, longitudeDeg: geolocation.value.longitude };
 }
