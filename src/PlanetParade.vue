@@ -622,19 +622,19 @@ updateSelectedLocationText();
 const searchErrorMessage = ref<string | null>(null);
 const { selectedTimezoneOffset, shortTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
 
-// const todayAt4pm = computed(() => {
-//   const now = Date.now();
-//   const date = new Date(now);
-//   console.log(date);
-//   date.setUTCMilliseconds(0);
-//   date.setUTCSeconds(0);
-//   date.setUTCMinutes(0);
-//   console.log(selectedTimezoneOffset.value);
-//   const msToHours = 1000 * 60 * 60;
-//   date.setUTCHours(16 - selectedTimezoneOffset.value / msToHours);
-//   console.log(date);
-//   return date.getTime();
-// });
+const todayAt4pm = computed(() => {
+  const now = Date.now();
+  const date = new Date(now);
+  console.log(date);
+  date.setUTCMilliseconds(0);
+  date.setUTCSeconds(0);
+  date.setUTCMinutes(0);
+  console.log(selectedTimezoneOffset.value);
+  const msToHours = 1000 * 60 * 60;
+  date.setUTCHours(16 - selectedTimezoneOffset.value / msToHours);
+  console.log(date);
+  return date.getTime();
+});
 const selectedTime = ref(Date.now());
 
 // faking localization because
@@ -721,6 +721,8 @@ onMounted(() => {
     // If there are layers to set up, do that here!
     layersLoaded.value = true;
 
+    selectedTime.value = todayAt4pm.value;
+
     store.applySetting(["localHorizonMode", true]);
     store.applySetting(["altAzGridColor", Color.fromArgb(180, 133, 201, 254)]);
     store.applySetting(["eclipticColor", Color.fromArgb(255, 255, 0, 255)]);
@@ -729,7 +731,6 @@ onMounted(() => {
     updateEcliptic(showEcliptic.value);
     updateConstellations(showConstellations.value);
     updateWWTLocation(selectedLocation.value);
-    // store.setTime(new Date(selectedTime.value));
     store.setClockSync(false);
     store.setClockRate(1800);
 
