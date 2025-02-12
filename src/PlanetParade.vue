@@ -246,6 +246,7 @@
       
       <!-- eslint-disable-next-line vue/no-v-model-argument -->
       <speed-control v-model:playing="playing" 
+        :store="store"
         :color="accentColor" 
         :defaultRate="500"
         :useInline="xs"
