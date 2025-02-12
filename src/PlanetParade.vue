@@ -84,6 +84,7 @@
               <li>Set the desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> (top-center).</li>
               <li>Set the date and time (bottom-left). Soon after sunset is optimal.</li>
               <li>Go outside and find the planet parade!</li>
+              <li>Learn more using <font-awesome-icon class="bullet-icon" icon="book-open" style="color: #f4ba3e" /> and <font-awesome-icon class="bullet-icon" icon="video" style="color: #f4ba3e" /> (upper-left).   </li>
             </ol>
           </div>
 
@@ -414,6 +415,9 @@
                 </p>
                 <p>
                   <strong>The planets are not really all in a line.</strong> It only appears that way from Earth because Earth and the other planets all orbit the Sun in roughly the same plane (as if they were on a vinyl record). From Earth's point of view, all the other solar system objects appear to move along a circular path around the sky, which ancient astronomers called the "ecliptic." Check <span style="color: var(--accent-color)">Ecliptic</span> in the control box to display this path in the virtual sky. 
+                </p>
+                <p>
+                  Click <font-awesome-icon class="bullet-icon" icon="video" style="color: #f4ba3e" /> in the upper left to watch a (silent) video showing an overhead view of the planets and how their positions lead to the planet parade.
                 </p>
                 <h3>What else can I do to learn more?</h3>
                 <p>
