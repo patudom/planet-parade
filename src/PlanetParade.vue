@@ -504,9 +504,10 @@ import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
 import { Color, Grids, Place, Planets, Settings, WWTControl } from "@wwtelescope/engine";
 import { Classification, SolarSystemObjects } from "@wwtelescope/engine-types";
 import { engineStore } from "@wwtelescope/engine-pinia";
-import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, D2R } from "@cosmicds/vue-toolkit";
+import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, D2R, API_BASE_URL } from "@cosmicds/vue-toolkit";
 import { useDisplay } from "vuetify";
 import { formatInTimeZone } from "date-fns-tz";
+import { v4 } from "uuid";
 
 import { useTimezone } from "./timezones";
 import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
@@ -518,6 +519,24 @@ const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
 const millisecondsPerInterval = MILLISECONDS_PER_DAY / 48;
 const minTime = Date.UTC(2025, 1, 11);
 const maxTime = Date.UTC(2025, 2, 1);
+const STORY_DATA_PATH = `${API_BASE_URL}/planet-parade/data`;
+
+const UUID_KEY = "eclipse-mini-uuid" as const;
+const OPT_OUT_KEY = "eclipse-mini-optout" as const;
+const maybeUUID = window.localStorage.getItem(UUID_KEY);
+const storedOptOut = window.localStorage.getItem(OPT_OUT_KEY);
+const existingUser = maybeUUID !== null;
+const uuid = maybeUUID ?? v4();
+if (!existingUser) {
+  window.localStorage.setItem(UUID_KEY, uuid);
+}
+let appTimeMs = 0;
+let infoTimeMs = 0;
+let appStartTimeStamp = null as number | null;
+let infoStartTimeStamp = null as number | null;
+
+const userSelectedSearchLocations: [number, number][] = [];
+const userSelectedMapLocations: [number, number][] = [];
 
 type SheetType = "text" | "video";
 export interface PlanetParadeProps {
@@ -554,6 +573,9 @@ const showControls = ref(smAndUp.value);
 const showConstellations = ref(false);
 const showPlanetLabels = ref(true);
 const inIntro = ref(false);
+
+const optOut = typeof storedOptOut === "string" ? storedOptOut === "true" : null;
+const responseOptOut = ref(optOut);
 
 const geocodingOptions = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -826,6 +848,53 @@ async function updateSelectedLocationText() {
 
 function searchProvider(text: string): Promise<MapBoxFeatureCollection> {
   return geocodingInfoForSearch(text, geocodingOptions);
+}
+
+async function createUserEntry() {
+  if (responseOptOut.value) {
+    return;
+  }
+
+  const response = await fetch(`${STORY_DATA_PATH}/${uuid.value}`, {
+    method: "GET",
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    headers: { "Authorization": process.env.VUE_APP_CDS_API_KEY ?? "" }
+  });
+  const content = await response.json();
+  const exists = response.status === 200 && content.response?.user_uuid != undefined;
+  if (exists) {
+    return;
+  }
+
+  fetch(`${STORY_DATA_PATH}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      "Authorization": process.env.VUE_APP_CDS_API_KEY ?? ""
+    },
+    body: JSON.stringify({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      user_uuid: uuid,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      user_selected_search_locations: userSelectedSearchLocations,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      user_selected_map_locations: userSelectedMapLocations,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      app_time_ms: appTimeMs,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      info_time_ms: infoTimeMs,
+    })
+  });
+}
+
+async function updateUserData() {
+  if (responseOptOut.value) {
+    return;
+  }
+
+  const now = Date.now();
+
 }
 
 async function resetCamera(): Promise<void> {
