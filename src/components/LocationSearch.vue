@@ -170,7 +170,6 @@ watch(searchText, function(text: string | null) {
 
 <style lang="less">
 .forward-geocoding-container {
-  position: relative;
   width: fit-content;
   color: var(--accent-color);
   background-color: black;
