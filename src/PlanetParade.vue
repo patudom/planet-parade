@@ -165,15 +165,15 @@
             />
             <geolocation-button
               id="location"
-              :debug="false"
               size="30px"
               density="default"
               elevation="5"
               :color="accentColor"
-              @location="selectedLocation = {longitudeDeg: $event.longitude, latitudeDeg: $event.latitude}"
+              @geolocation="selectedLocation = {longitudeDeg: $event.longitude, latitudeDeg: $event.latitude}"
             />
           </v-card>
         </v-dialog>
+        <span id="my-location-label">Current location: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
       </div>
       <div id="right-buttons">
         <div id="controls" class="control-icon-wrapper">
@@ -378,7 +378,7 @@
                   You can use this resource to simulate the planet parade where you are.
                   <ul>
                     <li>Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. (The default location is Cambridge, MA.)</li>
-                    <li>The display defaults to the current date and time. If you are viewing this app during the day, use the time controls to advance time until just after sunset.</li>
+                    <li>The display defaults to 4pm local time. Use the time controls to advance time until just after sunset.</li>
                     <li>
                       If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun rise above the horizon in the morning and set in the evening. The sky will lighten and darken with the Sun's changing position. 
                     </li>
@@ -508,7 +508,7 @@ import { useTimezone } from "./timezones";
 import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
-
+// import { useGeolocation } from "@cosmicds/vue-toolkit";
 const SECONDS_PER_DAY = 60 * 60 * 24;
 const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
 const millisecondsPerInterval = MILLISECONDS_PER_DAY / 48;
@@ -562,13 +562,38 @@ const selectedLocation = ref<LocationDeg>({
 });
 const selectedLocationText = ref("");
 updateSelectedLocationText();
+
+// const { geolocation, geolocate} = useGeolocation();
+// function useGeolocated() {
+//   if (!geolocation.value) {return;}
+//   selectedLocation.value = { latitudeDeg: geolocation.value.latitude, longitudeDeg: geolocation.value.longitude };
+// }
+// watch(
+//   geolocation,
+//   (location) => {
+//     if (location) {
+//       selectedLocation.value = { latitudeDeg: location?.latitude, longitudeDeg: location?.longitude };
+//     }
+//   }
+// );
+
 const searchErrorMessage = ref<string | null>(null);
+const { selectedTimezone, selectedTimezoneOffset, shortTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
+
+// const todayAt4pm = computed(() => {
+//   const now = Date.now();
+//   const date = new Date(now);
+//   console.log(date);
+//   date.setUTCMilliseconds(0);
+//   date.setUTCSeconds(0);
+//   date.setUTCMinutes(0);
+//   console.log(selectedTimezoneOffset.value);
+//   const msToHours = 1000 * 60 * 60;
+//   date.setUTCHours(16 - selectedTimezoneOffset.value / msToHours);
+//   console.log(date);
+//   return date.getTime();
+// });
 const selectedTime = ref(Date.now());
-const { selectedTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
-
-
-const { shortTimezone, selectedTimezoneOffset, } = useTimezone(selectedLocation);
-
 
 // faking localization because
 // <date-time-picker> and <time-display> are not timezone aware
@@ -662,12 +687,18 @@ onMounted(() => {
     updateEcliptic(showEcliptic.value);
     updateConstellations(showConstellations.value);
     updateWWTLocation(selectedLocation.value);
-
+    // store.setTime(new Date(selectedTime.value));
     store.setClockSync(false);
     store.setClockRate(1800);
 
     doWWTModifications();
     resetCamera().then(() => positionSet.value = true);
+    // geolocate().then(() => {
+    //   console.log('got location');
+    //   useGeolocated(); 
+    //   selectedTime.value = todayAt4pm.value;
+    //   resetCamera();
+    // });
 
     setInterval(() => {
       if (playing.value) {
@@ -852,12 +883,15 @@ function updateConstellations(show: boolean) {
 }
 
 watch(selectedLocation, (location: LocationDeg) => {
+  console.log('selectedLocation changed', location);
   updateSelectedLocationText();
   updateWWTLocation(location);
   resetCamera();
   WWTControl.singleton.renderOneFrame();
 });
 
+watch(selectedTime, (value) => {
+  console.log(value);});
 watch(playing, (play) => {
   store.setClockSync(play);
 });
@@ -1018,6 +1052,19 @@ li {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  
+  #my-location-label {
+    background-color: #ccc;
+    padding-inline: 5px;
+    padding-block: 2px;
+    border-radius: 1em;
+    color: black;
+    font-size: var(--default-font-size);
+  }
 }
 
 #right-buttons {
@@ -1550,12 +1597,12 @@ video {
   font-size: calc(0.85 * var(--default-font-size));
 }
 
-#body-logos {
+#body-logos  {
   position: fixed;
   right: 0.5em;
   bottom: 0.5em;
 
-  img {
+  #icons-container img {
     height: 35px;
     vertical-align: middle;
     margin: 2px;
