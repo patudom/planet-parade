@@ -580,19 +580,19 @@ updateSelectedLocationText();
 const searchErrorMessage = ref<string | null>(null);
 const { selectedTimezone, selectedTimezoneOffset, shortTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
 
-const todayAt4pm = computed(() => {
-  const now = Date.now();
-  const date = new Date(now);
-  console.log(date);
-  date.setUTCMilliseconds(0);
-  date.setUTCSeconds(0);
-  date.setUTCMinutes(0);
-  console.log(selectedTimezoneOffset.value);
-  const msToHours = 1000 * 60 * 60;
-  date.setUTCHours(16 - selectedTimezoneOffset.value / msToHours);
-  console.log(date);
-  return date.getTime();
-});
+// const todayAt4pm = computed(() => {
+//   const now = Date.now();
+//   const date = new Date(now);
+//   console.log(date);
+//   date.setUTCMilliseconds(0);
+//   date.setUTCSeconds(0);
+//   date.setUTCMinutes(0);
+//   console.log(selectedTimezoneOffset.value);
+//   const msToHours = 1000 * 60 * 60;
+//   date.setUTCHours(16 - selectedTimezoneOffset.value / msToHours);
+//   console.log(date);
+//   return date.getTime();
+// });
 const selectedTime = ref(Date.now());
 
 // faking localization because
