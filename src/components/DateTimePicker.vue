@@ -156,7 +156,7 @@
 
 
 <script setup lang="ts">
-import { ref, watch, computed, withDefaults } from 'vue';
+import { ref, watch, computed } from 'vue';
 import TapToInput from './TapToInput.vue';
 
 
