@@ -1022,8 +1022,8 @@ watch(selectedLocation, (location: LocationDeg) => {
   WWTControl.singleton.renderOneFrame();
 });
 
-watch(selectedTime, (value: number) => {
-  console.log(value);});
+// watch(selectedTime, (value: number) => {
+//   console.log(value);});
 watch(playing, (play: boolean) => {
   store.setClockSync(play);
 });
