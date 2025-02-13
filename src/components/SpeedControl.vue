@@ -41,7 +41,7 @@
           if (!timePlaying) {
             timePlaying = true
           } else {
-          increasePlaybackRate();
+            increasePlaybackRate();
           }
         }
       "
@@ -166,6 +166,7 @@
         "
       />
     </div>
+    <div v-if="showText" id="speed-text">{{ Math.round(playbackRate) }}x {{ timePlaying ? '' : '(Paused)'  }}</div>
   </div>
 </template>
 
@@ -186,14 +187,16 @@ interface Props {
   maxSpeed?: number;
   defaultRate?: number;
   useInline?: boolean;
+  showText?: boolean;
 }
 
-const { color, maxSpeed, defaultRate, store } = withDefaults(defineProps<Props>(),
+const { color, maxSpeed, defaultRate, store, showText } = withDefaults(defineProps<Props>(),
   {
     color: 'white',
     maxSpeed: 10000,
     defaultRate: 1,
     useInline: false,
+    showText: false
   }
 );
 
@@ -309,24 +312,13 @@ const mobile = computed( () => smAndDown && supportsTouchscreen());
 
 
 #speed-text {
-  position: absolute;
   background-color: rgba(0, 0, 0, 0.5);
   padding-inline: 0.4em;
-  padding-block: 0.15em;
   border-radius: 0.3em;
   font-size: calc(1 * var(--default-font-size));
   text-wrap: nowrap;  
   width: fit-content;
-
-  left: calc(100% + 1rem);
-  top: 1.5rem;
-  
-  @media (max-width: 600px) {
-    position: relative;
-    top: 3rem;
-    left: 0.5rem;
-    display: inline;
-  }
+  align-self: center;
 }
 
 </style>
