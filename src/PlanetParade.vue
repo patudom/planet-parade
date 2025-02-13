@@ -723,7 +723,7 @@ onMounted(() => {
     layersLoaded.value = true;
 
     selectedTime.value = todayAt4pm.value;
-    nextTick(() => resetCamera().then(() => positionSet.value = true));
+    setTimeout(() => resetCamera().then(() => positionSet.value = true), 100);
 
     store.applySetting(["localHorizonMode", true]);
     store.applySetting(["altAzGridColor", Color.fromArgb(180, 133, 201, 254)]);
