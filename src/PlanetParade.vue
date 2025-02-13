@@ -146,7 +146,7 @@
         >
           <v-card>
             <font-awesome-icon
-              style="position: absolute; right: 12px; top: 12px; cursor: pointer; padding: 1em; margin: -1em; z-index: 1000;"
+              style="position: absolute; right: 12px; top: 1em; cursor: pointer; padding: 1em; margin: -1em; z-index: 1000;"
               icon="xmark"
               size="xl"
               @click="showLocationSelector = false"
@@ -553,8 +553,13 @@ if (!existingUser) {
   window.localStorage.setItem(UUID_KEY, uuid);
 }
 let infoTimeMs = 0;
+let videoPlayingTimeMs = 0;
+let videoPlaying = false;
+let videoOpened = false;
+let videoPlayed = false;
 let appStartTimestamp = Date.now();
 let infoStartTimestamp = null as number | null;
+let videoPlayingStartTimestamp = null as number | null;
 
 let userSelectedSearchLocations: [number, number][] = [];
 let userSelectedMapLocations: [number, number][] = [];
@@ -771,7 +776,6 @@ onMounted(() => {
         resetData();
       }
     });
-
   });
 });
 
@@ -826,6 +830,24 @@ const showVideoSheet = computed({
     if (!value) {
       const video = document.querySelector("#info-video") as HTMLVideoElement;
       video.pause();
+    } else {
+      nextTick(() => {
+        const video = document.querySelector("#info-video") as HTMLVideoElement;
+        video.addEventListener("play", (_event: Event) => {
+          videoPlaying = true;
+          videoPlayingStartTimestamp = Date.now();
+          videoPlayed = true;
+        });
+
+        video.addEventListener("pause", (_event: Event) => {
+          videoPlaying = false;
+          const now = Date.now();
+          if (videoPlayingStartTimestamp !== null) {
+            videoPlayingTimeMs += (now - videoPlayingStartTimestamp);
+            videoPlayingStartTimestamp = null;
+          }
+        });
+      });
     }
   }
 });
@@ -912,9 +934,9 @@ async function createUserEntry() {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       user_selected_map_locations: userSelectedMapLocations,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      app_time_ms: 0,
+      app_time_ms: 0, info_time_ms: 0, video_time_ms: 0,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      info_time_ms: 0,
+      video_opened: videoOpened, video_played: videoPlayed,
     }),
   });
 }
@@ -923,9 +945,11 @@ function resetData() {
   userSelectedMapLocations = [];
   userSelectedSearchLocations = [];
   infoTimeMs = 0;
+  videoPlayingTimeMs = 0;
   const now = Date.now();
   appStartTimestamp = now;
   infoStartTimestamp = showTextSheet.value ? now : null;
+  videoPlayingStartTimestamp = videoPlaying ? now : null;
 }
 
 async function updateUserData() {
@@ -935,6 +959,7 @@ async function updateUserData() {
 
   const now = Date.now();
   const infoTime = (showTextSheet.value && infoStartTimestamp !== null) ? now - infoStartTimestamp : infoTimeMs;
+  const videoTime = (videoPlaying && videoPlayingStartTimestamp !== null) ? now - videoPlayingStartTimestamp : videoPlayingTimeMs;
 
   fetch(`${STORY_DATA_URL}/${uuid}`, {
     method: "PATCH",
@@ -952,6 +977,10 @@ async function updateUserData() {
       delta_app_time_ms: now - appStartTimestamp,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       delta_info_time_ms: infoTime,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      delta_video_time_ms: videoTime,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      video_opened: videoOpened, video_played: videoPlayed,
     }),
     keepalive: true,
   }).then(() => {
@@ -1046,6 +1075,12 @@ watch(showTextSheet, (show: boolean) => {
   } else if (infoStartTimestamp !== null) {
     infoTimeMs += (now - infoStartTimestamp);
     infoStartTimestamp = null;
+  }
+});
+
+watch(showVideoSheet, (show: boolean) => {
+  if (show) {
+    videoOpened = true;
   }
 });
 
@@ -1617,9 +1652,17 @@ video {
 }
 
 .map-container {
-  width: 60vw;
-  height: 60vh;
+  @media (max-width: 600px) {
+    width: 90vw;
+    height: 70vh;
+  }
+
+@media (min-width: 601px) {
+    width: 70vw;
+    height: 60vh;
+  }
 }
+
 
 #geolocation-wrapper\+location {
   position: absolute;
@@ -1753,7 +1796,7 @@ video {
   height: fit-content;
   position: absolute;
   z-index: 600;
-  right: 2em;
+  right: 3em;
   top: 1em;
 }
 
