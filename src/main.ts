@@ -32,6 +32,8 @@ import {
   faGaugeHigh,
   faAnglesLeft,
   faAnglesRight,
+  faAnglesUp,
+  faAnglesDown,
   faRotate,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -49,6 +51,8 @@ library.add(faXmark);
 library.add(faGaugeHigh);
 library.add(faAnglesLeft);
 library.add(faAnglesRight);
+library.add(faAnglesUp);
+library.add(faAnglesDown);
 library.add(faRotate);
 
 /** v-hide directive taken from https://www.ryansouthgate.com/2020/01/30/vue-js-v-hide-element-whilst-keeping-occupied-space/ */

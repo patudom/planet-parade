@@ -1,11 +1,12 @@
 <template>
   <div id="speed-control">
     <icon-button
+      v-if="useOldControl"
       id="reverse-speed"
       :fa-icon="'angles-left'"
       @activate="
         () => {
-          reversePlaybackRate();
+          reverseOrIncreaseReversePlaybackRate();
           timePlaying = true;
         }
       "
@@ -17,7 +18,68 @@
       faSize="1x"
       :show-tooltip="!mobile"
     ></icon-button>
-    <icon-button
+    
+    <icon-button 
+      v-if="useOldControl"
+      id="forward-speed"
+      :fa-icon="'angles-right'"
+      @activate="
+        () => {
+          if (!timePlaying) {
+            timePlaying = true
+          } else {
+            forwardOrIncreaseForwardPlaybackRate();
+          }
+        }
+      "
+      :color="color"
+      :focus-color="color"
+      :tooltip-text="playbackRate > 0 ? 'Faster' : 'Forward'"
+      tooltip-location="top"
+      tooltip-offset="5px"
+      faSize="1x"
+      :show-tooltip="!mobile"
+    ></icon-button>
+    
+    <icon-button 
+      v-if="!useOldControl"
+      id="reverse-direction"
+      :fa-icon="'angles-left'"
+      @activate="
+        () => {
+          setDirection('reverse')
+          timePlaying = true
+        }
+      "
+      :color="color"
+      :focus-color="color"
+      tooltip-text="Reverse"
+      tooltip-location="top"
+      tooltip-offset="5px"
+      faSize="1x"
+      :show-tooltip="!mobile"
+    ></icon-button>
+    
+    <icon-button 
+      v-if="!useOldControl"
+      id="forward-direction"
+      :fa-icon="'angles-right'"
+      @activate="
+        () => {
+          setDirection('forward');
+          timePlaying = true
+        }
+      "
+      :color="color"
+      :focus-color="color"
+      tooltip-text="Forward"
+      tooltip-location="top"
+      tooltip-offset="5px"
+      faSize="1x"
+      :show-tooltip="!mobile"
+    ></icon-button>
+    
+    <icon-button 
       id="play-pause-icon"
       :fa-icon="!timePlaying ? 'play' : 'pause'"
       @activate="
@@ -33,27 +95,48 @@
       faSize="1x"
       :show-tooltip="!mobile"
     ></icon-button>
-    <icon-button
-      id="forward-speed"
-      :fa-icon="'angles-right'"
+    
+    <icon-button 
+      v-if="!useOldControl"
+      id="slow-down"
+      :fa-icon="'angles-down'"
       @activate="
         () => {
-          if (!timePlaying) {
-            timePlaying = true
-          } else {
-            increasePlaybackRate();
-          }
+          decreaseRate();
+          timePlaying = true;
         }
       "
       :color="color"
       :focus-color="color"
-      :tooltip-text="playbackRate > 0 ? 'Faster' : 'Forward'"
+      :tooltip-text="`Slow down ${rateDelta}x`"
       tooltip-location="top"
       tooltip-offset="5px"
       faSize="1x"
       :show-tooltip="!mobile"
     ></icon-button>
-    <icon-button
+    
+    <icon-button 
+      v-if="!useOldControl"
+      id="speed-up"
+      :fa-icon="'angles-up'"
+      @activate="
+        () => {
+          increaseRate();
+          timePlaying = true;
+        }
+      "
+      :color="color"
+      :focus-color="color"
+      :tooltip-text="`Speed up ${rateDelta}x`"
+      tooltip-location="top"
+      tooltip-offset="5px"
+      faSize="1x"
+      :show-tooltip="!mobile"
+    ></icon-button>
+    
+    
+
+    <icon-button 
       id="reset"
       :fa-icon="'rotate'"
       @activate="
@@ -166,6 +249,7 @@
         "
       />
     </div>
+    
     <div v-if="showText" id="speed-text">{{ Math.round(playbackRate) }}x {{ timePlaying ? '' : '(Paused)'  }}</div>
   </div>
 </template>
@@ -181,6 +265,7 @@ import { supportsTouchscreen } from "@cosmicds/vue-toolkit";
 import { engineStore } from "@wwtelescope/engine-pinia";
 import { usePlaybackControl } from '../wwt_playback_control';
 
+
 interface Props {
   store: ReturnType<typeof engineStore>;
   color: string;
@@ -188,20 +273,34 @@ interface Props {
   defaultRate?: number;
   useInline?: boolean;
   showText?: boolean;
+  rateDelta?: number;
 }
 
-const { color, maxSpeed, defaultRate, store, showText } = withDefaults(defineProps<Props>(),
+const { 
+  color, 
+  maxSpeed, 
+  defaultRate, 
+  store, 
+  showText, 
+  rateDelta, 
+  useOldControl, 
+  useInline
+} = withDefaults(defineProps<Props>(),
   {
     color: 'white',
     maxSpeed: 10000,
+    minSpeed: 1,
     defaultRate: 1,
     useInline: false,
-    showText: false
+    showText: false,
+    rateDelta: 10,
+    useOldControl: false,
   }
 );
 
-const playing = defineModel<boolean>('playing', {default: false, required: true});
 
+const playing = defineModel<boolean>('playing', {default: false, required: true});
+const minSpeed = 1;
 
 const emit = defineEmits(['reset', 'update:playing']);
 
@@ -215,6 +314,10 @@ timePlaying.value = playing.value;
 watch(playing, (v) => {timePlaying.value = v;});
 watch(timePlaying, (v) => {playing.value = v;});
 
+function clamp(val) {
+  return Math.min(Math.max(val, minSpeed), maxSpeed);
+}
+
 const playbackRate = computed({
   get: function(): number {
     if (forceRate.value) {
@@ -224,11 +327,34 @@ const playbackRate = computed({
     return clockRate.value;
   },
   set: function(value: number) {
-    clockRate.value = Math.sign(value) * Math.min(Math.abs(value), maxSpeed);
+    clockRate.value = Math.sign(value) * clamp(Math.abs(value));
   }
 });
 
-function reversePlaybackRate() {
+// function reverseRate() {
+//   playbackRate.value = -playbackRate.value;
+// }
+
+function setDirection(direction: 'forward' | 'reverse' | null = null) {
+  playbackRate.value = direction == 'reverse' ? -Math.abs(playbackRate.value) : Math.abs(playbackRate.value);
+}
+
+function increaseRate() {
+  const sign = Math.sign(playbackRate.value);
+  const abs = Math.abs(playbackRate.value);
+  const newRate = abs * rateDelta;
+  playbackRate.value = sign * clamp(newRate);
+}
+function decreaseRate() {
+  const sign = Math.sign(playbackRate.value);
+  const abs = Math.abs(playbackRate.value);
+  const newRate = abs / rateDelta;
+  playbackRate.value = sign * clamp(newRate);
+}
+
+
+// either moves to reverse time (at -1x) or slows down by rateDelta
+function reverseOrIncreaseReversePlaybackRate() {
   forceRate.value = false;
   const sign = Math.sign(playbackRate.value);
   if (sign > 0) {
@@ -237,21 +363,22 @@ function reversePlaybackRate() {
   }
   const abs = Math.abs(playbackRate.value);
   let ezrate = Math.floor(Math.log10(abs));
-  ezrate -= sign * 1;
-  playbackRate.value = sign * Math.min(maxSpeed,Math.pow(10, Math.abs(ezrate)));
+  ezrate -= sign * Math.log10(rateDelta);
+  playbackRate.value = sign * clamp(Math.pow(10, Math.abs(ezrate)));
 }
 
-function increasePlaybackRate() {
+// etiher switches to forward time (at 1x) or speeds up by rateDelta
+function forwardOrIncreaseForwardPlaybackRate() {
   forceRate.value = false;
-  if (Math.sign(playbackRate.value) < 0 ) {
+  const sign = Math.sign(playbackRate.value);
+  if (sign < 0 ) {
     playbackRate.value = -Math.max(playbackRate.value,-1);
     return;
   }
-  const sign = Math.sign(playbackRate.value);
   const abs = Math.abs(playbackRate.value);
   let ezrate = Math.floor(Math.log10(abs));
-  ezrate += sign * 1;
-  playbackRate.value = sign * Math.min(maxSpeed, Math.pow(10, Math.abs(ezrate)));
+  ezrate += sign * Math.log10(rateDelta);
+  playbackRate.value = sign * clamp(Math.pow(10, Math.abs(ezrate)));
 }
 
 const { smAndDown } = useDisplay();
