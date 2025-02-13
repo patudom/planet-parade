@@ -155,7 +155,7 @@
       :fa-icon="'rotate'"
       @activate="
         () => {
-          playbackRate = 500;
+          playbackRate = 100;
           timePlaying = false;
           forceRate = false;
           emit('reset');
@@ -406,7 +406,7 @@ const mobile = computed( () => smAndDown && supportsTouchscreen());
   display: flex;
   flex-direction: row;
   align-items: flex-end;
-  gap: 5px;
+  gap: 10px;
   //margin-left: 10px;
   justify-content: center;
   
@@ -440,7 +440,7 @@ const mobile = computed( () => smAndDown && supportsTouchscreen());
   flex-grow: 0;
   align-items: flex-end; 
   position: relative; 
-  gap: 5px;
+  gap: 6px;
   
   #enclosing-playback-container.mobile-playback-control {
     position: fixed;
