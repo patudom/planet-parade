@@ -1522,8 +1522,15 @@ video {
   height: fit-content;
   padding-inline: 30px;
   padding-block: 20px;
-  width: 80%;
-  max-width: 400px;
+  max-width: 500px;
+
+  @media (max-width: 600px) {
+    width: 90%;
+  }
+
+  @media (min-width: 600px) {
+    width: 80%;
+  }
 }
 
 .bottom-sheet {
