@@ -250,6 +250,8 @@
         :color="accentColor" 
         :defaultRate="500"
         :useInline="xs"
+        :maxSpeed="10000"
+        show-text
         @reset="()=>{selectedTime = Date.now()}"
         />
       <div id="change-optout">
