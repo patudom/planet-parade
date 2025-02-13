@@ -167,7 +167,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 
 import { supportsTouchscreen } from "@cosmicds/vue-toolkit";
@@ -175,16 +175,17 @@ import { supportsTouchscreen } from "@cosmicds/vue-toolkit";
 
 // import { storeToRefs } from 'pinia';
 import { engineStore } from "@wwtelescope/engine-pinia";
-import {usePlaybackControl } from '../wwt_playback_control';
+import { usePlaybackControl } from '../wwt_playback_control';
 
 interface Props {
-  color: string,
-  maxSpeed?: number,
-  defaultRate?: number,
-  useInline?: boolean
+  store: ReturnType<typeof engineStore>;
+  color: string;
+  maxSpeed?: number;
+  defaultRate?: number;
+  useInline?: boolean;
 }
 
-const {color, maxSpeed, defaultRate} = withDefaults(defineProps<Props>(),
+const { color, maxSpeed, defaultRate, store } = withDefaults(defineProps<Props>(),
   {
     color: 'white',
     maxSpeed: 10000,
@@ -201,8 +202,7 @@ const emit = defineEmits(['reset', 'update:playing']);
 const playbackVisible = ref(false);
 const forceRate = ref(false);
 
-const store = engineStore();
-const {timePlaying, clockRate, setSpeed} = usePlaybackControl(store, false);
+const { timePlaying, clockRate, setSpeed } = usePlaybackControl(store, false);
 setSpeed(defaultRate);
 
 timePlaying.value = playing.value;

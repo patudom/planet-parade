@@ -83,7 +83,7 @@
             <ol>
               <li>Set the desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> (top-center).</li>
               <li>Set the date and time (bottom-left). Soon after sunset is optimal.</li>
-              <li>Go outside and find the planet parade!</li>
+              <li>Go outdoors and find the planet parade!</li>
               <li>Learn more using <font-awesome-icon class="bullet-icon" icon="book-open" style="color: #f4ba3e" /> and <font-awesome-icon class="bullet-icon" icon="video" style="color: #f4ba3e" /> (upper-left).   </li>
             </ol>
           </div>
@@ -246,6 +246,7 @@
       
       <!-- eslint-disable-next-line vue/no-v-model-argument -->
       <speed-control v-model:playing="playing" 
+        :store="store"
         :color="accentColor" 
         :defaultRate="500"
         :useInline="xs"
@@ -307,7 +308,7 @@
     >
       <v-card>
         <v-card-text>
-          To evaluate usage of this app, <strong>anonymized</strong> data may be collected, including locations viewed and map quiz responses. "My Location" data is NEVER collected.
+          To evaluate usage of this app, <strong>anonymized</strong> data may be collected, including locations searched or selected on map. Places selected via geolocation services on your device are NOT collected.
         </v-card-text>
         <v-card-actions class="pt-3">
           <v-spacer></v-spacer>
@@ -402,7 +403,7 @@
                 </p>
                 <ul>
                   <li>Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. (The default location is Cambridge, MA.)</li>
-                  <li>The display defaults to the current date and time. Use the time controls to advance time until just after sunset.</li>
+                  <li>The display defaults to the current day at 4pm local time. Use the time controls to advance time until just after sunset.</li>
                   <li>
                     If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun rise above the horizon in the morning and set in the evening. The sky will lighten and darken with the Sun's changing position. 
                   </li>
@@ -622,19 +623,19 @@ updateSelectedLocationText();
 const searchErrorMessage = ref<string | null>(null);
 const { selectedTimezoneOffset, shortTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
 
-// const todayAt4pm = computed(() => {
-//   const now = Date.now();
-//   const date = new Date(now);
-//   console.log(date);
-//   date.setUTCMilliseconds(0);
-//   date.setUTCSeconds(0);
-//   date.setUTCMinutes(0);
-//   console.log(selectedTimezoneOffset.value);
-//   const msToHours = 1000 * 60 * 60;
-//   date.setUTCHours(16 - selectedTimezoneOffset.value / msToHours);
-//   console.log(date);
-//   return date.getTime();
-// });
+const todayAt4pm = computed(() => {
+  const now = Date.now();
+  const date = new Date(now);
+  console.log(date);
+  date.setUTCMilliseconds(0);
+  date.setUTCSeconds(0);
+  date.setUTCMinutes(0);
+  console.log(selectedTimezoneOffset.value);
+  const msToHours = 1000 * 60 * 60;
+  date.setUTCHours(16 - selectedTimezoneOffset.value / msToHours);
+  console.log(date);
+  return date.getTime();
+});
 const selectedTime = ref(Date.now());
 
 // faking localization because
@@ -721,6 +722,9 @@ onMounted(() => {
     // If there are layers to set up, do that here!
     layersLoaded.value = true;
 
+    selectedTime.value = todayAt4pm.value;
+    setTimeout(() => resetCamera().then(() => positionSet.value = true), 100);
+
     store.applySetting(["localHorizonMode", true]);
     store.applySetting(["altAzGridColor", Color.fromArgb(180, 133, 201, 254)]);
     store.applySetting(["eclipticColor", Color.fromArgb(255, 255, 0, 255)]);
@@ -729,12 +733,10 @@ onMounted(() => {
     updateEcliptic(showEcliptic.value);
     updateConstellations(showConstellations.value);
     updateWWTLocation(selectedLocation.value);
-    // store.setTime(new Date(selectedTime.value));
     store.setClockSync(false);
     store.setClockRate(1800);
 
     doWWTModifications();
-    resetCamera().then(() => positionSet.value = true);
     // geolocate().then(() => {
     //   console.log('got location');
     //   useGeolocated(); 
