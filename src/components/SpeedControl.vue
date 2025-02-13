@@ -6,7 +6,7 @@
       @activate="
         () => {
           reversePlaybackRate();
-          // timePlaying = true;
+          timePlaying = true;
         }
       "
       :color="color"
@@ -38,8 +38,11 @@
       :fa-icon="'angles-right'"
       @activate="
         () => {
+          if (!timePlaying) {
+            timePlaying = true
+          } else {
           increasePlaybackRate();
-          // timePlaying = true;
+          }
         }
       "
       :color="color"
