@@ -157,12 +157,13 @@
               button-size="xl"
               :accent-color="accentColor"
               :search-provider="searchProvider"
-              @set-location="setLocationFromFeature"
+              @set-location="setLocationFromSearchFeature"
               @error="searchErrorMessage = $event"
             >
             </location-search>
             <location-selector
-              v-model="selectedLocation"
+              :model-value="selectedLocation"
+              @update:modelValue="updateLocationFromMap"
             />
             <geolocation-button
               id="location"
@@ -250,41 +251,19 @@
         :useInline="xs"
         @reset="()=>{selectedTime = Date.now()}"
         />
-      
-      <div v-if="false" id="time-controls">
+      <div id="change-optout">
         <icon-button
-          id="play-pause-button"
-          :fa-icon="playing ? 'pause' : 'play'"
-          @activate="() => { playing = !playing }"
+          md-icon="mdi-lock"
+          @activate="() => showPrivacyDialog = true"
           :color="accentColor"
           :focus-color="accentColor"
-          :tooltip="playing ? 'Pause' : 'Play'"
-          tooltip-location="top"
+          tooltip-text="Change privacy settings"
+          tooltip-location="bottom"
           tooltip-offset="5px"
-          faSize="1x"
           :show-tooltip="!mobile"
-        ></icon-button>
-        <div id="slider">
-          <div>Feb 10</div>
-          <v-slider
-            v-model="selectedTime"
-            :min="minTime"
-            :max="maxTime"
-            :color="accentColor"
-            :ripple="false"
-            hide-details
-            track-size="8px"
-            thumb-size="20px"
-            thumb-label="always"
-            :step="millisecondsPerInterval"
-            @mousedown="() => { playing = false; }"
-            >
-            <template v-slot:thumb-label="item">
-              {{ toTimeString(new Date(item.modelValue))  }}
-            </template>
-          </v-slider>
-          <div>Feb 28</div>
-        </div>
+          mdSize="1em"
+        >
+        </icon-button>
       </div>
       <div id="body-logos" v-if="!smallSize">
         <credit-logos/>
@@ -317,6 +296,49 @@
           <source src="CosmicDS Planet Parade Overhead View.mp4" type="video/mp4">
         </video>
       </div>
+    </v-dialog>
+
+    <!-- Data collection opt-out dialog -->
+    <v-dialog
+      scrim="false"
+      v-model="showPrivacyDialog"
+      max-width="400px"
+      id="privacy-popup-dialog"
+    >
+      <v-card>
+        <v-card-text>
+          To evaluate usage of this app, <strong>anonymized</strong> data may be collected, including locations viewed and map quiz responses. "My Location" data is NEVER collected.
+        </v-card-text>
+        <v-card-actions class="pt-3">
+          <v-spacer></v-spacer>
+          <v-btn
+            color="#BDBDBD"
+            href="https://www.cfa.harvard.edu/privacy-statement"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+          Privacy Policy
+          </v-btn>
+          <v-btn
+            color="#ff6666"
+            @click="() => {
+              responseOptOut = true;
+              showPrivacyDialog = false;
+            }"
+          >
+          Opt out
+          </v-btn>
+          <v-btn 
+            color="green"
+            @click="() => {
+              responseOptOut = false;
+              showPrivacyDialog = false;
+            }"
+          >
+            Allow
+          </v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
 
 
@@ -377,38 +399,38 @@
                 </p>
                 <p>
                   You can use this resource to simulate the planet parade where you are.
-                  <ul>
-                    <li>Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. (The default location is Cambridge, MA.)</li>
-                    <li>The display defaults to the current date and time. Use the time controls to advance time until just after sunset.</li>
-                    <li>
-                      If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun rise above the horizon in the morning and set in the evening. The sky will lighten and darken with the Sun's changing position. 
-                    </li>
-                    <li>
-                      Display the cardinal directions in the view to help orient yourself by checking <span style="color: var(--accent-color)">Sky Grid</span>.
-                    </li>
-                  </ul>
                 </p>
+                <ul>
+                  <li>Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. (The default location is Cambridge, MA.)</li>
+                  <li>The display defaults to the current date and time. Use the time controls to advance time until just after sunset.</li>
+                  <li>
+                    If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun rise above the horizon in the morning and set in the evening. The sky will lighten and darken with the Sun's changing position. 
+                  </li>
+                  <li>
+                    Display the cardinal directions in the view to help orient yourself by checking <span style="color: var(--accent-color)">Sky Grid</span>.
+                  </li>
+                </ul>
                 <h3>How do I find my way around the sky?</h3>
                 <p>
                   Here are some tips for finding the planets in the sky from the Northern Hemisphere.
-                  <ul>
-                    <li>
-                      Venus is the brightest planet and should be easiest to spot above the western horizon.
-                    </li>
-                    <li>
-                      Once you've found Venus, look down toward the horizon to find Saturn.
-                    </li>
-                    <li>
-                       Imagine a line between Saturn and Venus that points along a big arc towards Jupiter (which is above and to the right of Orion).
-                    </li>
-                    <li> 
-                      Keep following that path to a bright, red object, which is Mars.
-                    </li>
-                    <li>
-                      Mercury's position will change throughout the month, but it will be near the horizon, close to Venus and Saturn.
-                    </li>
-                  </ul> 
                 </p>
+                <ul>
+                  <li>
+                    Venus is the brightest planet and should be easiest to spot above the western horizon.
+                  </li>
+                  <li>
+                    Once you've found Venus, look down toward the horizon to find Saturn.
+                  </li>
+                  <li>
+                     Imagine a line between Saturn and Venus that points along a big arc towards Jupiter (which is above and to the right of Orion).
+                  </li>
+                  <li> 
+                    Keep following that path to a bright, red object, which is Mars.
+                  </li>
+                  <li>
+                    Mercury's position will change throughout the month, but it will be near the horizon, close to Venus and Saturn.
+                  </li>
+                </ul> 
                 <h3>What is the significance of the planet parade?</h3>
                 <p>
                   The planet parade happens when all the planets happen to be on the same side of their orbits around the Sun as Earth, so they all are on Earth's night-time side. (When a planet is on the opposite side of the Sun during Earth, that means it is up in the sky during the day when the Sun outshines it.) 
@@ -504,20 +526,32 @@ import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
 import { Color, Grids, Place, Planets, Settings, WWTControl } from "@wwtelescope/engine";
 import { Classification, SolarSystemObjects } from "@wwtelescope/engine-types";
 import { engineStore } from "@wwtelescope/engine-pinia";
-import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, D2R } from "@cosmicds/vue-toolkit";
+import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, D2R, API_BASE_URL } from "@cosmicds/vue-toolkit";
 import { useDisplay } from "vuetify";
-import { formatInTimeZone } from "date-fns-tz";
+import { v4 } from "uuid";
 
 import { useTimezone } from "./timezones";
 import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 // import { useGeolocation } from "@cosmicds/vue-toolkit";
-const SECONDS_PER_DAY = 60 * 60 * 24;
-const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
-const millisecondsPerInterval = MILLISECONDS_PER_DAY / 48;
-const minTime = Date.UTC(2025, 1, 11);
-const maxTime = Date.UTC(2025, 2, 1);
+const STORY_DATA_URL = `${API_BASE_URL}/planet-parade/data`;
+
+const UUID_KEY = "eclipse-mini-uuid" as const;
+const OPT_OUT_KEY = "eclipse-mini-optout" as const;
+const maybeUUID = window.localStorage.getItem(UUID_KEY);
+const storedOptOut = window.localStorage.getItem(OPT_OUT_KEY);
+const existingUser = maybeUUID !== null;
+const uuid = maybeUUID ?? v4();
+if (!existingUser) {
+  window.localStorage.setItem(UUID_KEY, uuid);
+}
+let infoTimeMs = 0;
+let appStartTimestamp = Date.now();
+let infoStartTimestamp = null as number | null;
+
+let userSelectedSearchLocations: [number, number][] = [];
+let userSelectedMapLocations: [number, number][] = [];
 
 type SheetType = "text" | "video";
 export interface PlanetParadeProps {
@@ -554,6 +588,10 @@ const showControls = ref(smAndUp.value);
 const showConstellations = ref(false);
 const showPlanetLabels = ref(true);
 const inIntro = ref(false);
+const showPrivacyDialog = ref(false);
+
+const optOut = typeof storedOptOut === "string" ? storedOptOut === "true" : null;
+const responseOptOut = ref(optOut);
 
 const geocodingOptions = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -582,7 +620,7 @@ updateSelectedLocationText();
 // );
 
 const searchErrorMessage = ref<string | null>(null);
-const { selectedTimezone, selectedTimezoneOffset, shortTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
+const { selectedTimezoneOffset, shortTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
 
 // const todayAt4pm = computed(() => {
 //   const now = Date.now();
@@ -704,6 +742,8 @@ onMounted(() => {
     //   resetCamera();
     // });
 
+    createUserEntry();
+
     setInterval(() => {
       if (playing.value) {
         const time = store.currentTime;
@@ -714,6 +754,14 @@ onMounted(() => {
     window.addEventListener("keyup", (event: KeyboardEvent) => {
       if (["Esc", "Escape"].includes(event.key) && showVideoSheet.value) {
         showVideoSheet.value = false;
+      }
+    });
+
+    window.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        updateUserData();
+      } else {
+        resetData();
       }
     });
 
@@ -794,18 +842,6 @@ function selectSheet(sheetType: SheetType | null) {
   }
 }
 
-function toTimeString(date: Date | null, seconds = false, utc = false) {
-  // return this.toLocaleTimeString(date);
-  if (date === null) {
-    return "";
-  }
-  
-  if (seconds) {
-    return formatInTimeZone(date, utc ? 'UTC' : selectedTimezone.value, 'h:mm:ss aaa (zzz)');
-  }
-  return formatInTimeZone(date, utc ? 'UTC' : selectedTimezone.value, 'h:mm aaa (zzz)');
-}
-
 function getTextForLocation(longitudeDeg: number, latitudeDeg: number): Promise<string> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   return textForLocation(longitudeDeg, latitudeDeg, geocodingOptions);
@@ -820,12 +856,100 @@ function setLocationFromFeature(feature: MapBoxFeature) {
   });
 }
 
+function setLocationFromSearchFeature(feature: MapBoxFeature) {
+  setLocationFromFeature(feature);
+  userSelectedSearchLocations.push(feature.center);
+}
+
 async function updateSelectedLocationText() {
   selectedLocationText.value = await getTextForLocation(selectedLocation.value.longitudeDeg, selectedLocation.value.latitudeDeg);
 }
 
 function searchProvider(text: string): Promise<MapBoxFeatureCollection> {
   return geocodingInfoForSearch(text, geocodingOptions);
+}
+
+function updateLocationFromMap(location: LocationDeg) {
+  selectedLocation.value = location;
+  userSelectedMapLocations.push([location.latitudeDeg, location.longitudeDeg]);
+}
+
+async function createUserEntry() {
+  if (responseOptOut.value) {
+    return;
+  }
+
+  const response = await fetch(`${STORY_DATA_URL}/${uuid}`, {
+    method: "GET",
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    headers: { "Authorization": process.env.VUE_APP_CDS_API_KEY ?? "" }
+  });
+  const content = await response.json();
+  const exists = response.status === 200 && content.response?.user_uuid != undefined;
+  if (exists) {
+    return;
+  }
+
+  fetch(`${STORY_DATA_URL}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      "Authorization": process.env.VUE_APP_CDS_API_KEY ?? "",
+    },
+    body: JSON.stringify({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      user_uuid: uuid,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      user_selected_search_locations: userSelectedSearchLocations,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      user_selected_map_locations: userSelectedMapLocations,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      app_time_ms: 0,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      info_time_ms: 0,
+    }),
+  });
+}
+
+function resetData() {
+  userSelectedMapLocations = [];
+  userSelectedSearchLocations = [];
+  infoTimeMs = 0;
+  const now = Date.now();
+  appStartTimestamp = now;
+  infoStartTimestamp = showTextSheet.value ? now : null;
+}
+
+async function updateUserData() {
+  if (responseOptOut.value) {
+    return;
+  }
+
+  const now = Date.now();
+  const infoTime = (showTextSheet.value && infoStartTimestamp !== null) ? now - infoStartTimestamp : infoTimeMs;
+
+  fetch(`${STORY_DATA_URL}/${uuid}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      "Authorization": process.env.VUE_APP_CDS_API_KEY ?? "",
+    },
+    body: JSON.stringify({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      user_selected_search_locations: userSelectedSearchLocations,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      user_selected_map_locations: userSelectedMapLocations,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      delta_app_time_ms: now - appStartTimestamp,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      delta_info_time_ms: infoTime,
+    }),
+    keepalive: true,
+  }).then(() => {
+    resetData();
+  });
 }
 
 async function resetCamera(): Promise<void> {
@@ -894,9 +1018,9 @@ watch(selectedLocation, (location: LocationDeg) => {
   WWTControl.singleton.renderOneFrame();
 });
 
-watch(selectedTime, (value) => {
+watch(selectedTime, (value: number) => {
   console.log(value);});
-watch(playing, (play) => {
+watch(playing, (play: boolean) => {
   store.setClockSync(play);
 });
 
@@ -908,11 +1032,35 @@ watch(dateTime, (dt: Date) => {
   store.setTime(dt);
 });
 
+watch(showTextSheet, (show: boolean) => {
+  const now = Date.now();
+  if (show) {
+    infoStartTimestamp = now; 
+  } else if (infoStartTimestamp !== null) {
+    infoTimeMs += (now - infoStartTimestamp);
+    infoStartTimestamp = null;
+  }
+});
+
 watch(inNorthernHemisphere, (_inNorth: boolean) => resetAltAzGridText());
 
 watch(showSplashScreen, (show: boolean) => {
   if (!show) {
     inIntro.value = true;
+  }
+});
+
+watch(inIntro, (intro: boolean) => {
+  if (!intro) {
+    if (!showSplashScreen.value && responseOptOut.value === null) {
+      showPrivacyDialog.value = true;
+    }
+  }
+});
+
+watch(responseOptOut, (optOut: boolean | null) => {
+  if (optOut !== null) {
+    window.localStorage.setItem(OPT_OUT_KEY, String(optOut));
   }
 });
 </script>
@@ -1529,13 +1677,43 @@ video {
   }
 }
 
-#time-controls {
-  display: flex;
-  gap: 10px;
-  width: 100% !important;
-  margin-left: 5px;
-  margin-right: 0;
-  position: relative;
+#change-optout {
+  
+  @media (max-width: 600px) {
+    position: absolute;
+    bottom: -0.5rem ;
+    right: 0.5rem;
+  }
+  
+  .icon-wrapper {
+    margin: 0;
+    padding: 0.15em;
+    border: none;
+    min-width: 0;
+  }
+}
+
+#privacy-popup-dialog {
+
+  .v-card-text {
+    color: #BDBDBD;
+  }
+
+  .v-overlay__content {
+    font-size: var(--default-font-size);
+    background-color: purple;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+
+  .v-btn--size-default {
+      font-size: calc(0.9 * var(--default-font-size));
+    }  
+
+  .v-card-actions .v-btn {
+    padding: 0 4px;
+  }
 }
 
 #intro-window-close-button {

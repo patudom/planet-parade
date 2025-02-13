@@ -1,7 +1,6 @@
 import Vue, { createApp, type Plugin } from "vue";
 
 import { CreditLogos, FundingAcknowledgement, GeolocationButton, IconButton, LocationSelector } from "@cosmicds/vue-toolkit";
-import LocationSearch from "./LocationSearch.vue";
 import PlanetParade from "./PlanetParade.vue";
 
 import vuetify from "../plugins/vuetify";
@@ -10,10 +9,11 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 import { WWTComponent, wwtPinia } from "@wwtelescope/engine-pinia";
 
-import TimeDisplay from "./components/TimeDisplay.vue";
 import DateTimePicker from "./components/DateTimePicker.vue";
+import LocationSearch from "./components/LocationSearch.vue";
 import PlaybackControl from './components/PlaybackControl.vue';
 import SpeedControl from "./components/SpeedControl.vue";
+import TimeDisplay from "./components/TimeDisplay.vue";
 
 
 import { library } from "@fortawesome/fontawesome-svg-core";

@@ -167,7 +167,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, watch, defineProps, defineEmits, withDefaults, defineModel} from 'vue';
+import {ref, computed, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 
 import { supportsTouchscreen } from "@cosmicds/vue-toolkit";
