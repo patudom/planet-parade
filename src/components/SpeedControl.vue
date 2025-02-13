@@ -41,7 +41,7 @@
       :show-tooltip="!mobile"
     ></icon-button>
     
-    <icon-button 
+    <!-- <icon-button 
       v-if="!useOldControl"
       id="reverse-direction"
       :fa-icon="'angles-left'"
@@ -58,9 +58,9 @@
       tooltip-offset="5px"
       faSize="1x"
       :show-tooltip="!mobile"
-    ></icon-button>
+    ></icon-button> -->
     
-    <icon-button 
+    <!-- <icon-button 
       v-if="!useOldControl"
       id="forward-direction"
       :fa-icon="'angles-right'"
@@ -77,7 +77,21 @@
       tooltip-offset="5px"
       faSize="1x"
       :show-tooltip="!mobile"
-    ></icon-button>
+    ></icon-button> -->
+    <icon-button
+      @activate="() => {
+        reverseRate()
+      }"
+      :md-icon="playbackRate < 0 ? 'mdi-step-forward-2' : 'mdi-step-backward-2'"
+      :color="color"
+      :focus-color="color"
+      :tooltip-text="playbackRate < 0 ? 'Play time forward' : 'Play time backwards'"
+      tooltip-location="top"
+      tooltip-offset="5px"
+      :show-tooltip="!mobile"
+      md-size="18"
+    >
+    </icon-button>
     
     <icon-button 
       id="play-pause-icon"
@@ -331,10 +345,11 @@ const playbackRate = computed({
   }
 });
 
-// function reverseRate() {
-//   playbackRate.value = -playbackRate.value;
-// }
+function reverseRate() {
+  playbackRate.value = -playbackRate.value;
+}
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function setDirection(direction: 'forward' | 'reverse' | null = null) {
   playbackRate.value = direction == 'reverse' ? -Math.abs(playbackRate.value) : Math.abs(playbackRate.value);
 }
