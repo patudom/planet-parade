@@ -723,6 +723,7 @@ onMounted(() => {
     layersLoaded.value = true;
 
     selectedTime.value = todayAt4pm.value;
+    nextTick(() => resetCamera().then(() => positionSet.value = true));
 
     store.applySetting(["localHorizonMode", true]);
     store.applySetting(["altAzGridColor", Color.fromArgb(180, 133, 201, 254)]);
@@ -736,7 +737,6 @@ onMounted(() => {
     store.setClockRate(1800);
 
     doWWTModifications();
-    resetCamera().then(() => positionSet.value = true);
     // geolocate().then(() => {
     //   console.log('got location');
     //   useGeolocated(); 
