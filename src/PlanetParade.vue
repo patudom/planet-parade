@@ -1675,13 +1675,16 @@ video {
 }
 
 #change-optout {
-  
-  @media (max-width: 600px) {
-    position: absolute;
-    bottom: -0.5rem ;
-    right: 0.5rem;
-  }
-  
+  position: absolute;
+  right: 0.5rem;
+
+    @media (max-width: 990px) {
+      bottom: -0.5rem;
+    } 
+    @media (min-width: 948px) {
+      bottom: 40px;
+    }
+    
   .icon-wrapper {
     margin: 0;
     padding: 0.15em;
