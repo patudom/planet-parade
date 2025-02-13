@@ -175,7 +175,7 @@
             />
           </v-card>
         </v-dialog>
-        <span id="my-location-label">Current location: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
+        <span tabindex="0" id="my-location-label" class="elevation-1" @click="showLocationSelector=true" @keyup.enter="showLocationSelector=true">Current location: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
       </div>
       <div id="right-buttons">
         <div id="controls" class="control-icon-wrapper">
@@ -1220,6 +1220,12 @@ li {
     border-radius: 1em;
     color: black;
     font-size: var(--default-font-size);
+    pointer-events: auto;
+    cursor:pointer
+  }
+  
+  #my-location-label:hover {
+    filter: drop-shadow(0 0 2px white;)
   }
 }
 
