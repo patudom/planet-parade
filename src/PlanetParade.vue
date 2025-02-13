@@ -81,10 +81,10 @@
           <div class="intro-text">
             <h3 style="color: #f4ba3e" class="mb-2">Quick Start</h3>
             <ol>
-              <li>Set the desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> (top-center).</li>
-              <li>Set the date and time (bottom-left). Soon after sunset is optimal.</li>
+              <li>Set desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> <strong><span style="color: #f4ba3e">(top-center)</span></strong>.</li>
+              <li>Click box <strong><span style="color: #f4ba3e">(bottom-left)</span></strong> that displays date/time to update. Soon after sunset is optimal. (Or press <font-awesome-icon class="bullet-icon" icon="play" style="color: #f4ba3e" /> to advance time.)</li>
               <li>Go outdoors and find the planet parade!</li>
-              <li>Learn more using <font-awesome-icon class="bullet-icon" icon="book-open" style="color: #f4ba3e" /> and <font-awesome-icon class="bullet-icon" icon="video" style="color: #f4ba3e" /> (upper-left).   </li>
+              <li>Learn more using <font-awesome-icon class="bullet-icon" icon="book-open" style="color: #f4ba3e" /> and <font-awesome-icon class="bullet-icon" icon="video" style="color: #f4ba3e" /> <strong><span style="color: #f4ba3e">(upper-left)</span></strong>.   </li>
             </ol>
           </div>
 
@@ -191,14 +191,14 @@
           </div>
         
           <div v-if="showControls" id="control-checkboxes">
+            <v-checkbox :color="accentColor" v-model="showEcliptic" @keyup.enter="showEcliptic = !showEcliptic"
+            label="Ecliptic" hide-details />
             <v-checkbox :color="accentColor" v-model="showAltAzGrid" @keyup.enter="showAltAzGrid = !showAltAzGrid"
               label="Sky Grid" hide-details />
             <v-checkbox :color="accentColor" v-model="showHorizon" @keyup.enter="showHorizon = !showHorizon"
               label="Horizon/Sky" hide-details />
               <v-checkbox :color="accentColor" v-model="showPlanetLabels" @keyup.enter="showPlanetLabels = !showPlanetLabels"
               label="Planet Labels" hide-details />
-              <v-checkbox :color="accentColor" v-model="showEcliptic" @keyup.enter="showEcliptic = !showEcliptic"
-              label="Ecliptic" hide-details />
               <v-checkbox :color="accentColor" v-model="showConstellations" @keyup.enter="showConstellations = !showConstellations"
               label="Constellations" hide-details />
 
@@ -437,7 +437,7 @@
                   The planet parade happens when all the planets happen to be on the same side of their orbits around the Sun as Earth, so they all are on Earth's night-time side. (When a planet is on the opposite side of the Sun during Earth, that means it is up in the sky during the day when the Sun outshines it.) 
                 </p>
                 <p>
-                  <strong>The planets are not really all in a line.</strong> It only appears that way from Earth because Earth and the other planets all orbit the Sun in roughly the same plane (as if they were on a vinyl record). From Earth's point of view, all the other solar system objects appear to move along a circular path around the sky, which ancient astronomers called the "ecliptic." Check <span style="color: var(--accent-color)">Ecliptic</span> in the control box to display this path in the virtual sky. 
+                  <strong>The planets are not really all in a line.</strong> It only appears that way from Earth because Earth and the other planets all orbit the Sun in roughly the same plane (as if they were on a vinyl record). From Earth's point of view, all the other solar system objects appear to move along a circular path around the sky, which ancient astronomers called the "ecliptic." The <span style="color: var(--accent-color)">Ecliptic</span> is displayed as a magenta path in the virtual sky. 
                 </p>
                 <p>
                   Click <font-awesome-icon class="bullet-icon" icon="video" style="color: #f4ba3e" /> in the upper left to watch a (silent) video showing an overhead view of the planets and how their positions lead to the planet parade.
@@ -582,7 +582,7 @@ const buttonColor = ref("#f4ba3e");
 const tab = ref(0);
 const showHorizon = ref(true);
 const showAltAzGrid = ref(true);
-const showEcliptic = ref(false);
+const showEcliptic = ref(true);
 const showLocationSelector = ref(false);
 const playing = ref(false);
 const showControls = ref(smAndUp.value);
@@ -1273,11 +1273,6 @@ li {
       height: calc(1.2 * var(--default-line-height));
     }
 
-    .v-selection-control--focused .v-selection-control__input {
-      outline: 9px double black;
-      box-shadow: 0 0 0 6px white !important;
-    }
-
     .v-btn {
       align-self: center;
       padding-left: 5px;
@@ -1680,13 +1675,16 @@ video {
 }
 
 #change-optout {
-  
-  @media (max-width: 600px) {
-    position: absolute;
-    bottom: -0.5rem ;
-    right: 0.5rem;
-  }
-  
+  position: absolute;
+  right: 0.5rem;
+
+    @media (max-width: 990px) {
+      bottom: -0.5rem;
+    } 
+    @media (min-width: 948px) {
+      bottom: 40px;
+    }
+    
   .icon-wrapper {
     margin: 0;
     padding: 0.15em;
