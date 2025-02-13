@@ -83,7 +83,7 @@
             <ol>
               <li>Set the desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> (top-center).</li>
               <li>Set the date and time (bottom-left). Soon after sunset is optimal.</li>
-              <li>Go outside and find the planet parade!</li>
+              <li>Go outdoors and find the planet parade!</li>
               <li>Learn more using <font-awesome-icon class="bullet-icon" icon="book-open" style="color: #f4ba3e" /> and <font-awesome-icon class="bullet-icon" icon="video" style="color: #f4ba3e" /> (upper-left).   </li>
             </ol>
           </div>
@@ -403,7 +403,7 @@
                 </p>
                 <ul>
                   <li>Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. (The default location is Cambridge, MA.)</li>
-                  <li>The display defaults to the current date and time. Use the time controls to advance time until just after sunset.</li>
+                  <li>The display defaults to the current day at 4pm local time. Use the time controls to advance time until just after sunset.</li>
                   <li>
                     If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun rise above the horizon in the morning and set in the evening. The sky will lighten and darken with the Sun's changing position. 
                   </li>
