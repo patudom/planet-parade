@@ -143,7 +143,7 @@
         >
           <v-card>
             <font-awesome-icon
-              style="position: absolute; right: 12px; top: 12px; cursor: pointer; padding: 1em; margin: -1em; z-index: 1000;"
+              style="position: absolute; right: 12px; top: 1em; cursor: pointer; padding: 1em; margin: -1em; z-index: 1000;"
               icon="xmark"
               size="xl"
               @click="showLocationSelector = false"
@@ -1599,9 +1599,17 @@ video {
 }
 
 .map-container {
-  width: 60vw;
-  height: 60vh;
+  @media (max-width: 600px) {
+    width: 90vw;
+    height: 70vh;
+  }
+
+@media (min-width: 601px) {
+    width: 70vw;
+    height: 60vh;
+  }
 }
+
 
 #geolocation-wrapper\+location {
   position: absolute;
@@ -1735,7 +1743,7 @@ video {
   height: fit-content;
   position: absolute;
   z-index: 600;
-  right: 2em;
+  right: 3em;
   top: 1em;
 }
 
