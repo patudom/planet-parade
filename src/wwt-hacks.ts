@@ -341,7 +341,9 @@ export function drawEcliptic(renderContext: RenderContext, opacity: number, draw
             }
             d += Grids._monthDays[m];
         }
-        Grids._eclipticOverviewLineList.addLine(Vector3d._transformCoordinate(Vector3d.create(Math.cos((dStart * Math.PI * 2) / 360), 0, Math.sin((dStart * Math.PI * 2) / 360)), mat), Vector3d._transformCoordinate(Vector3d.create(Math.cos((dd * Math.PI * 2) / 360), 0, Math.sin((dd * Math.PI * 2) / 360)), mat));
+        if (drawCircle) {
+          Grids._eclipticOverviewLineList.addLine(Vector3d._transformCoordinate(Vector3d.create(Math.cos((dStart * Math.PI * 2) / 360), 0, Math.sin((dStart * Math.PI * 2) / 360)), mat), Vector3d._transformCoordinate(Vector3d.create(Math.cos((dd * Math.PI * 2) / 360), 0, Math.sin((dd * Math.PI * 2) / 360)), mat));
+        }
     }
     Grids._eclipticOverviewLineList.drawLines(renderContext, opacity, drawColor);
     return true;
