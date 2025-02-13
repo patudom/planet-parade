@@ -221,7 +221,7 @@ const playbackRate = computed({
     return clockRate.value;
   },
   set: function(value: number) {
-    clockRate.value = Math.sign(value) * Math.min(Math.abs(value), 5000);
+    clockRate.value = Math.sign(value) * Math.min(Math.abs(value), maxSpeed);
   }
 });
 
@@ -235,7 +235,7 @@ function reversePlaybackRate() {
   const abs = Math.abs(playbackRate.value);
   let ezrate = Math.floor(Math.log10(abs));
   ezrate -= sign * 1;
-  playbackRate.value = sign * Math.pow(10, Math.abs(ezrate));
+  playbackRate.value = sign * Math.min(maxSpeed,Math.pow(10, Math.abs(ezrate)));
 }
 
 function increasePlaybackRate() {
@@ -248,7 +248,7 @@ function increasePlaybackRate() {
   const abs = Math.abs(playbackRate.value);
   let ezrate = Math.floor(Math.log10(abs));
   ezrate += sign * 1;
-  playbackRate.value = sign * Math.pow(10, Math.abs(ezrate));
+  playbackRate.value = sign * Math.min(maxSpeed, Math.pow(10, Math.abs(ezrate)));
 }
 
 const { smAndDown } = useDisplay();
