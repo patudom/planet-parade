@@ -18,8 +18,12 @@ export interface EquatorialRad {
   decRad: number;
 }
 
-
 export interface LocationDeg {
   longitudeDeg: number;
   latitudeDeg: number;
+}
+
+export interface AltAzRad {
+  altRad: number;
+  azRad: number;
 }

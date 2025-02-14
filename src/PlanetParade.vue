@@ -401,10 +401,10 @@
                   During February 2025, seven planets&#8212;Mercury, Saturn, Neptune, Venus, Uranus, Jupiter, and Mars&#8212;will be visible in the night sky all at once! 
                 </p>
                 <p> 
-                  The planets that will be visible to your eye depends on how dark your night sky is. For most of the month, from a reasonably dark, clear sky, you should be able to see four of the seven planets (Saturn, Venus, Jupiter, and Mars) by eye. Uranus and Neptune will also be up, but you will likely need binoculars or a small telescope to see them.
+                  Which planets will be visible to your eye depends on how dark your night sky is. For most of the month, from a reasonably dark, clear sky, you should be able to see four of the seven planets (Saturn, Venus, Jupiter, and Mars) by eye. Uranus and Neptune will also be up, but you will likely need binoculars or a small telescope to see them.
                 </p> 
                 <p>
-                  At the end of February, Mercury, which is usually difficult to spot, will move far enough away from the Sun to also be visible.
+                  At the end of February, Mercury, which is usually difficult to spot, will move far enough away from the Sun to also become visible.
                 </p>
                 <h3>Cool! How do I see the planet parade?</h3>
                 <p>
@@ -415,7 +415,7 @@
                 </p>
                 <ul>
                   <li>Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. (The default location is Cambridge, MA.)</li>
-                  <li>The display defaults to the current day at 4pm local time. Use the time controls to advance time until just after sunset.</li>
+                  <li>The display defaults to the current day just before sunset. Use the time controls to advance time until just after sunset.</li>
                   <li>
                     If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun rise above the horizon in the morning and set in the evening. The sky will lighten and darken with the Sun's changing position. 
                   </li>
@@ -536,18 +536,20 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
-import { Color, Grids, Place, Planets, Settings, WWTControl } from "@wwtelescope/engine";
-import { Classification, SolarSystemObjects } from "@wwtelescope/engine-types";
+import { Color, Grids, Planets, Settings, WWTControl } from "@wwtelescope/engine";
+import { SolarSystemObjects } from "@wwtelescope/engine-types";
 import { engineStore } from "@wwtelescope/engine-pinia";
 import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, D2R, API_BASE_URL } from "@cosmicds/vue-toolkit";
 import { useDisplay } from "vuetify";
 import { v4 } from "uuid";
 
 import { useTimezone } from "./timezones";
-import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
+import { horizontalToEquatorial } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame, drawEcliptic, drawSkyOverlays } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 // import { useGeolocation } from "@cosmicds/vue-toolkit";
+import { useSun } from './useSun';
+
 const STORY_DATA_URL = `${API_BASE_URL}/planet-parade/data`;
 
 const UUID_KEY = "eclipse-mini-uuid" as const;
@@ -641,21 +643,9 @@ updateSelectedLocationText();
 const searchErrorMessage = ref<string | null>(null);
 const { selectedTimezoneOffset, shortTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
 
-const todayAt4pm = computed(() => {
-  const now = Date.now();
-  const date = new Date(now);
-  console.log(date);
-  date.setUTCMilliseconds(0);
-  date.setUTCSeconds(0);
-  date.setUTCMinutes(0);
-  console.log(selectedTimezoneOffset.value);
-  const msToHours = 1000 * 60 * 60;
-  date.setUTCHours(16 - selectedTimezoneOffset.value / msToHours);
-  console.log(date);
-  return date.getTime();
-});
 const selectedTime = ref(Date.now());
 
+const { getTimeforSunAlt, getSunPositionAtTime } = useSun(store, selectedLocation, selectedTime, selectedTimezoneOffset);
 // faking localization because
 // <date-time-picker> and <time-display> are not timezone aware
 const localSelectedDate = computed({
@@ -743,7 +733,10 @@ onMounted(() => {
     // If there are layers to set up, do that here!
     layersLoaded.value = true;
 
-    selectedTime.value = todayAt4pm.value;
+    const altTime = getTimeforSunAlt(2).setting;
+    if (altTime) {
+      selectedTime.value = altTime;
+    }
     setTimeout(() => resetCamera().then(() => positionSet.value = true), 100);
 
     store.applySetting(["localHorizonMode", true]);
@@ -765,6 +758,8 @@ onMounted(() => {
     //   selectedTime.value = todayAt4pm.value;
     //   resetCamera();
     // });
+    
+    
 
     createUserEntry();
 
@@ -1003,22 +998,10 @@ async function updateUserData() {
 async function resetCamera(): Promise<void> {
   const time = store.currentTime;
 
-  const sunPlace = new Place();
-  sunPlace.set_names(["Sun"]);
-  sunPlace.set_classification(Classification.solarSystem);
-  sunPlace.set_target(SolarSystemObjects.sun);
-
   const latRad = selectedLocation.value.latitudeDeg * D2R;
   const lonRad = selectedLocation.value.longitudeDeg * D2R;
 
-  const sunAltAz = equatorialToHorizontal(
-    sunPlace.get_RA() * 15 * D2R,
-    sunPlace.get_dec() * D2R,
-    latRad,
-    lonRad,
-    time,
-  );
-
+  const sunAltAz = getSunPositionAtTime(time);
   const sunAz = sunAltAz.azRad;
   const startAlt = 25 * D2R;
   const startRADec = horizontalToEquatorial(
