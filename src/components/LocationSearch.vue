@@ -144,10 +144,10 @@ function toggleSearch() {
   }
 }
 
-function closeSearch() {
-  searchOpen.value = false;
-  clearSearchData();
-}
+// function closeSearch() {
+//   searchOpen.value = false;
+//   clearSearchData();
+// }
 
 function onFocusChange(focused: boolean) {
   comboFocused.value = focused;
