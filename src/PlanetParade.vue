@@ -91,6 +91,13 @@
             </ol>
           </div>
 
+          <v-checkbox
+            v-model="skipIntroChecked"
+            label="Do not display Intro Content again"
+            density="default"
+            hide-details
+          >
+          </v-checkbox>
         </v-card>
       </div>
 
@@ -264,7 +271,19 @@
         show-text
         @reset="()=>{selectedTime = Date.now()}"
         />
-      <div id="change-optout">
+      <div id="change-flags">
+        <icon-button
+          md-icon="mdi-information-outline"
+          @activate="() => inIntro = true"
+          :color="accentColor"
+          :focus-color="accentColor"
+          tooltip-text="Show Quick Start Guide"
+          tooltip-location="bottom"
+          tooltip-offset="5px"
+          :show-tooltip="!mobile"
+          mdSize="1.2em"
+        >
+        </icon-button>
         <icon-button
           md-icon="mdi-lock"
           @activate="() => showPrivacyDialog = true"
@@ -274,7 +293,7 @@
           tooltip-location="bottom"
           tooltip-offset="5px"
           :show-tooltip="!mobile"
-          mdSize="1em"
+          mdSize="1.2em"
         >
         </icon-button>
       </div>
@@ -554,8 +573,10 @@ const STORY_DATA_URL = `${API_BASE_URL}/planet-parade/data`;
 
 const UUID_KEY = "eclipse-mini-uuid" as const;
 const OPT_OUT_KEY = "eclipse-mini-optout" as const;
+const SKIP_INTRO_CONTENT_KEY = "skip-intro-content" as const;
 const maybeUUID = window.localStorage.getItem(UUID_KEY);
 const storedOptOut = window.localStorage.getItem(OPT_OUT_KEY);
+const skipIntroContent = window.localStorage.getItem(SKIP_INTRO_CONTENT_KEY)?.toLowerCase() === "true";
 const existingUser = maybeUUID !== null;
 const uuid = maybeUUID ?? v4();
 if (!existingUser) {
@@ -589,7 +610,8 @@ const _props = withDefaults(defineProps<PlanetParadeProps>(), {
   wwtNamespace: "planet-parade",
 });
 
-const splash = new URLSearchParams(window.location.search).get("splash")?.toLowerCase() !== "false";
+const queryHideSplash = new URLSearchParams(window.location.search).get("splash")?.toLowerCase() === "false";
+const splash = !(queryHideSplash || skipIntroContent);
 const showSplashScreen = ref(splash);
 const backgroundImagesets = reactive<BackgroundImageset[]>([]);
 const sheet = ref<SheetType | null>(null);
@@ -610,6 +632,7 @@ const showPlanetLabels = ref(true);
 const inIntro = ref(false);
 const showPrivacyDialog = ref(false);
 const datePickerOpen = ref(false);
+const skipIntroChecked = ref(skipIntroContent);
 
 const optOut = typeof storedOptOut === "string" ? storedOptOut === "true" : null;
 const responseOptOut = ref(optOut);
@@ -1003,7 +1026,7 @@ async function resetCamera(): Promise<void> {
 
   const sunAltAz = getSunPositionAtTime(time);
   const sunAz = sunAltAz.azRad;
-  const startAlt = 25 * D2R;
+  const startAlt = smallSize.value ? 15 * D2R : 25 * D2R;
   const startRADec = horizontalToEquatorial(
     startAlt,
     sunAz,
@@ -1070,6 +1093,10 @@ watch(showHorizon, (show: boolean) => {
 
 watch(dateTime, (dt: Date) => {
   store.setTime(dt);
+});
+
+watch(skipIntroChecked, (checked: boolean) => {
+  window.localStorage.setItem(SKIP_INTRO_CONTENT_KEY, String(checked));
 });
 
 watch(showTextSheet, (show: boolean) => {
@@ -1774,16 +1801,20 @@ video {
   }
 }
 
-#change-optout {
+#change-flags {
   position: absolute;
-  right: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
 
-    @media (max-width: 990px) {
-      bottom: -0.5rem;
-    } 
-    @media (min-width: 948px) {
-      bottom: 40px;
-    }
+  @media (max-width: 990px) {
+    right: 0rem;
+    bottom: 0rem;
+  }
+  @media (min-width: 948px) {
+    right: 0.5rem;
+    bottom: 40px;
+  }
     
   .icon-wrapper {
     margin: 0;
