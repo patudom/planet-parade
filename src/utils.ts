@@ -107,3 +107,10 @@ export function equatorialToHorizontal(raRad: number, decRad: number, latRad: nu
   return { altRad: altitude, azRad: azimuth };
 
 }
+
+export function skyOpacityForSunAlt(sunAltRad: number) {
+  const civilTwilight = -6 * D2R;
+  const astronomicalTwilight = 3 * civilTwilight;
+  
+  return Math.min(Math.max((1 + Math.atan(Math.PI * sunAltRad / (-astronomicalTwilight))) / 2, 0), 1);
+}

@@ -19,7 +19,7 @@ import {
 } from "@wwtelescope/engine";
 import { Classification, SolarSystemObjects } from "@wwtelescope/engine-types";
 import { HorizonSkyOptions } from "./types";
-import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
+import { equatorialToHorizontal, horizontalToEquatorial, skyOpacityForSunAlt } from "./utils";
 import { D2R, R2D } from "@cosmicds/vue-toolkit";
 
 const sunPlace = new Place();
@@ -55,14 +55,6 @@ export const drawHorizon = (renderContext: RenderContext, options: HorizonSkyOpt
   triangleList.draw(renderContext, 1, true);
 
 };
-
-
-function skyOpacityForSunAlt(sunAltRad: number) {
-  const civilTwilight = -6 * D2R;
-  const astronomicalTwilight = 3 * civilTwilight;
-  
-  return Math.min(Math.max((1 + Math.atan(Math.PI * sunAltRad / (-astronomicalTwilight))) / 2, 0), 1);
-}
 
 
 export const drawSky = (renderContext: RenderContext, options: HorizonSkyOptions) => {

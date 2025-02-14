@@ -544,7 +544,7 @@ import { useDisplay } from "vuetify";
 import { v4 } from "uuid";
 
 import { useTimezone } from "./timezones";
-import { horizontalToEquatorial } from "./utils";
+import { horizontalToEquatorial, skyOpacityForSunAlt } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame, drawEcliptic, drawSkyOverlays } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 // import { useGeolocation } from "@cosmicds/vue-toolkit";
@@ -759,8 +759,6 @@ onMounted(() => {
     //   resetCamera();
     // });
     
-    
-
     createUserEntry();
 
     setInterval(() => {
@@ -768,6 +766,8 @@ onMounted(() => {
         const time = store.currentTime;
         selectedTime.value = time.getTime();
       }
+      const sunPosition = getSunPositionAtTime(store.currentTime);
+      updateEclipticColor(sunPosition.altRad);
     }, 500);
 
     window.addEventListener("keyup", (event: KeyboardEvent) => {
@@ -1037,6 +1037,13 @@ function updateAltAzGridText(show: boolean) {
 function updateEcliptic(show: boolean) {
   store.applySetting(["showEcliptic", show]);
   // store.applySetting(["showEclipticOverviewText", show]);
+}
+
+function updateEclipticColor(sunAlt: number) {
+  const opacity = skyOpacityForSunAlt(sunAlt);
+  const component = 255 - opacity * (255 - 119);
+  const color = Color.fromArgb(255, component, 0, component);
+  store.applySetting(["eclipticColor", color]);
 }
 
 function updateConstellations(show: boolean) {
