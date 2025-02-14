@@ -145,6 +145,17 @@
           transition="slide-y-transition"
         >
           <v-card>
+            <div id="geolocation-close">
+              <font-awesome-icon
+                style="cursor: pointer; z-index: 1000;"
+                icon="xmark"
+                size="xl"
+                @click="showLocationSelector = false"
+                @keyup.enter="showLocationSelector = false"
+                tabindex="0"
+                color="black"
+              ></font-awesome-icon>
+            </div>
             <div id="geolocation-controls">
               <geolocation-button
                 id="location"
@@ -164,15 +175,6 @@
                 @error="searchErrorMessage = $event"
               >
               </location-search>
-              <font-awesome-icon
-                style="cursor: pointer; z-index: 1000;"
-                icon="xmark"
-                size="xl"
-                @click="showLocationSelector = false"
-                @keyup.enter="showLocationSelector = false"
-                tabindex="0"
-                color="black"
-              ></font-awesome-icon>
             </div>
             <location-selector
               :model-value="selectedLocation"
@@ -1497,7 +1499,7 @@ li {
 }
 
 // From Sara Soueidan (https://www.sarasoueidan.com/blog/focus-indicators/) & Erik Kroes (https://www.erikkroes.nl/blog/the-universal-focus-state/)
-:focus-visible:not(.v-overlay__content),
+:focus-visible:not(.v-overlay__content, .v-field__input input),
 button:focus-visible,
 .focus-visible,
 .v-selection-control--focus-visible .v-selection-control__input,
@@ -1666,6 +1668,12 @@ video {
   }
 }
 
+#geolocation-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}
 
 #geolocation-controls {
   display: flex;
@@ -1674,7 +1682,7 @@ video {
   align-items: center;
   position: absolute;
   width: 350px;
-  top: 1rem;
+  bottom: 1rem;
   right: 1rem;
   z-index: 1000;
   gap: 5px;
@@ -1684,7 +1692,7 @@ video {
   }
 
   @media (max-width: 600px) {
-    width: 250px;
+    width: 300px;
   }
 }
 

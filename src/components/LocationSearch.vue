@@ -34,17 +34,6 @@
         color="gray"
         @click="toggleSearch"
       ></font-awesome-icon>
-
-      <slot name="append-icon" class="geocode-icon"></slot>
-
-      <font-awesome-icon
-        class="geocoding-close-icon"
-        v-show="searchOpen && !stayOpen"
-        icon="circle-xmark"
-        :size="searchOpen ? 'xl' : '1x'"
-        color="gray"
-        @click="closeSearch"
-      ></font-awesome-icon>
     </template>
   </v-combobox>
   <font-awesome-icon
