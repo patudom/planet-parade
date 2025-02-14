@@ -93,8 +93,8 @@
 
           <v-checkbox
             v-model="skipIntroChecked"
-            label="Don't display intro content again"
-            density="compact"
+            label="Do not display Intro Content again"
+            density="default"
             hide-details
           >
           </v-checkbox>
@@ -273,6 +273,18 @@
         />
       <div id="change-flags">
         <icon-button
+          md-icon="mdi-information-outline"
+          @activate="() => inIntro = true"
+          :color="accentColor"
+          :focus-color="accentColor"
+          tooltip-text="Show Quick Start Guide"
+          tooltip-location="bottom"
+          tooltip-offset="5px"
+          :show-tooltip="!mobile"
+          mdSize="1.2em"
+        >
+        </icon-button>
+        <icon-button
           md-icon="mdi-lock"
           @activate="() => showPrivacyDialog = true"
           :color="accentColor"
@@ -281,19 +293,7 @@
           tooltip-location="bottom"
           tooltip-offset="5px"
           :show-tooltip="!mobile"
-          mdSize="1em"
-        >
-        </icon-button>
-        <icon-button
-          md-icon="mdi-help"
-          @activate="() => inIntro = true"
-          :color="accentColor"
-          :focus-color="accentColor"
-          tooltip-text="Show quickstart guide"
-          tooltip-location="bottom"
-          tooltip-offset="5px"
-          :show-tooltip="!mobile"
-          mdSize="1em"
+          mdSize="1.2em"
         >
         </icon-button>
       </div>
@@ -1815,15 +1815,16 @@ video {
 
 #change-flags {
   position: absolute;
-  right: 0.5rem;
   display: flex;
   flex-direction: row;
   gap: 5px;
 
   @media (max-width: 990px) {
-    bottom: -0.5rem;
+    right: 0rem;
+    bottom: 0rem;
   }
   @media (min-width: 948px) {
+    right: 0.5rem;
     bottom: 40px;
   }
     
