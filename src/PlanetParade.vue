@@ -1673,10 +1673,15 @@ video {
   justify-content: space-around;
   align-items: center;
   position: absolute;
+  width: 300px;
   top: 1rem;
   right: 1rem;
   z-index: 1000;
   gap: 5px;
+
+  .location-search {
+    flex-grow: 1;
+  }
 }
 
 #geolocation-wrapper\+location .v-btn {
