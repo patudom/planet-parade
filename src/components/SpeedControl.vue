@@ -426,7 +426,15 @@ function onClickOutside() {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 10px;
+
+    @media (max-width: 600px) {
+      gap: 20px;
+    }
+
+    @media (min-width: 601px) {
+      gap: 10px;
+    }
+
   }
   
   @media (orientation: landscape) {
