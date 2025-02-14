@@ -1,28 +1,11 @@
 import { Ref, ref, computed } from "vue";
 import { Classification, SolarSystemObjects } from "@wwtelescope/engine-types";
 import { Place} from "@wwtelescope/engine";
+import { AltAzRad, EquatorialRad, LocationDeg, LocationRad } from "./types";
 import { equatorialToHorizontal } from "./utils";
 import { D2R } from "@cosmicds/vue-toolkit";
 import { engineStore } from "@wwtelescope/engine-pinia";
 type WWTEngineStore = ReturnType<typeof engineStore>;
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type LocationRad = {
-  longitudeRad: number;
-  latitudeRad: number;
-};
-
-type LocationDeg = {
-  longitudeDeg: number;
-  latitudeDeg: number;
-};
-
-
-type EquatorialRad = {
-  raRad: number;
-  decRad: number;
-};
-
 
 
 const SECONDS_PER_DAY = 60 * 60 * 24;
@@ -31,7 +14,7 @@ const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
 const secondsInterval = 40;
 const MILLISECONDS_PER_INTERVAL = 1000 * secondsInterval;
 
-export function useSun(store: WWTEngineStore, _location: Ref<LocationDeg>, _selectedTime: Ref<number> | number, _selectedTimezoneOffset: Ref<number> | number) {
+export function useSun(store: WWTEngineStore, location: Ref<LocationDeg>, _selectedTime: Ref<number> | number, _selectedTimezoneOffset: Ref<number> | number) {
   
   store.waitForReady().then(async ()=>{
     // setup any watchers here
@@ -40,13 +23,12 @@ export function useSun(store: WWTEngineStore, _location: Ref<LocationDeg>, _sele
   const selectedTime = ref(_selectedTime);
   const selectedTimezoneOffset = ref(_selectedTimezoneOffset);
   
-  const location = computed(() => {
+  const locationRad = computed<LocationRad>(() => {
     return {
-      latitudeRad: _location.value.latitudeDeg * D2R,
-      longitudeRad: _location.value.longitudeDeg * D2R,
+      latitudeRad: location.value.latitudeDeg * D2R,
+      longitudeRad: location.value.longitudeDeg * D2R,
     };
   });
-  
 
   const sunPlace = new Place();
   sunPlace.set_names(["Sun"]);
@@ -54,15 +36,15 @@ export function useSun(store: WWTEngineStore, _location: Ref<LocationDeg>, _sele
   sunPlace.set_target(SolarSystemObjects.sun);
   sunPlace.set_zoomLevel(20);
   
-  const sunPosition: Ref<EquatorialRad> = computed(() =>{
+  const sunPosition = computed<EquatorialRad>(() =>{
     return {
       raRad: sunPlace.get_RA() * 15 * D2R,
       decRad: sunPlace.get_dec() * D2R,
     } as EquatorialRad;
   });
 
-  function getSunAltitudeAtTime(time: Date): { altRad: number; azRad: number; } {
-    const sunAltAz = equatorialToHorizontal(sunPosition.value.raRad, sunPosition.value.decRad, location.value.latitudeRad, location.value.longitudeRad, time);
+  function getSunPositionAtTime(time: Date): AltAzRad {
+    const sunAltAz = equatorialToHorizontal(sunPosition.value.raRad, sunPosition.value.decRad, locationRad.value.latitudeRad, locationRad.value.longitudeRad, time);
     return sunAltAz;
   }
 
@@ -75,16 +57,16 @@ export function useSun(store: WWTEngineStore, _location: Ref<LocationDeg>, _sele
     const maxTime = minTime + MILLISECONDS_PER_DAY * 0.5;
     // const ehr = eclipticHorizonAngle(location.latitudeRad, dateTime);
     let time = minTime;
-    let sunAlt = getSunAltitudeAtTime(new Date(time)).altRad; // negative
+    let sunAlt = getSunPositionAtTime(new Date(time)).altRad; // negative
     // find the two times it crosses the given altitude
     while ((sunAlt < altDeg * D2R) && (time < maxTime)) {
       time += MILLISECONDS_PER_INTERVAL;
-      sunAlt = getSunAltitudeAtTime(new Date(time)).altRad;
+      sunAlt = getSunPositionAtTime(new Date(time)).altRad;
     }
     const rising = time == maxTime ? null : time;
     while ((sunAlt > altDeg * D2R) && (time < maxTime)) {
       time += MILLISECONDS_PER_INTERVAL;
-      sunAlt = getSunAltitudeAtTime(new Date(time)).altRad;
+      sunAlt = getSunPositionAtTime(new Date(time)).altRad;
     }
     const setting = time == maxTime ? null : time;
 
@@ -95,5 +77,5 @@ export function useSun(store: WWTEngineStore, _location: Ref<LocationDeg>, _sele
   }
   
   
-  return {getTimeforSunAlt};
+  return { getTimeforSunAlt, getSunPositionAtTime, sunPlace, sunPosition };
 }

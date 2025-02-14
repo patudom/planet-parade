@@ -529,15 +529,15 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
-import { Color, Grids, Place, Planets, Settings, WWTControl } from "@wwtelescope/engine";
-import { Classification, SolarSystemObjects } from "@wwtelescope/engine-types";
+import { Color, Grids, Planets, Settings, WWTControl } from "@wwtelescope/engine";
+import { SolarSystemObjects } from "@wwtelescope/engine-types";
 import { engineStore } from "@wwtelescope/engine-pinia";
 import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, D2R, API_BASE_URL } from "@cosmicds/vue-toolkit";
 import { useDisplay } from "vuetify";
 import { v4 } from "uuid";
 
 import { useTimezone } from "./timezones";
-import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
+import { horizontalToEquatorial } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame, drawEcliptic } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 // import { useGeolocation } from "@cosmicds/vue-toolkit";
@@ -635,22 +635,9 @@ updateSelectedLocationText();
 const searchErrorMessage = ref<string | null>(null);
 const { selectedTimezoneOffset, shortTimezone, browserTimezoneOffset } = useTimezone(selectedLocation);
 
-const todayAt4pm = computed(() => {
-  const now = Date.now();
-  const date = new Date(now);
-  console.log(date);
-  date.setUTCMilliseconds(0);
-  date.setUTCSeconds(0);
-  date.setUTCMinutes(0);
-  console.log(selectedTimezoneOffset.value);
-  const msToHours = 1000 * 60 * 60;
-  date.setUTCHours(16 - selectedTimezoneOffset.value / msToHours);
-  console.log(date);
-  return date.getTime();
-});
 const selectedTime = ref(Date.now());
 
-const { getTimeforSunAlt } = useSun(store, selectedLocation, selectedTime, selectedTimezoneOffset);
+const { getTimeforSunAlt, getSunPositionAtTime } = useSun(store, selectedLocation, selectedTime, selectedTimezoneOffset);
 // faking localization because
 // <date-time-picker> and <time-display> are not timezone aware
 const localSelectedDate = computed({
@@ -735,12 +722,9 @@ onMounted(() => {
     // If there are layers to set up, do that here!
     layersLoaded.value = true;
 
-    selectedTime.value = todayAt4pm.value;
-    
-    const alttime = getTimeforSunAlt(2)['setting'];
-    if (alttime) {
-      selectedTime.value = alttime;
-      console.log("Set for 2deg altitude");
+    const altTime = getTimeforSunAlt(2).setting;
+    if (altTime) {
+      selectedTime.value = altTime;
     }
     setTimeout(() => resetCamera().then(() => positionSet.value = true), 100);
 
@@ -1002,22 +986,10 @@ async function updateUserData() {
 async function resetCamera(): Promise<void> {
   const time = store.currentTime;
 
-  const sunPlace = new Place();
-  sunPlace.set_names(["Sun"]);
-  sunPlace.set_classification(Classification.solarSystem);
-  sunPlace.set_target(SolarSystemObjects.sun);
-
   const latRad = selectedLocation.value.latitudeDeg * D2R;
   const lonRad = selectedLocation.value.longitudeDeg * D2R;
 
-  const sunAltAz = equatorialToHorizontal(
-    sunPlace.get_RA() * 15 * D2R,
-    sunPlace.get_dec() * D2R,
-    latRad,
-    lonRad,
-    time,
-  );
-
+  const sunAltAz = getSunPositionAtTime(time);
   const sunAz = sunAltAz.azRad;
   const startAlt = 25 * D2R;
   const startRADec = horizontalToEquatorial(
