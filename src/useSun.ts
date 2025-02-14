@@ -3,6 +3,8 @@ import { Classification, SolarSystemObjects } from "@wwtelescope/engine-types";
 import { Place} from "@wwtelescope/engine";
 import { equatorialToHorizontal } from "./utils";
 import { D2R } from "@cosmicds/vue-toolkit";
+import { engineStore } from "@wwtelescope/engine-pinia";
+type WWTEngineStore = ReturnType<typeof engineStore>;
 
 type LocationRad = {
   longitudeRad: number;
@@ -28,7 +30,11 @@ const MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
 const secondsInterval = 40;
 const MILLISECONDS_PER_INTERVAL = 1000 * secondsInterval;
 
-export function useSun(_location: Ref<LocationDeg>, _selectedTime: Ref<number> | number, _selectedTimezoneOffset: Ref<number> | number) {
+export function useSun(store: WWTEngineStore, _location: Ref<LocationDeg>, _selectedTime: Ref<number> | number, _selectedTimezoneOffset: Ref<number> | number) {
+  
+  store.waitForReady().then(async ()=>{
+    // setup any watchers here
+  });
   
   const selectedTime = ref(_selectedTime);
   const selectedTimezoneOffset = ref(_selectedTimezoneOffset);

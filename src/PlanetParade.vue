@@ -650,6 +650,7 @@ const todayAt4pm = computed(() => {
 });
 const selectedTime = ref(Date.now());
 
+const { getTimeforSunAlt } = useSun(store, selectedLocation, selectedTime, selectedTimezoneOffset);
 // faking localization because
 // <date-time-picker> and <time-display> are not timezone aware
 const localSelectedDate = computed({
@@ -735,11 +736,11 @@ onMounted(() => {
     layersLoaded.value = true;
 
     selectedTime.value = todayAt4pm.value;
-    const { getTimeforSunAlt } = useSun(selectedLocation, selectedTime, selectedTimezoneOffset);
-    const alttime = getTimeforSunAlt(1.75)['setting'];
+    
+    const alttime = getTimeforSunAlt(2)['setting'];
     if (alttime) {
       selectedTime.value = alttime;
-      console.log("Set for 7.5deg altitude");
+      console.log("Set for 2deg altitude");
     }
     setTimeout(() => resetCamera().then(() => positionSet.value = true), 100);
 
