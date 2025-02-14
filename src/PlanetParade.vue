@@ -216,6 +216,7 @@
     <div id="bottom-content">
       <div id="date-picker">
         <v-overlay 
+          v-model="datePickerOpen"
           activator="parent"
           location-strategy="connected"
           location="top end"
@@ -237,8 +238,9 @@
             <v-icon v-if="!(smAndDown || mobile)" class="td__icon"  >mdi-cursor-default-click</v-icon>
           </v-card>
         </template>
-          <v-card width="fit-content" elevation="5">
-            <date-time-picker v-model="localSelectedDate" :editable-time="true">
+          <v-card ref="dtpCard" tabindex="0" width="fit-content" elevation="5">
+            <v-icon tabindex="0" class="dtp-close-button" @click="datePickerOpen=false" @keyup.enter="datePickerOpen=false" :color="accentColor" size="18">mdi-close</v-icon>
+            <date-time-picker tabindex="0" v-model="localSelectedDate" :editable-time="true">
               <!-- <button class="dtp__button" @click="() => {playbackControl.pause(); set9pm(); goToTCrB()}" name="set-9pm" aria-label="Set time to 9pm">9pm</button>
               <button class="dtp__button" @click="() => {playbackControl.pause(); setMidnight(); goToTCrB()}" name="set-midnight" aria-label="Set time to Midnight">Midnight</button>-->
               <button class="dtp__button" @click="() => {selectedTime = Date.now()}" name="set-now" aria-label="Set time to Now">Now</button> 
@@ -600,6 +602,7 @@ const showConstellations = ref(false);
 const showPlanetLabels = ref(true);
 const inIntro = ref(false);
 const showPrivacyDialog = ref(false);
+const datePickerOpen = ref(false);
 
 const optOut = typeof storedOptOut === "string" ? storedOptOut === "true" : null;
 const responseOptOut = ref(optOut);
@@ -1823,6 +1826,13 @@ video {
   gap: 1rem;
 }
 
+.dtp-close-button {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  border-radius: 50%;
+  border: 1.5px solid car(--accent-color)
+}
 .dtp__button {
   background-color: var(--accent-color);
   font-size: 0.85em;
