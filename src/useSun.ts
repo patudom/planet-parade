@@ -6,6 +6,7 @@ import { D2R } from "@cosmicds/vue-toolkit";
 import { engineStore } from "@wwtelescope/engine-pinia";
 type WWTEngineStore = ReturnType<typeof engineStore>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type LocationRad = {
   longitudeRad: number;
   latitudeRad: number;
@@ -58,7 +59,7 @@ export function useSun(store: WWTEngineStore, _location: Ref<LocationDeg>, _sele
       raRad: sunPlace.get_RA() * 15 * D2R,
       decRad: sunPlace.get_dec() * D2R,
     } as EquatorialRad;
-  })
+  });
 
   function getSunAltitudeAtTime(time: Date): { altRad: number; azRad: number; } {
     const sunAltAz = equatorialToHorizontal(sunPosition.value.raRad, sunPosition.value.decRad, location.value.latitudeRad, location.value.longitudeRad, time);
