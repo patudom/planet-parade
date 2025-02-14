@@ -464,7 +464,7 @@ function onClickOutside() {
 #enclosing-playback-container.mobile-playback-control {
     position: fixed;
     width: calc(90% - 1rem);
-    left: 50%;
+    left: calc(50% - 11px); // 9px is half the size close button
     --off: 0; //calc(50%);
     transform: translateX(-50%) translateY(var(--off)) !important;
   }
