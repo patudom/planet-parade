@@ -145,37 +145,40 @@
           transition="slide-y-transition"
         >
           <v-card>
-            <font-awesome-icon
-              style="position: absolute; right: 12px; top: 1em; cursor: pointer; padding: 1em; margin: -1em; z-index: 1000;"
-              icon="xmark"
-              size="xl"
-              @click="showLocationSelector = false"
-              @keyup.enter="showLocationSelector = false"
-              tabindex="0"
-              color="black"
-            ></font-awesome-icon>
-            <location-search
-              :class="['location-search']"
-              small
-              button-size="xl"
-              :accent-color="accentColor"
-              :search-provider="searchProvider"
-              @set-location="setLocationFromSearchFeature"
-              @error="searchErrorMessage = $event"
-            >
-            </location-search>
+            <div id="geolocation-controls">
+              <geolocation-button
+                id="location"
+                size="30px"
+                density="default"
+                elevation="5"
+                :color="accentColor"
+                @geolocation="selectedLocation = {longitudeDeg: $event.longitude, latitudeDeg: $event.latitude}"
+              />
+              <location-search
+                :class="['location-search']"
+                small
+                button-size="xl"
+                :accent-color="accentColor"
+                :search-provider="searchProvider"
+                @set-location="setLocationFromSearchFeature"
+                @error="searchErrorMessage = $event"
+              >
+              </location-search>
+              <font-awesome-icon
+                style="cursor: pointer; z-index: 1000;"
+                icon="xmark"
+                size="xl"
+                @click="showLocationSelector = false"
+                @keyup.enter="showLocationSelector = false"
+                tabindex="0"
+                color="black"
+              ></font-awesome-icon>
+            </div>
             <location-selector
               :model-value="selectedLocation"
               @update:modelValue="updateLocationFromMap"
             />
-            <geolocation-button
-              id="location"
-              size="30px"
-              density="default"
-              elevation="5"
-              :color="accentColor"
-              @geolocation="selectedLocation = {longitudeDeg: $event.longitude, latitudeDeg: $event.latitude}"
-            />
+
           </v-card>
         </v-dialog>
         <span tabindex="0" id="my-location-label" class="elevation-1" @click="showLocationSelector=true" @keyup.enter="showLocationSelector=true">Current location: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
@@ -1664,11 +1667,16 @@ video {
 }
 
 
-#geolocation-wrapper\+location {
+#geolocation-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
   position: absolute;
-  bottom: 1rem;
-  left: 1rem;
+  top: 1rem;
+  right: 1rem;
   z-index: 1000;
+  gap: 5px;
 }
 
 #geolocation-wrapper\+location .v-btn {
@@ -1790,14 +1798,6 @@ video {
 .bullet-icon {
   color: var(--accent-color);
   width: 1.5em;
-}
-
-.location-search {
-  height: fit-content;
-  position: absolute;
-  z-index: 600;
-  right: 3em;
-  top: 1em;
 }
 
 #date-picker {
