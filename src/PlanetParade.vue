@@ -541,6 +541,8 @@ import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame, drawEcliptic } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 // import { useGeolocation } from "@cosmicds/vue-toolkit";
+import { useSun } from './useSun';
+
 const STORY_DATA_URL = `${API_BASE_URL}/planet-parade/data`;
 
 const UUID_KEY = "eclipse-mini-uuid" as const;
@@ -733,6 +735,12 @@ onMounted(() => {
     layersLoaded.value = true;
 
     selectedTime.value = todayAt4pm.value;
+    const { getTimeforSunAlt } = useSun(selectedLocation, selectedTime, selectedTimezoneOffset);
+    const alttime = getTimeforSunAlt(1.75)['setting'];
+    if (alttime) {
+      selectedTime.value = alttime;
+      console.log("Set for 7.5deg altitude");
+    }
     setTimeout(() => resetCamera().then(() => positionSet.value = true), 100);
 
     store.applySetting(["localHorizonMode", true]);
@@ -753,6 +761,8 @@ onMounted(() => {
     //   selectedTime.value = todayAt4pm.value;
     //   resetCamera();
     // });
+    
+    
 
     createUserEntry();
 
