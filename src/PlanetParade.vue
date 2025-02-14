@@ -82,10 +82,12 @@
             <h3 style="color: #f4ba3e" class="mb-2">Quick Start</h3>
             <ol>
               <li>Set desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> <strong><span style="color: #f4ba3e">(top-center)</span></strong>.</li>
-              <li>Click box <strong>
+              <li>Click box that displays date/time 
+                <strong>
                 <span v-show="!xs" style="color: #f4ba3e">(bottom-left)</span>
                 <span v-show="xs" style="color: #f4ba3e">(bottom-center)</span>
-              </strong> that displays date/time to update. Soon after sunset is optimal. (Or press <font-awesome-icon class="bullet-icon" icon="play" style="color: #f4ba3e" /> to advance time.)</li>
+              </strong>
+              to update, or press <font-awesome-icon class="bullet-icon" icon="play" style="color: #f4ba3e" /> to advance time.</li>
               <li>Go outdoors and find the planet parade!</li>
               <li>Learn more using <font-awesome-icon class="bullet-icon" icon="book-open" style="color: #f4ba3e" /> and <font-awesome-icon class="bullet-icon" icon="video" style="color: #f4ba3e" /> <strong><span style="color: #f4ba3e">(upper-left)</span></strong>.   </li>
             </ol>
@@ -1616,7 +1618,7 @@ video {
   max-width: 500px;
 
   @media (max-width: 600px) {
-    width: 90%;
+    width: 95%;
   }
 
   @media (min-width: 600px) {
@@ -1870,11 +1872,19 @@ video {
 }
 
 #date-picker {
-  margin: 1rem;
   pointer-events: auto;
   display: flex;
   align-items: center;
   gap: 1rem;
+
+  @media (max-width: 600px) {
+    margin: 0;
+  }
+
+  @media (min-width: 601px) {
+    margin: 1rem;
+  }
+
 }
 
 .dtp-close-button {
