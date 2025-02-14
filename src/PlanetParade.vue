@@ -91,9 +91,15 @@
             </ol>
           </div>
 
+          <v-checkbox
+            v-model="skipIntroChecked"
+            label="Don't display intro content again"
+            density="compact"
+            hide-details
+          >
+          </v-checkbox>
         </v-card>
       </div>
-      <v-checkbox v-model="skipIntroChecked" label="Don't display intro content again"></v-checkbox>
 
     </v-dialog>
 
@@ -265,13 +271,25 @@
         show-text
         @reset="()=>{selectedTime = Date.now()}"
         />
-      <div id="change-optout">
+      <div id="change-flags">
         <icon-button
           md-icon="mdi-lock"
           @activate="() => showPrivacyDialog = true"
           :color="accentColor"
           :focus-color="accentColor"
           tooltip-text="Change privacy settings"
+          tooltip-location="bottom"
+          tooltip-offset="5px"
+          :show-tooltip="!mobile"
+          mdSize="1em"
+        >
+        </icon-button>
+        <icon-button
+          md-icon="mdi-help"
+          @activate="() => inIntro = true"
+          :color="accentColor"
+          :focus-color="accentColor"
+          tooltip-text="Show quickstart guide"
           tooltip-location="bottom"
           tooltip-offset="5px"
           :show-tooltip="!mobile"
@@ -556,7 +574,7 @@ const OPT_OUT_KEY = "eclipse-mini-optout" as const;
 const SKIP_INTRO_CONTENT_KEY = "skip-intro-content" as const;
 const maybeUUID = window.localStorage.getItem(UUID_KEY);
 const storedOptOut = window.localStorage.getItem(OPT_OUT_KEY);
-const skipIntroContent = window.localStorage.getItem(SKIP_INTRO_CONTENT_KEY) === "true";
+const skipIntroContent = window.localStorage.getItem(SKIP_INTRO_CONTENT_KEY)?.toLowerCase() === "true";
 const existingUser = maybeUUID !== null;
 const uuid = maybeUUID ?? v4();
 if (!existingUser) {
@@ -590,7 +608,8 @@ const _props = withDefaults(defineProps<PlanetParadeProps>(), {
   wwtNamespace: "planet-parade",
 });
 
-const splash = new URLSearchParams(window.location.search).get("splash")?.toLowerCase() !== "false";
+const queryHideSplash = new URLSearchParams(window.location.search).get("splash")?.toLowerCase() === "false";
+const splash = !(queryHideSplash || skipIntroContent);
 const showSplashScreen = ref(splash);
 const backgroundImagesets = reactive<BackgroundImageset[]>([]);
 const sheet = ref<SheetType | null>(null);
@@ -1794,16 +1813,19 @@ video {
   }
 }
 
-#change-optout {
+#change-flags {
   position: absolute;
   right: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
 
-    @media (max-width: 990px) {
-      bottom: -0.5rem;
-    } 
-    @media (min-width: 948px) {
-      bottom: 40px;
-    }
+  @media (max-width: 990px) {
+    bottom: -0.5rem;
+  }
+  @media (min-width: 948px) {
+    bottom: 40px;
+  }
     
   .icon-wrapper {
     margin: 0;
