@@ -644,7 +644,8 @@ const todayAt4pm = computed(() => {
   date.setUTCMinutes(0);
   console.log(selectedTimezoneOffset.value);
   const msToHours = 1000 * 60 * 60;
-  date.setUTCHours(16 - selectedTimezoneOffset.value / msToHours);
+  date.setUTCHours(18 - selectedTimezoneOffset.value / msToHours);
+  // want 17:40pm
   console.log(date);
   return date.getTime();
 });
