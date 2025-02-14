@@ -751,7 +751,7 @@ onMounted(() => {
     store.applySetting(["eclipticColor", Color.fromArgb(255, 255, 0, 255)]);
     store.applySetting(["actualPlanetScale", false]);
     updateAltAzGrid(showAltAzGrid.value);
-    updateAltAzGridText(showHorizon.value);
+    updateAltAzGridText(showAltAzGrid.value || showHorizon.value);
     updateEcliptic(showEcliptic.value);
     updateConstellations(showConstellations.value);
     updateWWTLocation(selectedLocation.value);
@@ -1075,10 +1075,15 @@ watch(playing, (play: boolean) => {
   store.setClockSync(play);
 });
 
-watch(showAltAzGrid, updateAltAzGrid);
+watch(showAltAzGrid, (show: boolean) => {
+  updateAltAzGrid(show);
+  updateAltAzGridText(show || showHorizon.value);
+});
 watch(showEcliptic, updateEcliptic);
 watch(showConstellations, updateConstellations);
-watch(showHorizon, updateAltAzGridText);
+watch(showHorizon, (show: boolean) => {
+  updateAltAzGridText(show || showAltAzGrid.value);
+});
 
 watch(dateTime, (dt: Date) => {
   store.setTime(dt);
