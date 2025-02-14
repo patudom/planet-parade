@@ -540,7 +540,7 @@ import { v4 } from "uuid";
 
 import { useTimezone } from "./timezones";
 import { equatorialToHorizontal, horizontalToEquatorial } from "./utils";
-import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame, drawEcliptic } from "./wwt-hacks";
+import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame, drawEcliptic, drawSkyOverlays } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 // import { useGeolocation } from "@cosmicds/vue-toolkit";
 const STORY_DATA_URL = `${API_BASE_URL}/planet-parade/data`;
@@ -678,7 +678,6 @@ const wwtSettings: Settings = Settings.get_active();
 function doWWTModifications() {
 
   Grids._makeAltAzGridText = makeAltAzGridText;
-  drawEcliptic;
   Grids.drawEcliptic = drawEcliptic;
 
   // We need to render one frame ahead of time
@@ -694,6 +693,10 @@ function doWWTModifications() {
       showPlanetLabels.value,
     );
   };
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  WWTControl.singleton._drawSkyOverlays = drawSkyOverlays.bind(WWTControl.singleton);
 
   // as well as our custom text overlays
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -743,6 +746,7 @@ onMounted(() => {
     store.applySetting(["eclipticColor", Color.fromArgb(255, 255, 0, 255)]);
     store.applySetting(["actualPlanetScale", false]);
     updateAltAzGrid(showAltAzGrid.value);
+    updateAltAzGridText(showHorizon.value);
     updateEcliptic(showEcliptic.value);
     updateConstellations(showConstellations.value);
     updateWWTLocation(selectedLocation.value);
@@ -1036,6 +1040,9 @@ function updateWWTLocation(location: LocationDeg) {
 
 function updateAltAzGrid(show: boolean) {
   store.applySetting(["showAltAzGrid", show]);
+}
+
+function updateAltAzGridText(show: boolean) {
   store.applySetting(["showAltAzGridText", show]);
 }
 
@@ -1066,6 +1073,7 @@ watch(playing, (play: boolean) => {
 watch(showAltAzGrid, updateAltAzGrid);
 watch(showEcliptic, updateEcliptic);
 watch(showConstellations, updateConstellations);
+watch(showHorizon, updateAltAzGridText);
 
 watch(dateTime, (dt: Date) => {
   store.setTime(dt);
