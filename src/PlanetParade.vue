@@ -401,10 +401,10 @@
                   During February 2025, seven planets&#8212;Mercury, Saturn, Neptune, Venus, Uranus, Jupiter, and Mars&#8212;will be visible in the night sky all at once! 
                 </p>
                 <p> 
-                  The planets that will be visible to your eye depends on how dark your night sky is. For most of the month, from a reasonably dark, clear sky, you should be able to see four of the seven planets (Saturn, Venus, Jupiter, and Mars) by eye. Uranus and Neptune will also be up, but you will likely need binoculars or a small telescope to see them.
+                  Which planets will be visible to your eye depends on how dark your night sky is. For most of the month, from a reasonably dark, clear sky, you should be able to see four of the seven planets (Saturn, Venus, Jupiter, and Mars) by eye. Uranus and Neptune will also be up, but you will likely need binoculars or a small telescope to see them.
                 </p> 
                 <p>
-                  At the end of February, Mercury, which is usually difficult to spot, will move far enough away from the Sun to also be visible.
+                  At the end of February, Mercury, which is usually difficult to spot, will move far enough away from the Sun to also become visible.
                 </p>
                 <h3>Cool! How do I see the planet parade?</h3>
                 <p>
@@ -415,7 +415,7 @@
                 </p>
                 <ul>
                   <li>Click <font-awesome-icon class="bullet-icon" icon="location-dot"/> in the top-center of the view and choose your location. (The default location is Cambridge, MA.)</li>
-                  <li>The display defaults to the current day at 4pm local time. Use the time controls to advance time until just after sunset.</li>
+                  <li>The display defaults to the current day just before sunset. Use the time controls to advance time until just after sunset.</li>
                   <li>
                     If <span style="color: var(--accent-color)">Horizon/Sky</span> is checked, you can see the Sun rise above the horizon in the morning and set in the evening. The sky will lighten and darken with the Sun's changing position. 
                   </li>
