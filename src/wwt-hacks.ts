@@ -348,3 +348,69 @@ export function drawEcliptic(renderContext: RenderContext, opacity: number, draw
     Grids._eclipticOverviewLineList.drawLines(renderContext, opacity, drawColor);
     return true;
 };
+
+export function drawSkyOverlays() {
+    if (Settings.get_active().get_showConstellationPictures() && !this.freestandingMode) {
+        Constellations.drawArtwork(this.renderContext);
+    }
+    if (Settings.get_active().get_showConstellationFigures()) {
+        if (WWTControl.constellationsFigures == null) {
+            WWTControl.constellationsFigures = Constellations.create(
+                'Constellations',
+                URLHelpers.singleton.engineAssetUrl('figures.txt'),
+                false,  // "boundry"
+                false,  // "noInterpollation"
+                false,  // "resource"
+            );
+        }
+        WWTControl.constellationsFigures.draw(this.renderContext, false, 'UMA', false);
+    }
+    if (Settings.get_active().get_showEclipticGrid()) {
+        Grids.drawEclipticGrid(this.renderContext, 1, Settings.get_active().get_eclipticGridColor());
+        if (Settings.get_active().get_showEclipticGridText()) {
+            Grids.drawEclipticGridText(this.renderContext, 1, Settings.get_active().get_eclipticGridColor());
+        }
+    }
+    if (Settings.get_active().get_showGalacticGrid()) {
+        Grids.drawGalacticGrid(this.renderContext, 1, Settings.get_active().get_galacticGridColor());
+        if (Settings.get_active().get_showGalacticGridText()) {
+            Grids.drawGalacticGridText(this.renderContext, 1, Settings.get_active().get_galacticGridColor());
+        }
+    }
+    if (Settings.get_active().get_showAltAzGrid()) {
+        Grids.drawAltAzGrid(this.renderContext, 1, Settings.get_active().get_altAzGridColor());
+    }
+    if (Settings.get_active().get_showAltAzGridText()) {
+        Grids.drawAltAzGridText(this.renderContext, 1, Settings.get_active().get_altAzGridColor());
+    }
+    if (Settings.get_active().get_showPrecessionChart()) {
+        Grids.drawPrecessionChart(this.renderContext, 1, Settings.get_active().get_precessionChartColor());
+    }
+    if (Settings.get_active().get_showEcliptic()) {
+        Grids.drawEcliptic(this.renderContext, 1, Settings.get_active().get_eclipticColor());
+        if (Settings.get_active().get_showEclipticOverviewText()) {
+            Grids.drawEclipticText(this.renderContext, 1, Settings.get_active().get_eclipticColor());
+        }
+    }
+    if (Settings.get_active().get_showGrid()) {
+        Grids.drawEquitorialGrid(this.renderContext, 1, Settings.get_active().get_equatorialGridColor());
+        if (Settings.get_active().get_showEquatorialGridText()) {
+            Grids.drawEquitorialGridText(this.renderContext, 1, Settings.get_active().get_equatorialGridColor());
+        }
+    }
+    if (Settings.get_active().get_showConstellationBoundries()) {
+        if (WWTControl.constellationsBoundries == null) {
+            WWTControl.constellationsBoundries = Constellations.create(
+                'Constellations',
+                URLHelpers.singleton.engineAssetUrl('constellations.txt'),
+                true,   // "boundry"
+                false,  // "noInterpollation"
+                false,  // "resource"
+            );
+        }
+        WWTControl.constellationsBoundries.draw(this.renderContext, Settings.get_active().get_showConstellationSelection(), this.constellation, false);
+    }
+    if (Settings.get_active().get_showConstellationLabels()) {
+        Constellations.drawConstellationNames(this.renderContext, 1, Colors.get_yellow());
+    }
+}
