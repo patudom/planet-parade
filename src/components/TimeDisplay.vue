@@ -60,7 +60,8 @@ const shortTimeDateString = computed(() => {
   // return date formatted as Oct 3 9:00 AM
   const month = props.date.toLocaleString('default', { month: 'short' });
   const day = props.date.getDate();
-  const hour = props.date.getHours() % 12;
+  const h = props.date.getHours() % 12;
+  const hour = h === 0 ? 12 : h;
   const minute = pad(props.date.getMinutes());
   const ampm = props.date.getHours() >= 12 ? 'PM' : 'AM';
   const tz =  props.timezone;

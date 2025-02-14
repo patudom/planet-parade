@@ -349,7 +349,7 @@ export default defineComponent({
   &.inset {
     padding: 0;
     padding-inline: 0.25rem;
-    padding-block-end: 0.5em;
+    padding-block-end: 1em;
     background-color: black;
     
     border: 2px solid var(--color);
@@ -358,9 +358,17 @@ export default defineComponent({
     --tick-font-size: clamp(10px, 1.5vw, 1em);
     
     i.v-icon {
-      font-size: clamp(1vw, 1em, 18px) !important;
+      font-size: clamp(1vw, 1.5em, 18px) !important;
       width: 1em !important;
       height: 1em !important;
+    }
+    
+    #playback-play-pause-button {
+      i.v-icon {
+        font-size: clamp(1vw, 1.5em, 24px) !important;
+        width: 1.5em !important;
+        height: 1em !important;
+      }
     }
     
     #playback-slider-container {
@@ -377,7 +385,7 @@ export default defineComponent({
     margin-inline-end: 0.5rem;
     flex-direction: row;
     align-items: center;
-    gap: 0.5em;
+    gap: 0.75em;
     pointer-events: auto!important;
     
     #playback-reverse-time {
@@ -385,7 +393,7 @@ export default defineComponent({
       #reverse-button-text {
         position: absolute;
         font-size: var(--tick-font-size);
-        left: -25%;
+        left: 0%;
       }
       .icon-wrapper {
         border-radius: 2em;

@@ -234,7 +234,7 @@
             @keyup.enter="props.onClick"
             >
             <time-display class="bsn__time" :date="localSelectedDate" ampm :short-time-date="smAndDown" show-timezone :timezone="shortTimezone" />
-            <v-icon class="td__icon"  >mdi-cursor-default-click</v-icon>
+            <v-icon v-if="!(smAndDown || mobile)" class="td__icon"  >mdi-cursor-default-click</v-icon>
           </v-card>
         </template>
           <v-card width="fit-content" elevation="5">
@@ -1359,9 +1359,24 @@ li {
   gap: 5px;
 }
 
+// vuetify smAndDown
+@media ( max-width: 960px ) {
+  #bottom-content {
+    align-items: flex-start;
+  }
+  #date-picker {
+    margin-block: 0;
+  }
+  
+  .td__container.bsn__time {
+    margin-block: 0.25em !important;
+  }
+}
+
 @media (max-width: 600px) {
   #bottom-content {
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
   }
 }
