@@ -1682,6 +1682,10 @@ video {
   .location-search {
     flex-grow: 1;
   }
+
+  @media (max-width: 600px) {
+    width: 250px;
+  }
 }
 
 #geolocation-wrapper\+location .v-btn {
