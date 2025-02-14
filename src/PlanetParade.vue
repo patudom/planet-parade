@@ -253,7 +253,7 @@
       <speed-control v-model:playing="playing" 
         :store="store"
         :color="accentColor" 
-        :defaultRate="100"
+        :defaultRate="1000"
         :useInline="xs"
         :maxSpeed="10000"
         show-text
