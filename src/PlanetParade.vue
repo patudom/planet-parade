@@ -82,7 +82,10 @@
             <h3 style="color: #f4ba3e" class="mb-2">Quick Start</h3>
             <ol>
               <li>Set desired location using <font-awesome-icon class="bullet-icon" icon="location-dot" style="color: #f4ba3e" /> <strong><span style="color: #f4ba3e">(top-center)</span></strong>.</li>
-              <li>Click box <strong><span style="color: #f4ba3e">(bottom-left)</span></strong> that displays date/time to update. Soon after sunset is optimal. (Or press <font-awesome-icon class="bullet-icon" icon="play" style="color: #f4ba3e" /> to advance time.)</li>
+              <li>Click box <strong>
+                <span v-show="!xs" style="color: #f4ba3e">(bottom-left)</span>
+                <span v-show="xs" style="color: #f4ba3e">(bottom-center)</span>
+              </strong> that displays date/time to update. Soon after sunset is optimal. (Or press <font-awesome-icon class="bullet-icon" icon="play" style="color: #f4ba3e" /> to advance time.)</li>
               <li>Go outdoors and find the planet parade!</li>
               <li>Learn more using <font-awesome-icon class="bullet-icon" icon="book-open" style="color: #f4ba3e" /> and <font-awesome-icon class="bullet-icon" icon="video" style="color: #f4ba3e" /> <strong><span style="color: #f4ba3e">(upper-left)</span></strong>.   </li>
             </ol>
@@ -175,7 +178,7 @@
             />
           </v-card>
         </v-dialog>
-        <span id="my-location-label">Current location: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
+        <span tabindex="0" id="my-location-label" class="elevation-1" @click="showLocationSelector=true" @keyup.enter="showLocationSelector=true">Current location: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
       </div>
       <div id="right-buttons">
         <div id="controls" class="control-icon-wrapper">
@@ -248,8 +251,10 @@
       <speed-control v-model:playing="playing" 
         :store="store"
         :color="accentColor" 
-        :defaultRate="500"
+        :defaultRate="100"
         :useInline="xs"
+        :maxSpeed="10000"
+        show-text
         @reset="()=>{selectedTime = Date.now()}"
         />
       <div id="change-optout">
@@ -1049,8 +1054,8 @@ watch(selectedLocation, (location: LocationDeg) => {
   WWTControl.singleton.renderOneFrame();
 });
 
-watch(selectedTime, (value: number) => {
-  console.log(value);});
+// watch(selectedTime, (value: number) => {
+//   console.log(value);});
 watch(playing, (play: boolean) => {
   store.setClockSync(play);
 });
@@ -1253,6 +1258,12 @@ li {
     border-radius: 1em;
     color: black;
     font-size: var(--default-font-size);
+    pointer-events: auto;
+    cursor:pointer
+  }
+  
+  #my-location-label:hover {
+    filter: drop-shadow(0 0 2px white;)
   }
 }
 
@@ -1549,8 +1560,15 @@ video {
   height: fit-content;
   padding-inline: 30px;
   padding-block: 20px;
-  width: 80%;
-  max-width: 400px;
+  max-width: 500px;
+
+  @media (max-width: 600px) {
+    width: 90%;
+  }
+
+  @media (min-width: 600px) {
+    width: 80%;
+  }
 }
 
 .bottom-sheet {

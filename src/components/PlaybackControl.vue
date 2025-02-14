@@ -512,9 +512,6 @@ export default defineComponent({
         transform: translateX(-50%);
       }
       
-      .tick[style="left: 50%;"] {
-        margin-top: 0.5em;
-      }
 
       .tick-label {
         font-size: var(--tick-font-size);

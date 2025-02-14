@@ -1,87 +1,229 @@
 <template>
   <div id="speed-control">
-    <icon-button
-      id="reverse-speed"
-      :fa-icon="'angles-left'"
-      @activate="
-        () => {
-          reversePlaybackRate();
-          // timePlaying = true;
-        }
-      "
-      :color="color"
-      :focus-color="color"
-      :tooltip-text="playbackRate < 0 ? 'Reverse Faster' : 'Reverse'"
-      tooltip-location="top"
-      tooltip-offset="5px"
-      faSize="1x"
-      :show-tooltip="!mobile"
-    ></icon-button>
-    <icon-button
-      id="play-pause-icon"
-      :fa-icon="!timePlaying ? 'play' : 'pause'"
-      @activate="
-        () => {
-          timePlaying = !timePlaying;
-        }
-      "
-      :color="color"
-      :focus-color="color"
-      tooltip-text="Play/Pause"
-      tooltip-location="top"
-      tooltip-offset="5px"
-      faSize="1x"
-      :show-tooltip="!mobile"
-    ></icon-button>
-    <icon-button
-      id="forward-speed"
-      :fa-icon="'angles-right'"
-      @activate="
-        () => {
-          increasePlaybackRate();
-          // timePlaying = true;
-        }
-      "
-      :color="color"
-      :focus-color="color"
-      :tooltip-text="playbackRate > 0 ? 'Faster' : 'Forward'"
-      tooltip-location="top"
-      tooltip-offset="5px"
-      faSize="1x"
-      :show-tooltip="!mobile"
-    ></icon-button>
-    <icon-button
-      id="reset"
-      :fa-icon="'rotate'"
-      @activate="
-        () => {
-          playbackRate = 500;
-          timePlaying = false;
-          forceRate = false;
-          emit('reset');
-        }
-      "
-      :color="color"
-      :focus-color="color"
-      tooltip-text="Reset"
-      tooltip-location="top"
-      tooltip-offset="5px"
-      faSize="1x"
-      :show-tooltip="!mobile"
-    ></icon-button>
+    <div id="speed-buttons">
+      <icon-button
+        v-if="useOldControl"
+        id="reverse-speed"
+        :fa-icon="'angles-left'"
+        @activate="
+          () => {
+            reverseOrIncreaseReversePlaybackRate();
+            timePlaying = true;
+          }
+        "
+        :color="color"
+        :focus-color="color"
+        :tooltip-text="playbackRate < 0 ? 'Reverse Faster' : 'Reverse'"
+        tooltip-location="top"
+        tooltip-offset="5px"
+        faSize="1x"
+        :show-tooltip="!mobile"
+      ></icon-button>
+      
+      <icon-button 
+        v-if="useOldControl"
+        id="forward-speed"
+        :fa-icon="'angles-right'"
+        @activate="
+          () => {
+            if (!timePlaying) {
+              timePlaying = true
+            } else {
+              forwardOrIncreaseForwardPlaybackRate();
+            }
+          }
+        "
+        :color="color"
+        :focus-color="color"
+        :tooltip-text="playbackRate > 0 ? 'Faster' : 'Forward'"
+        tooltip-location="top"
+        tooltip-offset="5px"
+        faSize="1x"
+        :show-tooltip="!mobile"
+      ></icon-button>
+      
+      <!-- <icon-button 
+        v-if="!useOldControl"
+        id="reverse-direction"
+        :fa-icon="'angles-left'"
+        @activate="
+          () => {
+            setDirection('reverse')
+            timePlaying = true
+          }
+        "
+        :color="color"
+        :focus-color="color"
+        tooltip-text="Reverse"
+        tooltip-location="top"
+        tooltip-offset="5px"
+        faSize="1x"
+        :show-tooltip="!mobile"
+      ></icon-button> -->
+      
+      <!-- <icon-button 
+        v-if="!useOldControl"
+        id="forward-direction"
+        :fa-icon="'angles-right'"
+        @activate="
+          () => {
+            setDirection('forward');
+            timePlaying = true
+          }
+        "
+        :color="color"
+        :focus-color="color"
+        tooltip-text="Forward"
+        tooltip-location="top"
+        tooltip-offset="5px"
+        faSize="1x"
+        :show-tooltip="!mobile"
+      ></icon-button> -->
+      <icon-button
+        @activate="() => {
+          reverseRate()
+        }"
+        :md-icon="playbackRate < 0 ? 'mdi-step-forward-2' : 'mdi-step-backward-2'"
+        :color="color"
+        :focus-color="color"
+        :tooltip-text="playbackRate < 0 ? 'Play time forward' : 'Play time backwards'"
+        tooltip-location="top"
+        tooltip-offset="5px"
+        :show-tooltip="!mobile"
+        md-size="18"
+      >
+      </icon-button>
+      
+      <icon-button 
+        id="play-pause-icon"
+        :fa-icon="!timePlaying ? 'play' : 'pause'"
+        @activate="
+          () => {
+            timePlaying = !timePlaying;
+          }
+        "
+        :color="color"
+        :focus-color="color"
+        tooltip-text="Play/Pause"
+        tooltip-location="top"
+        tooltip-offset="5px"
+        faSize="1x"
+        :show-tooltip="!mobile"
+      ></icon-button>
+      
+      <icon-button 
+        v-if="!useOldControl"
+        id="slow-down"
+        :fa-icon="'angles-down'"
+        @activate="
+          () => {
+            decreaseRate();
+            timePlaying = true;
+          }
+        "
+        :color="color"
+        :focus-color="color"
+        :tooltip-text="`Slow down ${rateDelta}x`"
+        tooltip-location="top"
+        tooltip-offset="5px"
+        faSize="1x"
+        :show-tooltip="!mobile"
+      ></icon-button>
+      
+      <icon-button 
+        v-if="!useOldControl"
+        id="speed-up"
+        :fa-icon="'angles-up'"
+        @activate="
+          () => {
+            increaseRate();
+            timePlaying = true;
+          }
+        "
+        :color="color"
+        :focus-color="color"
+        :tooltip-text="`Speed up ${rateDelta}x`"
+        tooltip-location="top"
+        tooltip-offset="5px"
+        faSize="1x"
+        :show-tooltip="!mobile"
+      ></icon-button>
+      
+      
 
-    <v-dialog
-      v-if="!useInline"
-      v-model="playbackVisible"
-      :scrim="false"
-      location="top"
-      offset="40"
-      location-strategy="connected"
-      persistent
-      no-click-animation
-      :retain-focus="false"
-    >
-      <template v-slot:activator="{ props }">
+      <icon-button 
+        id="reset"
+        :fa-icon="'rotate'"
+        @activate="
+          () => {
+            playbackRate = 100;
+            timePlaying = false;
+            forceRate = false;
+            emit('reset');
+          }
+        "
+        :color="color"
+        :focus-color="color"
+        tooltip-text="Reset"
+        tooltip-location="top"
+        tooltip-offset="5px"
+        faSize="1x"
+        :show-tooltip="!mobile"
+      ></icon-button>
+
+      <v-dialog
+        v-if="!useInline"
+        v-model="playbackVisible"
+        :scrim="false"
+        location="top"
+        offset="40"
+        location-strategy="connected"
+        persistent
+        no-click-animation
+        :retain-focus="false"
+      >
+        <template v-slot:activator="{ props }">
+          <icon-button
+            id="speed-control-icon"
+            @activate="
+              () => {
+                playbackVisible = !playbackVisible;
+              }
+            "
+            :fa-icon="playbackVisible ? 'times' : 'gauge-high'"
+            :color="color"
+            :focus-color="color"
+            tooltip-text="More Speed Controls"
+            tooltip-location="top"
+            tooltip-offset="5px"
+            faSize="1x"
+            :show-tooltip="!mobile"
+            v-bind="props"
+          ></icon-button>
+        </template>
+        <playback-control
+          class="desktop-playback-control"
+          v-if="playbackVisible"
+          :model-value="playbackRate"
+          @update:modelValue="(value: number) => {
+                          forceRate = false;
+                          playbackRate = value;
+                        }"
+          :paused="!timePlaying"
+          @paused="timePlaying = !$event"
+          :max-power="Math.log10(maxSpeed)"
+          :max="Math.log10(maxSpeed) + 1"
+          :color="color"
+          :inline="false"
+          show-close-button
+          @close="
+            () => {
+              playbackVisible = false;
+            }
+          "
+        />
+      </v-dialog>
+      <div v-if="useInline" id="inline-speed-control">
         <icon-button
           id="speed-control-icon"
           @activate="
@@ -92,77 +234,38 @@
           :fa-icon="playbackVisible ? 'times' : 'gauge-high'"
           :color="color"
           :focus-color="color"
-          tooltip-text="Speed Controls"
+          tooltip-text="Time Controls"
           tooltip-location="top"
           tooltip-offset="5px"
           faSize="1x"
           :show-tooltip="!mobile"
-          v-bind="props"
         ></icon-button>
-      </template>
-      <playback-control
-        class="desktop-playback-control"
-        v-if="playbackVisible"
-        :model-value="playbackRate"
-        @update:modelValue="(value: number) => {
-                        forceRate = false;
-                        playbackRate = value;
-                      }"
-        :paused="!timePlaying"
-        @paused="timePlaying = !$event"
-        :max-power="Math.log10(maxSpeed)"
-        :max="Math.log10(maxSpeed) + 1"
-        :color="color"
-        :inline="false"
-        show-close-button
-        @close="
-          () => {
-            playbackVisible = false;
-          }
-        "
-      />
-    </v-dialog>
 
-    <div v-if="useInline" id="inline-speed-control">
-      <icon-button
-        id="speed-control-icon"
-        @activate="
-          () => {
-            playbackVisible = !playbackVisible;
-          }
-        "
-        :fa-icon="playbackVisible ? 'times' : 'gauge-high'"
-        :color="color"
-        :focus-color="color"
-        tooltip-text="Time Controls"
-        tooltip-location="top"
-        tooltip-offset="5px"
-        faSize="1x"
-        :show-tooltip="!mobile"
-      ></icon-button>
-
-      <playback-control
-        class="mobile-playback-control"
-        v-show="playbackVisible"
-        :model-value="playbackRate"
-        @update:modelValue="(value: number) => {
-                        forceRate = false;
-                        playbackRate = value;
-                      }"
-        :paused="!timePlaying"
-        @paused="timePlaying = !$event"
-        :max-power="Math.log10(maxSpeed)"
-        :max="Math.log10(maxSpeed) + 1"
-        :color="color"
-        :inline="true"
-        inline-button
-        @close="
-          () => {
-            playbackVisible = false;
-          }
-        "
-      />
+        <playback-control
+          class="mobile-playback-control"
+          v-show="playbackVisible"
+          :model-value="playbackRate"
+          @update:modelValue="(value: number) => {
+                          forceRate = false;
+                          playbackRate = value;
+                        }"
+          :paused="!timePlaying"
+          @paused="timePlaying = !$event"
+          :max-power="Math.log10(maxSpeed)"
+          :max="Math.log10(maxSpeed) + 1"
+          :color="color"
+          :inline="true"
+          inline-button
+          @close="
+            () => {
+              playbackVisible = false;
+            }
+          "
+        />
+      </div>
     </div>
+    
+    <div v-if="showText" id="speed-text">{{ Math.round(playbackRate) }}x {{ timePlaying ? '' : '(Paused)'  }}</div>
   </div>
 </template>
 
@@ -177,25 +280,42 @@ import { supportsTouchscreen } from "@cosmicds/vue-toolkit";
 import { engineStore } from "@wwtelescope/engine-pinia";
 import { usePlaybackControl } from '../wwt_playback_control';
 
+
 interface Props {
   store: ReturnType<typeof engineStore>;
   color: string;
   maxSpeed?: number;
   defaultRate?: number;
   useInline?: boolean;
+  showText?: boolean;
+  rateDelta?: number;
 }
 
-const { color, maxSpeed, defaultRate, store } = withDefaults(defineProps<Props>(),
+const { 
+  color, 
+  maxSpeed, 
+  defaultRate, 
+  store, 
+  showText, 
+  rateDelta, 
+  useOldControl, 
+  useInline
+} = withDefaults(defineProps<Props>(),
   {
     color: 'white',
     maxSpeed: 10000,
+    minSpeed: 1,
     defaultRate: 1,
     useInline: false,
+    showText: false,
+    rateDelta: 10,
+    useOldControl: false,
   }
 );
 
-const playing = defineModel<boolean>('playing', {default: false, required: true});
 
+const playing = defineModel<boolean>('playing', {default: false, required: true});
+const minSpeed = 1;
 
 const emit = defineEmits(['reset', 'update:playing']);
 
@@ -209,6 +329,10 @@ timePlaying.value = playing.value;
 watch(playing, (v) => {timePlaying.value = v;});
 watch(timePlaying, (v) => {playing.value = v;});
 
+function clamp(val) {
+  return Math.min(Math.max(val, minSpeed), maxSpeed);
+}
+
 const playbackRate = computed({
   get: function(): number {
     if (forceRate.value) {
@@ -218,11 +342,35 @@ const playbackRate = computed({
     return clockRate.value;
   },
   set: function(value: number) {
-    clockRate.value = Math.sign(value) * Math.min(Math.abs(value), 5000);
+    clockRate.value = Math.sign(value) * clamp(Math.abs(value));
   }
 });
 
-function reversePlaybackRate() {
+function reverseRate() {
+  playbackRate.value = -playbackRate.value;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function setDirection(direction: 'forward' | 'reverse' | null = null) {
+  playbackRate.value = direction == 'reverse' ? -Math.abs(playbackRate.value) : Math.abs(playbackRate.value);
+}
+
+function increaseRate() {
+  const sign = Math.sign(playbackRate.value);
+  const abs = Math.abs(playbackRate.value);
+  const newRate = abs * rateDelta;
+  playbackRate.value = sign * clamp(newRate);
+}
+function decreaseRate() {
+  const sign = Math.sign(playbackRate.value);
+  const abs = Math.abs(playbackRate.value);
+  const newRate = abs / rateDelta;
+  playbackRate.value = sign * clamp(newRate);
+}
+
+
+// either moves to reverse time (at -1x) or slows down by rateDelta
+function reverseOrIncreaseReversePlaybackRate() {
   forceRate.value = false;
   const sign = Math.sign(playbackRate.value);
   if (sign > 0) {
@@ -231,21 +379,22 @@ function reversePlaybackRate() {
   }
   const abs = Math.abs(playbackRate.value);
   let ezrate = Math.floor(Math.log10(abs));
-  ezrate -= sign * 1;
-  playbackRate.value = sign * Math.pow(10, Math.abs(ezrate));
+  ezrate -= sign * Math.log10(rateDelta);
+  playbackRate.value = sign * clamp(Math.pow(10, Math.abs(ezrate)));
 }
 
-function increasePlaybackRate() {
+// etiher switches to forward time (at 1x) or speeds up by rateDelta
+function forwardOrIncreaseForwardPlaybackRate() {
   forceRate.value = false;
-  if (Math.sign(playbackRate.value) < 0 ) {
+  const sign = Math.sign(playbackRate.value);
+  if (sign < 0 ) {
     playbackRate.value = -Math.max(playbackRate.value,-1);
     return;
   }
-  const sign = Math.sign(playbackRate.value);
   const abs = Math.abs(playbackRate.value);
   let ezrate = Math.floor(Math.log10(abs));
-  ezrate += sign * 1;
-  playbackRate.value = sign * Math.pow(10, Math.abs(ezrate));
+  ezrate += sign * Math.log10(rateDelta);
+  playbackRate.value = sign * clamp(Math.pow(10, Math.abs(ezrate)));
 }
 
 const { smAndDown } = useDisplay();
@@ -256,11 +405,17 @@ const mobile = computed( () => smAndDown && supportsTouchscreen());
 
 #speed-control {
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 5px;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   //margin-left: 10px;
-  justify-content: center;
+
+  #speed-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
   
   @media (orientation: landscape) {
     // margin-left: 3rem;
@@ -292,7 +447,7 @@ const mobile = computed( () => smAndDown && supportsTouchscreen());
   flex-grow: 0;
   align-items: flex-end; 
   position: relative; 
-  gap: 5px;
+  gap: 6px;
   
   #enclosing-playback-container.mobile-playback-control {
     position: fixed;
@@ -306,24 +461,13 @@ const mobile = computed( () => smAndDown && supportsTouchscreen());
 
 
 #speed-text {
-  position: absolute;
   background-color: rgba(0, 0, 0, 0.5);
   padding-inline: 0.4em;
-  padding-block: 0.15em;
   border-radius: 0.3em;
   font-size: calc(1 * var(--default-font-size));
   text-wrap: nowrap;  
   width: fit-content;
-
-  left: calc(100% + 1rem);
-  top: 1.5rem;
-  
-  @media (max-width: 600px) {
-    position: relative;
-    top: 3rem;
-    left: 0.5rem;
-    display: inline;
-  }
+  align-self: center;
 }
 
 </style>
