@@ -93,6 +93,7 @@
 
         </v-card>
       </div>
+      <v-checkbox v-model="skipIntroChecked" label="Don't display intro content again"></v-checkbox>
 
     </v-dialog>
 
@@ -552,8 +553,10 @@ const STORY_DATA_URL = `${API_BASE_URL}/planet-parade/data`;
 
 const UUID_KEY = "eclipse-mini-uuid" as const;
 const OPT_OUT_KEY = "eclipse-mini-optout" as const;
+const SKIP_INTRO_CONTENT_KEY = "skip-intro-content" as const;
 const maybeUUID = window.localStorage.getItem(UUID_KEY);
 const storedOptOut = window.localStorage.getItem(OPT_OUT_KEY);
+const skipIntroContent = window.localStorage.getItem(SKIP_INTRO_CONTENT_KEY) === "true";
 const existingUser = maybeUUID !== null;
 const uuid = maybeUUID ?? v4();
 if (!existingUser) {
@@ -608,6 +611,7 @@ const showPlanetLabels = ref(true);
 const inIntro = ref(false);
 const showPrivacyDialog = ref(false);
 const datePickerOpen = ref(false);
+const skipIntroChecked = ref(skipIntroContent);
 
 const optOut = typeof storedOptOut === "string" ? storedOptOut === "true" : null;
 const responseOptOut = ref(optOut);
@@ -1082,6 +1086,10 @@ watch(showHorizon, updateAltAzGridText);
 
 watch(dateTime, (dt: Date) => {
   store.setTime(dt);
+});
+
+watch(skipIntroChecked, (checked: boolean) => {
+  window.localStorage.setItem(SKIP_INTRO_CONTENT_KEY, String(checked));
 });
 
 watch(showTextSheet, (show: boolean) => {
