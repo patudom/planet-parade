@@ -33,7 +33,7 @@
           tabindex="0"
           />
         <div id="splash-screen-text">
-          <pp>Want to see the</pp>
+          <p>Want to see the</p>
           <p class="highlight">Planetary Parade?</p>
         </div>
         <div>
@@ -1673,7 +1673,7 @@ video {
   justify-content: space-around;
   align-items: center;
   position: absolute;
-  width: 300px;
+  width: 350px;
   top: 1rem;
   right: 1rem;
   z-index: 1000;

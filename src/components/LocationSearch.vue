@@ -6,7 +6,7 @@
     <v-combobox
       v-show="searchOpen"
       :class="['forward-geocoding-input', locationJustUpdated ? 'geocode-success' : '', small ? 'forward-geocoding-input-small' : '']"
-      v-model="searchText"
+      v-model="searchItem"
       :items="searchResults ? searchResults.features : []"
       :item-title="itemText"
       :bg-color="bgColor"
@@ -18,10 +18,11 @@
       @input="() => {}"
       @keydown.enter="performForwardGeocodingSearch"
       @keydown.esc="searchResults = null"
+      @keydown.stop
       :error-messages="searchErrorMessage"
       @click:append="focusCombobox"
       @update:focused="onFocusChange($event)"
-      ref="search-input"
+      ref="searchInput"
       :menu="menuOpen"
       @update:menu="menuOpen = $event"
     >
@@ -58,9 +59,8 @@
 </template> 
 
 <script setup lang="ts">
-import { computed, ref, useTemplateRef } from "vue";
+import { computed, ref, watch } from "vue";
 import { MapBoxFeature, MapBoxFeatureCollection, textForMapboxFeature } from "@cosmicds/vue-toolkit/src/mapbox";
-import { watch } from "vue";
 
 type SearchProvider = (searchText: string) => Promise<MapBoxFeatureCollection | null>;
 
@@ -85,7 +85,6 @@ const props = withDefaults(defineProps<LocationSearchProps>(), {
   buttonSize: "1x",
   bgColor: "black",
 });
-console.log(props);
 
 const emit = defineEmits<{
   (e: "error", message: string): void
@@ -94,12 +93,13 @@ const emit = defineEmits<{
 }>();
 
 const searchOpen = ref(props.modelValue || props.stayOpen);
-const searchText = ref<string | null>(null);
+const searchItem = ref<string | null>(null);
 const searchResults = ref<MapBoxFeatureCollection | null>(null);
 const searchErrorMessage = ref<string | null>(null);
 const locationJustUpdated = ref(false);
 const menuOpen = ref(false);
 const comboFocused = ref(false);
+const searchInput = ref<HTMLInputElement | null>(null);
 
 const cssStyles = computed(() => {
   return {
@@ -118,7 +118,7 @@ function itemText(item: string | MapBoxFeature): string {
 }
 
 function performForwardGeocodingSearch() {
-  const search = searchText.value;
+  const search = searchItem.value;
   if (search === null || search.length < 3) {
     return;
   }
@@ -136,12 +136,12 @@ function performForwardGeocodingSearch() {
 }
 
 function focusCombobox() {
-  const input = useTemplateRef("search-input").value as HTMLInputElement;
+  const input = searchInput.value as HTMLInputElement;
   input.focus();
 }
 
 function blurCombobox() {
-  const input = useTemplateRef("search-input").value as HTMLInputElement;
+  const input = searchInput.value as HTMLInputElement;
   input.blur();
 }
 
@@ -173,7 +173,7 @@ function setLocationFromSearchFeature(feature: MapBoxFeature) {
 
 function clearSearchData() {
   searchResults.value = null;
-  searchText.value = null;
+  searchItem.value = null;
   searchErrorMessage.value = null;
 }
 
@@ -188,12 +188,15 @@ watch(() => props.modelValue, (value: boolean) => { searchOpen.value = value; })
 
 watch(searchOpen, (value: boolean) => emit("update:modelValue", value));
 
-watch(searchText, function(text: string | null) {
+watch(searchItem, function(item: string | MapBoxFeature | null) {
   if (searchErrorMessage.value) {
     searchErrorMessage.value = null;
   }
-  if (!text || text.length === 0) {
+  if (!item || (typeof item === "string" && item.length === 0)) {
     searchResults.value = null;
+  }
+  if (item && typeof item !== "string") {
+    setLocationFromSearchFeature(item);
   }
 });
 </script>
