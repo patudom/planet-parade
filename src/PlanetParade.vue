@@ -33,7 +33,7 @@
           tabindex="0"
           />
         <div id="splash-screen-text">
-          <pp>Want to see the</pp>
+          <p>Want to see the</p>
           <p class="highlight">Planetary Parade?</p>
         </div>
         <div>
@@ -145,37 +145,42 @@
           transition="slide-y-transition"
         >
           <v-card>
-            <font-awesome-icon
-              style="position: absolute; right: 12px; top: 1em; cursor: pointer; padding: 1em; margin: -1em; z-index: 1000;"
-              icon="xmark"
-              size="xl"
-              @click="showLocationSelector = false"
-              @keyup.enter="showLocationSelector = false"
-              tabindex="0"
-              color="black"
-            ></font-awesome-icon>
-            <location-search
-              :class="['location-search']"
-              small
-              button-size="xl"
-              :accent-color="accentColor"
-              :search-provider="searchProvider"
-              @set-location="setLocationFromSearchFeature"
-              @error="searchErrorMessage = $event"
-            >
-            </location-search>
+            <div id="geolocation-close">
+              <font-awesome-icon
+                style="cursor: pointer; z-index: 1000;"
+                icon="xmark"
+                size="xl"
+                @click="showLocationSelector = false"
+                @keyup.enter="showLocationSelector = false"
+                tabindex="0"
+                color="black"
+              ></font-awesome-icon>
+            </div>
+            <div id="geolocation-controls">
+              <geolocation-button
+                id="location"
+                size="30px"
+                density="default"
+                elevation="5"
+                :color="accentColor"
+                @geolocation="selectedLocation = {longitudeDeg: $event.longitude, latitudeDeg: $event.latitude}"
+              />
+              <location-search
+                :class="['location-search']"
+                small
+                button-size="xl"
+                :accent-color="accentColor"
+                :search-provider="searchProvider"
+                @set-location="setLocationFromSearchFeature"
+                @error="searchErrorMessage = $event"
+              >
+              </location-search>
+            </div>
             <location-selector
               :model-value="selectedLocation"
               @update:modelValue="updateLocationFromMap"
             />
-            <geolocation-button
-              id="location"
-              size="30px"
-              density="default"
-              elevation="5"
-              :color="accentColor"
-              @geolocation="selectedLocation = {longitudeDeg: $event.longitude, latitudeDeg: $event.latitude}"
-            />
+
           </v-card>
         </v-dialog>
         <span tabindex="0" id="my-location-label" class="elevation-1" @click="showLocationSelector=true" @keyup.enter="showLocationSelector=true">Current location: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
@@ -216,6 +221,7 @@
     <div id="bottom-content">
       <div id="date-picker">
         <v-overlay 
+          v-model="datePickerOpen"
           activator="parent"
           location-strategy="connected"
           location="top end"
@@ -237,8 +243,9 @@
             <v-icon v-if="!(smAndDown || mobile)" class="td__icon"  >mdi-cursor-default-click</v-icon>
           </v-card>
         </template>
-          <v-card width="fit-content" elevation="5">
-            <date-time-picker v-model="localSelectedDate" :editable-time="true">
+          <v-card ref="dtpCard" tabindex="0" width="fit-content" elevation="5">
+            <v-icon tabindex="0" class="dtp-close-button" @click="datePickerOpen=false" @keyup.enter="datePickerOpen=false" :color="accentColor" size="18">mdi-close</v-icon>
+            <date-time-picker tabindex="0" v-model="localSelectedDate" :editable-time="true">
               <!-- <button class="dtp__button" @click="() => {playbackControl.pause(); set9pm(); goToTCrB()}" name="set-9pm" aria-label="Set time to 9pm">9pm</button>
               <button class="dtp__button" @click="() => {playbackControl.pause(); setMidnight(); goToTCrB()}" name="set-midnight" aria-label="Set time to Midnight">Midnight</button>-->
               <button class="dtp__button" @click="() => {selectedTime = Date.now()}" name="set-now" aria-label="Set time to Now">Now</button> 
@@ -251,7 +258,7 @@
       <speed-control v-model:playing="playing" 
         :store="store"
         :color="accentColor" 
-        :defaultRate="100"
+        :defaultRate="1000"
         :useInline="xs"
         :maxSpeed="10000"
         show-text
@@ -538,7 +545,7 @@ import { v4 } from "uuid";
 
 import { useTimezone } from "./timezones";
 import { horizontalToEquatorial } from "./utils";
-import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame, drawEcliptic } from "./wwt-hacks";
+import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame, drawEcliptic, drawSkyOverlays } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 // import { useGeolocation } from "@cosmicds/vue-toolkit";
 import { useSun } from './useSun';
@@ -602,6 +609,7 @@ const showConstellations = ref(false);
 const showPlanetLabels = ref(true);
 const inIntro = ref(false);
 const showPrivacyDialog = ref(false);
+const datePickerOpen = ref(false);
 
 const optOut = typeof storedOptOut === "string" ? storedOptOut === "true" : null;
 const responseOptOut = ref(optOut);
@@ -665,7 +673,6 @@ const wwtSettings: Settings = Settings.get_active();
 function doWWTModifications() {
 
   Grids._makeAltAzGridText = makeAltAzGridText;
-  drawEcliptic;
   Grids.drawEcliptic = drawEcliptic;
 
   // We need to render one frame ahead of time
@@ -681,6 +688,10 @@ function doWWTModifications() {
       showPlanetLabels.value,
     );
   };
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  WWTControl.singleton._drawSkyOverlays = drawSkyOverlays.bind(WWTControl.singleton);
 
   // as well as our custom text overlays
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -733,6 +744,7 @@ onMounted(() => {
     store.applySetting(["eclipticColor", Color.fromArgb(255, 255, 0, 255)]);
     store.applySetting(["actualPlanetScale", false]);
     updateAltAzGrid(showAltAzGrid.value);
+    updateAltAzGridText(showAltAzGrid.value || showHorizon.value);
     updateEcliptic(showEcliptic.value);
     updateConstellations(showConstellations.value);
     updateWWTLocation(selectedLocation.value);
@@ -1016,6 +1028,9 @@ function updateWWTLocation(location: LocationDeg) {
 
 function updateAltAzGrid(show: boolean) {
   store.applySetting(["showAltAzGrid", show]);
+}
+
+function updateAltAzGridText(show: boolean) {
   store.applySetting(["showAltAzGridText", show]);
 }
 
@@ -1043,9 +1058,15 @@ watch(playing, (play: boolean) => {
   store.setClockSync(play);
 });
 
-watch(showAltAzGrid, updateAltAzGrid);
+watch(showAltAzGrid, (show: boolean) => {
+  updateAltAzGrid(show);
+  updateAltAzGridText(show || showHorizon.value);
+});
 watch(showEcliptic, updateEcliptic);
 watch(showConstellations, updateConstellations);
+watch(showHorizon, (show: boolean) => {
+  updateAltAzGridText(show || showAltAzGrid.value);
+});
 
 watch(dateTime, (dt: Date) => {
   store.setTime(dt);
@@ -1492,7 +1513,7 @@ li {
 }
 
 // From Sara Soueidan (https://www.sarasoueidan.com/blog/focus-indicators/) & Erik Kroes (https://www.erikkroes.nl/blog/the-universal-focus-state/)
-:focus-visible:not(.v-overlay__content),
+:focus-visible:not(.v-overlay__content, .v-field__input input),
 button:focus-visible,
 .focus-visible,
 .v-selection-control--focus-visible .v-selection-control__input,
@@ -1661,12 +1682,32 @@ video {
   }
 }
 
-
-#geolocation-wrapper\+location {
+#geolocation-close {
   position: absolute;
-  bottom: 1rem;
-  left: 1rem;
+  top: 1rem;
+  right: 1rem;
   z-index: 1000;
+}
+
+#geolocation-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  position: absolute;
+  width: 350px;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  gap: 5px;
+
+  .location-search {
+    flex-grow: 1;
+  }
+
+  @media (max-width: 600px) {
+    width: 300px;
+  }
 }
 
 #geolocation-wrapper\+location .v-btn {
@@ -1790,14 +1831,6 @@ video {
   width: 1.5em;
 }
 
-.location-search {
-  height: fit-content;
-  position: absolute;
-  z-index: 600;
-  right: 3em;
-  top: 1em;
-}
-
 #date-picker {
   margin: 1rem;
   pointer-events: auto;
@@ -1806,6 +1839,13 @@ video {
   gap: 1rem;
 }
 
+.dtp-close-button {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  border-radius: 50%;
+  border: 1.5px solid car(--accent-color)
+}
 .dtp__button {
   background-color: var(--accent-color);
   font-size: 0.85em;

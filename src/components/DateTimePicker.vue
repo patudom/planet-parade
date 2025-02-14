@@ -225,7 +225,6 @@ const limits = computed(() => ({
 const units: Unit[] = ['second', 'minute', 'hour', 'day', 'month', 'year'];
 
 function changeValue(unit: Unit, increment: boolean) {
-  // recursive logic help courtesy of chatgpt :)
   const limit = limits.value[unit].max;
   const min = limits.value[unit].min;
 
@@ -235,18 +234,31 @@ function changeValue(unit: Unit, increment: boolean) {
     } else {
       values[unit].value = min;
       const nextUnit = units[units.indexOf(unit) + 1];
-      if (nextUnit) changeValue(nextUnit, increment);
+      if (nextUnit) {
+        changeValue(nextUnit, increment);
+      } else if (unit === 'hour' && props.useAmpm) {
+        // Toggle AM/PM when hour goes from 11 to 12
+        isAm.value = !isAm.value;
+      }
     }
   } else {
     if (values[unit].value > min) {
       values[unit].value--;
     } else {
+      values[unit].value = limit;
       const prevUnit = units[units.indexOf(unit) + 1];
       if (prevUnit) {
         changeValue(prevUnit, increment);
-        values[unit].value = limits.value[unit].max;
+      } else if (unit === 'hour' && props.useAmpm) {
+        // Toggle AM/PM when hour goes from 12 to 11
+        isAm.value = !isAm.value;
       }
     }
+  }
+
+  // Ensure hour is always between 0 and 23
+  if (unit === 'hour') {
+    hour.value = hour.value % 24;
   }
 }
 
@@ -261,20 +273,17 @@ const displayHour = computed({
   },
   set(value: number) {
     if (props.useAmpm) {
-      if (value > 12 && value < 24) {
-        hour.value = value;
-        return;
-      }
-      if (isAm.value) {
-        hour.value = value;
+      if (value === 12) {
+        hour.value = isAm.value ? 0 : 12;
       } else {
-        hour.value = value + 12;
+        hour.value = isAm.value ? value : value + 12;
       }
     } else {
       hour.value = value;
     }
   }
 });
+
 function increment(value: Unit) {
   changeValue(value, true);
 }
