@@ -34,12 +34,12 @@ const a = gMax - b * maxFOV;
 const planetTextOffsetsY = [
   115,  // Sun
   -60,  // Mercury
-  85,  // Venus
+  130,  // Venus
   100,  // Mars
-  100,  // Jupiter
-  120,  // Saturn
-  90,  // Uranus
-  90,  // Neptune
+  250,  // Jupiter
+  240,  // Saturn
+  180,  // Uranus
+  180,  // Neptune
   100,  // Pluto
   -70,  // Moon
 ];

@@ -113,13 +113,14 @@
     <!-- This block contains the elements (e.g. icon buttons displayed at/near the top of the screen -->
 
     <div id="top-content">
-      <div id="left-buttons">
+      <div id="left-buttons" >
         <icon-button
           v-model="showTextSheet"
           fa-icon="book-open"
           :color="buttonColor"
           :tooltip-text="showTextSheet ? 'Hide Info' : 'Learn More'"
           tooltip-location="start"
+          v-if="false"
         >
         </icon-button>
         <icon-button
@@ -128,8 +129,9 @@
           :color="buttonColor"
           tooltip-text="Watch video"
           tooltip-location="start"
+          v-if="false"
         >
-        </icon-button>
+        </icon-button> 
       </div>
       <div id="center-buttons">
         <icon-button
@@ -254,10 +256,10 @@
         :defaultRate="100"
         :useInline="xs"
         :maxSpeed="10000"
-        show-text
+        :show-text="false"
         @reset="()=>{selectedTime = Date.now()}"
         />
-      <div id="change-optout">
+      <div id="change-optout" v-show="false">
         <icon-button
           md-icon="mdi-lock"
           @activate="() => showPrivacyDialog = true"
@@ -610,8 +612,8 @@ const geocodingOptions = {
 };
 
 const selectedLocation = ref<LocationDeg>({
-  longitudeDeg: -71.1056,
-  latitudeDeg: 42.3581,
+  longitudeDeg: -148.71085358394453,
+  latitudeDeg: 70.2439592204296,
 });
 const selectedLocationText = ref("");
 updateSelectedLocationText();
@@ -701,12 +703,12 @@ function doWWTModifications() {
   const planetScales = [
     8,  // Sun
     1.25,  // Mercury
-    1.25,  // Venus
+    3.75,  // Venus
     1.25,  // Mars
-    2.5,  // Jupiter
-    4.5,  // Saturn
-    2,  // Uranus
-    2,  // Neptune
+    7.5,  // Jupiter
+    13.5,  // Saturn
+    6,  // Uranus
+    6,  // Neptune
     1,  // Pluto
     1.25,  // Moon
   ];
