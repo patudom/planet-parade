@@ -229,6 +229,7 @@
           @activate="
             () => {
               playbackVisible = !playbackVisible;
+              allowClickOutside = false; // prevent onClickOutside from hiding it.
             }
           "
           :fa-icon="playbackVisible ? 'times' : 'gauge-high'"
@@ -256,6 +257,7 @@
           :color="color"
           :inline="true"
           inline-button
+          v-click-outside="onClickOutside"
           @close="
             () => {
               playbackVisible = false;
@@ -399,6 +401,16 @@ function forwardOrIncreaseForwardPlaybackRate() {
 
 const { smAndDown } = useDisplay();
 const mobile = computed( () => smAndDown && supportsTouchscreen());
+
+const allowClickOutside = ref(false);
+function onClickOutside() {
+  // console.log('onclickoutside', playbackVisible.value, allowClickOutside.value);
+  if (playbackVisible.value && allowClickOutside.value) {
+    playbackVisible.value = false;
+    return;
+  }
+  allowClickOutside.value = playbackVisible.value;
+}
 </script>
 
 <style lang="less">
@@ -448,8 +460,8 @@ const mobile = computed( () => smAndDown && supportsTouchscreen());
   align-items: flex-end; 
   position: relative; 
   gap: 6px;
-  
-  #enclosing-playback-container.mobile-playback-control {
+
+#enclosing-playback-container.mobile-playback-control {
     position: fixed;
     width: calc(90% - 1rem);
     left: 50%;
