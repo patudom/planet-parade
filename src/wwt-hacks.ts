@@ -59,12 +59,12 @@ export function makeAltAzGridText() {
 
 const GLYPH_CACHE = function(): GlyphCache {
   const cache = new GlyphCache();
-  let origin = window.location.origin;
-  if (origin.endsWith("/")) {
-    origin = origin.slice(0, origin.length - 1);
+  let root = window.location.origin + window.location.pathname;
+  if (root.endsWith("/")) {
+    root= root.slice(0, root.length - 1);
   }
-  const imageUrl = `${origin}/glyphs2.png`;
-  const xmlUrl = `${origin}/glyphs2.xml`;
+  const imageUrl = `${root}/glyphs2.png`;
+  const xmlUrl = `${root}/glyphs2.xml`;
   cache._texture = Texture.fromUrl(imageUrl);
   cache._webFile = new WebFile(xmlUrl);
   cache._webFile.onStateChange = GlyphCache.prototype._glyphXmlReady.bind(cache);
