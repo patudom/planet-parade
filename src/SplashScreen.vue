@@ -18,6 +18,7 @@
         <font-awesome-icon
           id="close-splash-button"
           @click="closeSplashScreen"
+          @keyup.enter="closeSplashScreen"
           icon="xmark"
           tabindex="0"
           />
@@ -31,6 +32,7 @@
         <v-btn
           class="splash-get-started"
           @click="closeSplashScreen"
+          @keyup.enter="closeSplashScreen"
           :color="cssVars['--accent-color']"
           :density="$vuetify.display.xs ? 'compact' : 'default'"
           :size="$vuetify.display.width < 250 ? 'large' : 'x-large'"
