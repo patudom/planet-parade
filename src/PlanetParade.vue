@@ -152,7 +152,7 @@
 
           </v-card>
         </v-dialog>
-        <span tabindex="0" id="my-location-label" class="elevation-1" @click="showLocationSelector=true" @keyup.enter="showLocationSelector=true">Current location: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
+        <span tabindex="0" id="my-location-label" class="elevation-1" @click="showLocationSelector=true" @keyup.enter="showLocationSelector=true">{{ xSmallSize ? 'Location' : 'Current location'}}: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
       </div>
       <div id="right-buttons">
         <div id="controls" class="control-icon-wrapper">
@@ -786,7 +786,7 @@ const smallSize = computed(() => smAndDown.value);
 
 const mobile = computed(() => smallSize.value && touchscreen);
 
-// const xSmallSize = computed(() => xs.value);
+const xSmallSize = computed(() => xs.value);
 
 /* This lets us inject component data into element CSS */
 const cssVars = computed(() => {
