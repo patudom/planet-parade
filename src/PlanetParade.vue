@@ -13,51 +13,11 @@
 
     <!-- This contains the splash screen content -->
 
-    <v-overlay
-      :model-value="showSplashScreen"
-      absolute
-      opacity="0.6"
-      :style="cssVars"
-      id="splash-overlay"
-    >
-      <div
-        id="splash-screen"
-        v-click-outside="closeSplashScreen"
-        :style="cssVars"
-      >
-        <font-awesome-icon
-          id="close-splash-button"
-          @click="closeSplashScreen"
-          @keyup.enter="closeSplashScreen"
-          icon="xmark"
-          tabindex="0"
-          />
-        <div id="splash-screen-text">
-          <p>Want to see the</p>
-          <p class="highlight">Planetary Parade?</p>
-        </div>
-        <div>
-            <v-btn
-              class="splash-get-started"
-              @click="closeSplashScreen"
-              :color="accentColor"
-              :density="xSmallSize ? 'compact' : 'default'"
-              size="x-large"
-              variant="elevated"
-              rounded="lg"
-            >
-              Get Started
-            </v-btn>
-          </div>
-        <div id="splash-screen-acknowledgements" class="small">
-          This Data Story is brought to you by <a href="https://www.cosmicds.cfa.harvard.edu/" target="_blank" rel="noopener noreferrer">Cosmic Data Stories</a> and <a href="https://www.worldwidetelescope.org/home/" target="_blank" rel="noopener noreferrer">WorldWide Telescope</a>.
-          
-          <div id="splash-screen-logos">
-            <credit-logos logo-size="5vmin"/>
-          </div>
-        </div>
-      </div>
-    </v-overlay>
+    <splash-screen 
+      title="Planetary Parade" 
+      :cssVars="cssVars" 
+      @close="closeSplashScreen"
+      />
     <v-dialog
       v-model="inIntro"
     >
@@ -192,7 +152,7 @@
 
           </v-card>
         </v-dialog>
-        <span tabindex="0" id="my-location-label" class="elevation-1" @click="showLocationSelector=true" @keyup.enter="showLocationSelector=true">Current location: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
+        <span tabindex="0" id="my-location-label" class="elevation-1" @click="showLocationSelector=true" @keyup.enter="showLocationSelector=true">{{ xSmallSize ? 'Location' : 'Current location'}}: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
       </div>
       <div id="right-buttons">
         <div id="controls" class="control-icon-wrapper">
@@ -1421,133 +1381,6 @@ li {
   }
 }
 
-#splash-overlay {
-  position: fixed;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-#splash-screen {
-  color: #FFFFFF;
-  background-color: #000000;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-content: center;
-  justify-content: space-around;
-
-  font-family: 'Highway Gothic Narrow', 'Roboto', sans-serif;
-  font-size: min(8vw, 7vh);
-
-  p {
-    font-family: 'Highway Gothic Narrow', 'Roboto', sans-serif;
-    font-weight: bold;
-    vertical-align: middle;
-  }
-    
-  .highlight {
-    color: var(--accent-color2);
-    text-transform: uppercase;
-    font-weight: bolder;
-  }
-
-  border-radius: 30px;
-  border: min(1.2vw, 0.9vh) solid var(--accent-color);
-  overflow: auto;
-  padding-top: 4rem;
-  padding-bottom: 1rem;
-
-  @media (max-width: 699px) {
-    max-height: 80vh;
-    max-width: 90vw;
-  }
-
-  @media (min-width: 700px) {
-    max-height: 85vh;
-    max-width: min(70vw, 800px);
-  }
-
-  div {
-    margin-inline: auto;
-    text-align: center;
-  }
-
-  .small {
-    font-size: var(--default-font-size);
-    font-weight: bold;
-  }
-
-  #close-splash-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    text-align: end;
-    color: var(--accent-color);
-    font-size: min(5vw, 4vh);
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-
-  #splash-screen-text {
-    // in the grid, the text is in the 2nd column
-    display: flex;
-    flex-direction: column;
-    line-height: 130%;    
-  }
-
-  .splash-get-started {
-    border: 2px solid white;
-    font-size: calc(1.8 * var(--default-font-size));
-    margin-top: 5%;
-    margin-bottom: 2%;
-    font-weight: bold !important;
-  }
-
-  #splash-screen-guide {
-    margin-block: 1.5em;
-    font-size: min(5vw, 4vh);
-    line-height: 140%;
-    width: 75%;
-
-    .v-col{
-      padding: 0;
-    }
-    
-    .svg-inline--fa {
-      color:var(--accent-color);
-      margin: 0 10px;
-    }
-  }
-
-  #splash-screen-acknowledgements {
-    margin-top: 3rem;
-    font-size: calc(1.7 * var(--default-font-size));
-    line-height: calc(1.5 * var(--default-line-height));
-    width: 60%; 
-  }
-  #splash-screen-logos {
-    margin-block: 0.75em;
-    img {
-    height: 5vmin;
-    vertical-align: middle;
-    margin: 2px;
-    }
-    @media only screen and (max-width: 600px) {
-      img {
-        height: 24px;
-      }
-    }
-    svg {
-      vertical-align: middle;
-      height: 24px;
-    }
-  }
-}
-
 // From Sara Soueidan (https://www.sarasoueidan.com/blog/focus-indicators/) & Erik Kroes (https://www.erikkroes.nl/blog/the-universal-focus-state/)
 :focus-visible:not(.v-overlay__content, .v-field__input input),
 button:focus-visible,
@@ -1941,4 +1774,5 @@ video {
     margin: 2px;
   }
 }
+
 </style>
