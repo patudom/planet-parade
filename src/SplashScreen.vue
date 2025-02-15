@@ -6,6 +6,7 @@
     :style="cssVars"
     id="splash-overlay"
   >
+    <focus-trap>
     <div
       id="splash-screen"
       v-click-outside="closeSplashScreen"
@@ -17,7 +18,8 @@
         <font-awesome-icon
           id="close-splash-button"
           @click="closeSplashScreen"
-            icon="xmark"
+          icon="xmark"
+          tabindex="0"
           />
         <div id="splash-screen-text">
           <p>Want to see the</p>
@@ -47,6 +49,7 @@
         </div>
       </div>
     </div>
+    </focus-trap>
   </v-overlay>
 </template>
 
@@ -156,6 +159,8 @@ function closeSplashScreen() {
     text-align: end;
     color: var(--accent-color);
     font-size: min(5vw, 4vh);
+    padding: 0.25rem;
+    margin: -0.25rem;
 
     &:hover {
       cursor: pointer;

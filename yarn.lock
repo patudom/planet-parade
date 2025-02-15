@@ -324,6 +324,8 @@ __metadata:
     date-fns-tz: "npm:^3.2.0"
     eslint: "npm:^8.56.0"
     eslint-plugin-vue: "npm:^9.20.1"
+    focus-trap: "npm:^7.6.4"
+    focus-trap-vue: "npm:^4.0.3"
     less: "npm:^4.2.0"
     less-loader: "npm:^12.0.0"
     pinia: "npm:^2.1.7"
@@ -3691,6 +3693,25 @@ __metadata:
   version: 3.3.1
   resolution: "flatted@npm:3.3.1"
   checksum: 10c0/324166b125ee07d4ca9bcf3a5f98d915d5db4f39d711fba640a3178b959919aae1f7cfd8aabcfef5826ed8aa8a2aa14cc85b2d7d18ff638ddf4ae3df39573eaf
+  languageName: node
+  linkType: hard
+
+"focus-trap-vue@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "focus-trap-vue@npm:4.0.3"
+  peerDependencies:
+    focus-trap: ^7.0.0
+    vue: ^3.0.0
+  checksum: 10c0/ca3178ddb4c7ea0c8240fd2de96246e54d4244e84e25c8fa130774bd529ddcf9ca11ba14bec46be1921c459fe7498e0b0190d1c201aae68aa28893cbe0eaccb6
+  languageName: node
+  linkType: hard
+
+"focus-trap@npm:^7.6.4":
+  version: 7.6.4
+  resolution: "focus-trap@npm:7.6.4"
+  dependencies:
+    tabbable: "npm:^6.2.0"
+  checksum: 10c0/ed810d47fd904a5e0269e822d98e634c6cbdd7222046c712ef299bdd26a422db754e3cec04e6517065b12be4b47f65c21f6244e0c07a308b1060985463d518cb
   languageName: node
   linkType: hard
 
@@ -7394,6 +7415,13 @@ __metadata:
   bin:
     svgo: bin/svgo
   checksum: 10c0/0741f5d5cad63111a90a0ce7a1a5a9013f6d293e871b75efe39addb57f29a263e45294e485a4d2ff9cc260a5d142c8b5937b2234b4ef05efdd2706fb2d360ecc
+  languageName: node
+  linkType: hard
+
+"tabbable@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "tabbable@npm:6.2.0"
+  checksum: 10c0/ced8b38f05f2de62cd46836d77c2646c42b8c9713f5bd265daf0e78ff5ac73d3ba48a7ca45f348bafeef29b23da7187c72250742d37627883ef89cbd7fa76898
   languageName: node
   linkType: hard
 
