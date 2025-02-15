@@ -14,6 +14,7 @@ import LocationSearch from "./components/LocationSearch.vue";
 import PlaybackControl from './components/PlaybackControl.vue';
 import SpeedControl from "./components/SpeedControl.vue";
 import TimeDisplay from "./components/TimeDisplay.vue";
+import SplashScreen from "./SplashScreen.vue";
 
 
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -96,6 +97,7 @@ createApp(PlanetParade, {
   .component('date-time-picker', DateTimePicker)
   .component('speed-control', SpeedControl)
   .component('playback-control', PlaybackControl)
+  .component('splash-screen', SplashScreen)
 
   // Mount
   .mount("#app");
