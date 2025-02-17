@@ -9,7 +9,6 @@
           () => {
             reverseOrIncreaseReversePlaybackRate();
             timePlaying = true;
-            emit('update:reverse', playbackRate < 0);
           }
         "
         :color="color"
@@ -28,11 +27,11 @@
         @activate="
           () => {
             if (!timePlaying) {
-              timePlaying = true
+              timePlaying = true;
             } else {
               forwardOrIncreaseForwardPlaybackRate();
             }
-            emit('speed-up', playback);
+            emit('speed-up', playbackRate);
           }
         "
         :color="color"
@@ -84,6 +83,7 @@
       <icon-button
         @activate="() => {
           reverseRate();
+          emit('update:reverse', playbackRate < 0);
         }"
         :md-icon="playbackRate < 0 ? 'mdi-step-forward-2' : 'mdi-step-backward-2'"
         :color="color"
@@ -210,12 +210,18 @@
           class="desktop-playback-control"
           v-if="playbackVisible"
           :model-value="playbackRate"
-          @update:modelValue="(value: number) => {
-                          forceRate = false;
-                          playbackRate = value;
-                        }"
+          @update:modelValue="
+            (value: number) => {
+              forceRate = false;
+              playbackRate = value;
+              emit('set-rate', value);
+            }
+          "
           :paused="!timePlaying"
-          @paused="timePlaying = !$event"
+          @paused="(paused: boolean) => {
+            timePlaying = !paused;
+            emit('update:playing', !paused);
+          }"
           :max-power="Math.log10(maxSpeed)"
           :max="Math.log10(maxSpeed) + 1"
           :color="color"
@@ -251,10 +257,13 @@
           class="mobile-playback-control"
           v-show="playbackVisible"
           :model-value="playbackRate"
-          @update:modelValue="(value: number) => {
-                          forceRate = false;
-                          playbackRate = value;
-                        }"
+          @update:modelValue="
+            (value: number) => {
+              forceRate = false;
+              playbackRate = value;
+              emit('set-rate', value);
+            }
+          "
           :paused="!timePlaying"
           @paused="timePlaying = !$event"
           :max-power="Math.log10(maxSpeed)"
@@ -281,12 +290,9 @@ import { ref, computed, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 
 import { supportsTouchscreen } from "@cosmicds/vue-toolkit";
-
-
-// import { storeToRefs } from 'pinia';
 import { engineStore } from "@wwtelescope/engine-pinia";
-import { usePlaybackControl } from '../wwt_playback_control';
 
+import { usePlaybackControl } from '../wwt_playback_control';
 
 interface Props {
   store: ReturnType<typeof engineStore>;
@@ -296,6 +302,7 @@ interface Props {
   useInline?: boolean;
   showText?: boolean;
   rateDelta?: number;
+  useOldControl?: boolean;
 }
 
 const { 
@@ -305,12 +312,12 @@ const {
   store, 
   showText, 
   rateDelta, 
-  useInline
+  useInline,
+  useOldControl,
 } = withDefaults(defineProps<Props>(),
   {
     color: 'white',
     maxSpeed: 10000,
-    minSpeed: 1,
     defaultRate: 1,
     useInline: false,
     showText: false,
@@ -328,8 +335,8 @@ const emit = defineEmits<{
   "update:reverse": boolean,
   "update:playing": boolean,
   "slow-down": number,
-  "speed-up": number
-  "rate": number
+  "speed-up": number,
+  "set-rate": number,
 }>();
 
 const playbackVisible = ref(false);
@@ -342,7 +349,7 @@ timePlaying.value = playing.value;
 watch(playing, (v) => {timePlaying.value = v;});
 watch(timePlaying, (v) => {playing.value = v;});
 
-function clamp(val) {
+function clamp(val: number) {
   return Math.min(Math.max(val, minSpeed), maxSpeed);
 }
 
@@ -411,7 +418,7 @@ function forwardOrIncreaseForwardPlaybackRate() {
 }
 
 const { smAndDown } = useDisplay();
-const mobile = computed( () => smAndDown && supportsTouchscreen());
+const mobile = computed(() => smAndDown && supportsTouchscreen());
 
 const allowClickOutside = ref(false);
 function onClickOutside() {
