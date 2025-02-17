@@ -247,7 +247,7 @@
         @speed-up="(rate: number) => {
           wwtStats.speedups.push(rate);
         }"
-        @rate="(rate: number) => {
+        @set-rate="(rate: number) => {
           wwtStats.rateSelections.push(rate);
         }"
         />
@@ -538,7 +538,7 @@ import { ref, reactive, computed, markRaw, onMounted, nextTick, watch } from "vu
 import { Color, Grids, Planets, Settings, WWTControl } from "@wwtelescope/engine";
 import { SolarSystemObjects } from "@wwtelescope/engine-types";
 import { engineStore } from "@wwtelescope/engine-pinia";
-import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, D2R, API_BASE_URL } from "@cosmicds/vue-toolkit";
+import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, API_BASE_URL, D2R } from "@cosmicds/vue-toolkit";
 import { useDisplay } from "vuetify";
 import { v4 } from "uuid";
 
@@ -621,7 +621,7 @@ const wwtStats = markRaw({
   speedups: [] as number[],
   slowdowns: [] as number[],
   rateSelections: [] as number[],
-  startStopTimes: [] as [number, number | null][],
+  startTime: Date.now(),
 });
 
 const optOut = typeof storedOptOut === "string" ? storedOptOut === "true" : null;
@@ -750,7 +750,7 @@ onMounted(() => {
     if (altTime) {
       selectedTime.value = altTime;
     }
-    wwtStats.startStopTimes.push([selectedTime.value, null]);
+    wwtStats.startTime = selectedTime.value;
     setTimeout(() => resetCamera().then(() => positionSet.value = true), 100);
 
     store.applySetting(["localHorizonMode", true]);
@@ -971,7 +971,7 @@ async function createUserEntry() {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       wwt_rate_selections: wwtStats.rateSelections,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      wwt_start_stop_times: wwtStats.startStopTimes.filter(pair => pair.every(x => x !== null)),
+      wwt_start_stop_times: [wwtStats.startTime, selectedTime.value],
     }),
   });
 }
@@ -992,7 +992,7 @@ function resetData() {
     speedups: [],
     slowdowns: [],
     rateSelections: [],
-    startStopTimes: [],
+    startTime: selectedTime.value,
   });
 }
 
@@ -1004,10 +1004,6 @@ async function updateUserData() {
   const now = Date.now();
   const infoTime = (showTextSheet.value && infoStartTimestamp !== null) ? now - infoStartTimestamp : infoTimeMs;
   const videoTime = (videoPlaying && videoPlayingStartTimestamp !== null) ? now - videoPlayingStartTimestamp : videoPlayingTimeMs;
-
-  if (wwtStats.startStopTimes.length > 0) {
-    wwtStats.startStopTimes[wwtStats.startStopTimes.length - 1][1] = selectedTime.value;
-  }
 
   fetch(`${STORY_DATA_URL}/${uuid}`, {
     method: "PATCH",
@@ -1042,7 +1038,7 @@ async function updateUserData() {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       wwt_rate_selections: wwtStats.rateSelections,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      wwt_start_stop_times: wwtStats.startStopTimes.filter(pair => pair.every(x => x !== null)),
+      wwt_start_stop_times: [wwtStats.startTime, selectedTime.value],
     }),
     keepalive: true,
   }).then(() => {
