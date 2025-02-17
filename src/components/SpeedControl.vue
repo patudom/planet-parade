@@ -9,6 +9,7 @@
           () => {
             reverseOrIncreaseReversePlaybackRate();
             timePlaying = true;
+            emit('update:reverse', playbackRate < 0);
           }
         "
         :color="color"
@@ -31,6 +32,7 @@
             } else {
               forwardOrIncreaseForwardPlaybackRate();
             }
+            emit('speed-up', playback);
           }
         "
         :color="color"
@@ -81,7 +83,7 @@
       ></icon-button> -->
       <icon-button
         @activate="() => {
-          reverseRate()
+          reverseRate();
         }"
         :md-icon="playbackRate < 0 ? 'mdi-step-forward-2' : 'mdi-step-backward-2'"
         :color="color"
@@ -100,6 +102,7 @@
         @activate="
           () => {
             timePlaying = !timePlaying;
+            emit('update:playing', timePlaying);
           }
         "
         :color="color"
@@ -119,6 +122,7 @@
           () => {
             decreaseRate();
             timePlaying = true;
+            emit('slow-down', playbackRate);
           }
         "
         :color="color"
@@ -138,6 +142,7 @@
           () => {
             increaseRate();
             timePlaying = true;
+            emit('speed-up', playbackRate);
           }
         "
         :color="color"
@@ -300,7 +305,6 @@ const {
   store, 
   showText, 
   rateDelta, 
-  useOldControl, 
   useInline
 } = withDefaults(defineProps<Props>(),
   {
@@ -319,7 +323,14 @@ const {
 const playing = defineModel<boolean>('playing', {default: false, required: true});
 const minSpeed = 1;
 
-const emit = defineEmits(['reset', 'update:playing']);
+const emit = defineEmits<{
+  "reset": void,
+  "update:reverse": boolean,
+  "update:playing": boolean,
+  "slow-down": number,
+  "speed-up": number
+  "rate": number
+}>();
 
 const playbackVisible = ref(false);
 const forceRate = ref(false);
