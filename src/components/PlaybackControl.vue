@@ -70,7 +70,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-// import VueSlider from 'vue-slider-component';
 import { VSlider } from 'vuetify/components/VSlider';
 import { SymmetricalLogTransform, symmLinspace } from './symlog';
 
