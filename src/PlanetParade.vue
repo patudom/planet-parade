@@ -231,7 +231,25 @@
         :useInline="xs"
         :maxSpeed="10000"
         show-text
-        @reset="()=>{selectedTime = Date.now()}"
+        @reset="() => {
+          selectedTime = Date.now();
+          wwtStats.timeResetCount += 1;
+        }"
+        @update:reverse="(_reverse: boolean) => {
+          wwtStats.reverseCount += 1;
+        }"
+        @update:playing="(_playing: boolean) => {
+          wwtStats.playPauseCount += 1;
+        }"
+        @slow-down="(rate: number) => {
+          wwtStats.slowdowns.push(rate);
+        }"
+        @speed-up="(rate: number) => {
+          wwtStats.speedups.push(rate);
+        }"
+        @set-rate="(rate: number) => {
+          wwtStats.rateSelections.push(rate);
+        }"
         />
       <div id="change-flags">
         <icon-button
@@ -516,11 +534,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
+import { ref, reactive, computed, markRaw, onMounted, nextTick, watch } from "vue";
 import { Color, Grids, Planets, Settings, WWTControl } from "@wwtelescope/engine";
 import { SolarSystemObjects } from "@wwtelescope/engine-types";
 import { engineStore } from "@wwtelescope/engine-pinia";
-import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, D2R, API_BASE_URL } from "@cosmicds/vue-toolkit";
+import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, API_BASE_URL, D2R } from "@cosmicds/vue-toolkit";
 import { useDisplay } from "vuetify";
 import { v4 } from "uuid";
 
@@ -595,6 +613,16 @@ const inIntro = ref(false);
 const showPrivacyDialog = ref(false);
 const datePickerOpen = ref(false);
 const skipIntroChecked = ref(skipIntroContent);
+
+const wwtStats = markRaw({
+  timeResetCount: 0,
+  reverseCount: 0,
+  playPauseCount: 0,
+  speedups: [] as number[],
+  slowdowns: [] as number[],
+  rateSelections: [] as number[],
+  startTime: Date.now(),
+});
 
 const optOut = typeof storedOptOut === "string" ? storedOptOut === "true" : null;
 const responseOptOut = ref(optOut);
@@ -722,6 +750,7 @@ onMounted(() => {
     if (altTime) {
       selectedTime.value = altTime;
     }
+    wwtStats.startTime = selectedTime.value;
     setTimeout(() => resetCamera().then(() => positionSet.value = true), 100);
 
     store.applySetting(["localHorizonMode", true]);
@@ -929,6 +958,20 @@ async function createUserEntry() {
       app_time_ms: 0, info_time_ms: 0, video_time_ms: 0,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       video_opened: videoOpened, video_played: videoPlayed,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      wwt_time_reset_count: wwtStats.timeResetCount,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      wwt_reverse_count: wwtStats.reverseCount,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      wwt_play_pause_count: wwtStats.playPauseCount,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      wwt_speedups: wwtStats.speedups,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      wwt_slowdowns: wwtStats.slowdowns,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      wwt_rate_selections: wwtStats.rateSelections,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      wwt_start_stop_times: [wwtStats.startTime, selectedTime.value],
     }),
   });
 }
@@ -942,6 +985,15 @@ function resetData() {
   appStartTimestamp = now;
   infoStartTimestamp = showTextSheet.value ? now : null;
   videoPlayingStartTimestamp = videoPlaying ? now : null;
+  Object.assign(wwtStats, {
+    timeResetCount: 0,
+    reverseCount: 0,
+    playPauseCount: 0,
+    speedups: [],
+    slowdowns: [],
+    rateSelections: [],
+    startTime: selectedTime.value,
+  });
 }
 
 async function updateUserData() {
@@ -973,6 +1025,20 @@ async function updateUserData() {
       delta_video_time_ms: videoTime,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       video_opened: videoOpened, video_played: videoPlayed,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      delta_wwt_time_reset_count: wwtStats.timeResetCount,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      delta_wwt_reverse_count: wwtStats.reverseCount,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      delta_wwt_play_pause_count: wwtStats.playPauseCount,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      wwt_speedups: wwtStats.speedups,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      wwt_slowdowns: wwtStats.slowdowns,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      wwt_rate_selections: wwtStats.rateSelections,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      wwt_start_stop_times: [wwtStats.startTime, selectedTime.value],
     }),
     keepalive: true,
   }).then(() => {
