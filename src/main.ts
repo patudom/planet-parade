@@ -23,6 +23,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faBookOpen,
   faChevronDown,
+  faChevronUp,
   faCircleXmark,
   faGear,
   faLocationDot,
@@ -42,6 +43,7 @@ import {
 
 library.add(faBookOpen);
 library.add(faChevronDown);
+library.add(faChevronUp);
 library.add(faCircleXmark);
 library.add(faGear);
 library.add(faLocationDot);

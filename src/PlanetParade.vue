@@ -155,7 +155,7 @@
         <span tabindex="0" id="my-location-label" class="elevation-1" @click="showLocationSelector=true" @keyup.enter="showLocationSelector=true">{{ xSmallSize ? 'Location' : 'Current location'}}: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
       </div>
       <div id="right-buttons">
-        <div id="controls" class="control-icon-wrapper">
+        <div id="controls" class="collapsable-control control-icon-wrapper">
           <div id="controls-top-row">
             <font-awesome-icon
               size="lg"
@@ -179,6 +179,30 @@
               <v-checkbox :color="accentColor" v-model="showConstellations" @keyup.enter="showConstellations = !showConstellations"
               label="Constellations" hide-details />
 
+          </div>
+        </div>
+        
+        <div id="planet-visibility-box" class="collapsable-control control-icon-wrapper">
+          <div id="controls-top-row">
+            Planet Visibility&nbsp;&nbsp;
+            <font-awesome-icon
+              size="lg"
+              class="tab-focusable"
+              :color="accentColor"
+              :icon="showPlanetVisiblity ? `chevron-down` : `chevron-up`"
+              @click="showPlanetVisiblity = !showPlanetVisiblity" 
+              @keyup.enter="showPlanetVisiblity = !showPlanetVisiblity"
+              tabindex="0" />
+          </div>
+        
+          <div v-if="showPlanetVisiblity" id="planet-visibility-label">
+            <p class="planet-label"><v-icon>mdi-eye-outline</v-icon> Mercury</p>
+            <p class="planet-label not-visible"><v-icon>mdi-eye-outline</v-icon> Venus</p>
+            <p class="planet-label"><v-icon>mdi-eye-outline</v-icon> Mars</p>
+            <p class="planet-label not-visible"><v-icon>mdi-eye-outline</v-icon> Jupiter</p>
+            <p class="planet-label"><v-icon>mdi-eye-outline</v-icon> Saturn</p>
+            <p class="planet-label"><v-icon>mdi-binoculars</v-icon> Uranus</p>
+            <p class="planet-label"><v-icon>mdi-telescope</v-icon> Neptune</p>
           </div>
         </div>
       </div>
@@ -613,6 +637,7 @@ const inIntro = ref(false);
 const showPrivacyDialog = ref(false);
 const datePickerOpen = ref(false);
 const skipIntroChecked = ref(skipIntroContent);
+const showPlanetVisiblity = ref(true);
 
 const wwtStats = markRaw({
   timeResetCount: 0,
@@ -1341,7 +1366,7 @@ li {
   height: auto;
 }
 
-#controls {
+.collapsable-control {
   pointer-events: auto;
 
   background: black;
@@ -1410,6 +1435,21 @@ li {
     width: 100%;
     flex-direction: row;
     justify-content: flex-end;
+  }
+}
+
+#planet-visibility-box {
+  color: var(--accent-color);
+  // font-size: calc(1.1 * var(--default-font-size));
+  
+  #planet-visibility-label {
+      
+    p.planet-label {
+      margin: 0;
+      margin-left: 0.5em;
+      line-height: calc(1 * var(--default-line-height));
+      
+    }
   }
 }
 
