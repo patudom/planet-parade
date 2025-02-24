@@ -194,15 +194,15 @@
               @keyup.enter="showPlanetVisiblity = !showPlanetVisiblity"
               tabindex="0" />
           </div>
-        
+          <!-- {{ planetIsVisible(SolarSystemObjects.sun, dateTime,  selectedLocation) }} -->
           <div v-if="showPlanetVisiblity" id="planet-visibility-label">
-            <p class="planet-label"><v-icon>mdi-eye-outline</v-icon> Mercury</p>
-            <p class="planet-label not-visible"><v-icon>mdi-eye-outline</v-icon> Venus</p>
-            <p class="planet-label"><v-icon>mdi-eye-outline</v-icon> Mars</p>
-            <p class="planet-label not-visible"><v-icon>mdi-eye-outline</v-icon> Jupiter</p>
-            <p class="planet-label"><v-icon>mdi-eye-outline</v-icon> Saturn</p>
-            <p class="planet-label"><v-icon>mdi-binoculars</v-icon> Uranus</p>
-            <p class="planet-label"><v-icon>mdi-telescope</v-icon> Neptune</p>
+            <p :class="['planet-label', mercuryVis ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Mercury</p>
+            <p :class="['planet-label', venusVis   ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Venus</p>
+            <p :class="['planet-label', marsVis    ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Mars</p>
+            <p :class="['planet-label', jupiterVis ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Jupiter</p>
+            <p :class="['planet-label', saturnVis  ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Saturn</p>
+            <p :class="['planet-label', uranusVis  ? '' : 'not-visible' ]"><v-icon>mdi-binoculars</v-icon> Uranus</p>
+            <p :class="['planet-label', neptuneVis ? '' : 'not-visible' ]"><v-icon>mdi-telescope</v-icon> Neptune</p>
           </div>
         </div>
       </div>
@@ -559,7 +559,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, markRaw, onMounted, nextTick, watch } from "vue";
-import { Color, Grids, Planets, Settings, WWTControl } from "@wwtelescope/engine";
+import { Color, Grids, Planets, Settings, WWTControl, AstroCalc } from "@wwtelescope/engine";
 import { SolarSystemObjects } from "@wwtelescope/engine-types";
 import { engineStore } from "@wwtelescope/engine-pinia";
 import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, API_BASE_URL, D2R } from "@cosmicds/vue-toolkit";
@@ -567,7 +567,7 @@ import { useDisplay } from "vuetify";
 import { v4 } from "uuid";
 
 import { useTimezone } from "./timezones";
-import { horizontalToEquatorial, skyOpacityForSunAlt } from "./utils";
+import { horizontalToEquatorial, skyOpacityForSunAlt, getJulian, equatorialToHorizontal } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame, drawEcliptic, drawSkyOverlays } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 // import { useGeolocation } from "@cosmicds/vue-toolkit";
@@ -763,6 +763,24 @@ function doWWTModifications() {
   WWTControl.singleton.set_zoomMax(maxFOV * 6);
 
 }
+
+
+function planetIsVisible(planetName, date: Date, location: LocationDeg) {
+  // Get planet position
+  const planetPos = AstroCalc.getPlanet(getJulian(date), planetName, location.latitudeDeg * D2R, location.longitudeDeg * D2R, 0);
+  // Convert to horizontal
+  const altAz = equatorialToHorizontal(planetPos.RA * 15 * D2R, planetPos.dec * D2R, location.latitudeDeg * D2R, location.longitudeDeg * D2R, date);
+  // Check if planet is above minimum altitude
+  return altAz.altRad > 0;
+}
+
+const mercuryVis = computed(() => planetIsVisible(SolarSystemObjects.mercury, dateTime.value, selectedLocation.value));
+const venusVis = computed(() => planetIsVisible(SolarSystemObjects.venus, dateTime.value, selectedLocation.value));
+const marsVis = computed(() => planetIsVisible(SolarSystemObjects.mars, dateTime.value, selectedLocation.value));
+const jupiterVis = computed(() => planetIsVisible(SolarSystemObjects.jupiter, dateTime.value, selectedLocation.value));
+const saturnVis = computed(() => planetIsVisible(SolarSystemObjects.saturn, dateTime.value, selectedLocation.value));
+const uranusVis = computed(() => planetIsVisible(SolarSystemObjects.uranus, dateTime.value, selectedLocation.value));
+const neptuneVis = computed(() => planetIsVisible(SolarSystemObjects.neptune, dateTime.value, selectedLocation.value));
 
 onMounted(() => {
   store.waitForReady().then(async () => {
@@ -1448,7 +1466,9 @@ li {
       margin: 0;
       margin-left: 0.5em;
       line-height: calc(1 * var(--default-line-height));
-      
+    }
+    p.planet-label.not-visible {
+      color: #333;
     }
   }
 }

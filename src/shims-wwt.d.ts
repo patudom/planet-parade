@@ -1,4 +1,5 @@
 import { Color, RenderContext } from "@wwtelescope/engine";
+import { SolarSystemObjects } from "@wwtelescope/engine-types";
 
 declare module "@wwtelescope/engine" {
 
@@ -68,6 +69,18 @@ declare module "@wwtelescope/engine" {
 
   export class CAAMoon {
     static radiusVector(JD: number): number;
+  }
+  
+  export class AstroRaDec {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    RA: number;
+    dec: number;
+    distance: number;
+    constructor(ra: number, dec: number, distance: number, shadow?: boolean, eclipsed?: boolean);
+  }
+  
+  export class AstroCalc {
+    static getPlanet(jDate: number, planetName: SolarSystemObjects, lat: number, lng: number, height: number): AstroRaDec;
   }
 
 }
