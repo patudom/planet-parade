@@ -156,7 +156,7 @@
       </div>
       <div id="right-buttons">
         <div id="controls" class="collapsable-control control-icon-wrapper">
-          <div id="controls-top-row">
+          <div class="controls-top-row">
             <font-awesome-icon
               size="lg"
               class="tab-focusable"
@@ -183,8 +183,8 @@
         </div>
         
         <div id="planet-visibility-box" class="collapsable-control control-icon-wrapper">
-          <div id="controls-top-row">
-            Planet Visibility&nbsp;&nbsp;
+          <div class="controls-top-row planet-visibility">
+            <div class="planet-visibility-title">Above Horizon</div>
             <font-awesome-icon
               size="lg"
               class="tab-focusable"
@@ -196,6 +196,7 @@
           </div>
           <!-- {{ planetIsVisible(SolarSystemObjects.sun, dateTime,  selectedLocation) }} -->
           <div v-if="showPlanetVisiblity" id="planet-visibility-label">
+            <p :class="['planet-label','sun', sunVis ? '' : 'not-visible' ]"><v-icon>mdi-weather-sunny</v-icon> Sun</p>
             <p :class="['planet-label', mercuryVis ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Mercury</p>
             <p :class="['planet-label', venusVis   ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Venus</p>
             <p :class="['planet-label', marsVis    ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Mars</p>
@@ -774,6 +775,7 @@ function planetIsVisible(planetName, date: Date, location: LocationDeg) {
   return altAz.altRad > 0;
 }
 
+const sunVis = computed(() => planetIsVisible(SolarSystemObjects.sun, dateTime.value, selectedLocation.value));
 const mercuryVis = computed(() => planetIsVisible(SolarSystemObjects.mercury, dateTime.value, selectedLocation.value));
 const venusVis = computed(() => planetIsVisible(SolarSystemObjects.venus, dateTime.value, selectedLocation.value));
 const marsVis = computed(() => planetIsVisible(SolarSystemObjects.mars, dateTime.value, selectedLocation.value));
@@ -1447,7 +1449,7 @@ li {
     }
   }
   
-  #controls-top-row {
+  .controls-top-row {
     padding-left: 0.5em;
     display: flex;
     width: 100%;
@@ -1458,15 +1460,34 @@ li {
 
 #planet-visibility-box {
   color: var(--accent-color);
-  // font-size: calc(1.1 * var(--default-font-size));
+  font-size: calc(1.15 * var(--default-font-size));
+  
+  .controls-top-row.planet-visibility {
+    justify-content: space-between;
+  }
+  
+  .planet-visibility-title {
+    // flex-basis: 12ch;
+    line-height: calc(1 * var(--default-line-height));
+    margin-bottom: 5px;
+    margin-right: 5px;
+  }
   
   #planet-visibility-label {
       
     p.planet-label {
+      font-size: calc(1.1 * var(--default-font-size));
       margin: 0;
       margin-left: 0.5em;
       line-height: calc(1 * var(--default-line-height));
+      transition: color 0.3s;
     }
+    
+    .sun {
+      color: rgb(232, 232, 59);
+      font-weight: bold;
+    }
+
     p.planet-label.not-visible {
       color: #333;
     }
