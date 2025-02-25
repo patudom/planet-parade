@@ -233,7 +233,7 @@
             tabindex="0"
             @keyup.enter="props.onClick"
             >
-            <time-display class="bsn__time" :date="localSelectedDate" ampm :short-time-date="smAndDown" show-timezone :timezone="shortTimezone" />
+            <time-display class="bsn__time" :date="localSelectedDate" ampm :short-time-date="true" show-timezone :timezone="shortTimezone" />
             <v-icon v-if="!(smAndDown || mobile)" class="td__icon"  >mdi-cursor-default-click</v-icon>
           </v-card>
         </template>
@@ -1504,6 +1504,7 @@ li {
   pointer-events: none;
   align-items: center;
   gap: 5px;
+  justify-content: center;
 }
 
 // vuetify smAndDown
@@ -1856,13 +1857,16 @@ video {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-left: 1rem;
+  margin-top: 2px;
 
   @media (max-width: 600px) {
-    margin: 0;
+    // margin: 0;
+    // margin-left: 1rem;
   }
 
   @media (min-width: 601px) {
-    margin: 1rem;
+    // margin: 1rem;
   }
 
 }
@@ -1885,7 +1889,7 @@ video {
 }
 
 .td__card {
-  border: 1px solid var(--accent-color);
+  border: 2px solid var(--accent-color);
   text-align: right;
   position: relative;
   overflow: visible;
@@ -1901,6 +1905,14 @@ video {
 .bsn__time .td__time_time {
   font-size: var(--default-font-size);
 }
+
+@media (min-width: 960px) {
+  .bsn__time .td__time_time.td__short_time {
+    font-size: calc(1.2 * var(--default-font-size));
+  }
+}
+
+
 
 .bsn__time .td__date_date {
   font-size: calc(0.85 * var(--default-font-size));
