@@ -1099,7 +1099,7 @@ async function resetCamera(): Promise<void> {
 
   const sunAltAz = getSunPositionAtTime(time);
   const sunAz = sunAltAz.azRad;
-  const startAlt = smallSize.value ? 15 * D2R : 25 * D2R;
+  const startAlt = smallSize.value ? 15 * D2R : 20 * D2R;
   const startRADec = horizontalToEquatorial(
     startAlt,
     sunAz,
