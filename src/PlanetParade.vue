@@ -1460,7 +1460,7 @@ li {
 
 #planet-visibility-box {
   color: var(--accent-color);
-  font-size: calc(1.15 * var(--default-font-size));
+  font-size: calc(1.1 * var(--default-font-size));
   
   .controls-top-row.planet-visibility {
     justify-content: space-between;
@@ -1476,7 +1476,7 @@ li {
   #planet-visibility-label {
       
     p.planet-label {
-      font-size: calc(1.1 * var(--default-font-size));
+      font-size: var(--default-font-size);
       margin: 0;
       margin-left: 0.5em;
       line-height: calc(1 * var(--default-line-height));
