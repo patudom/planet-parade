@@ -12,7 +12,7 @@
         <span class="td__timezone_tz">{{ props.timezone }}</span>
       </div>
       <div class="td__time" v-if="props.shortTimeDate"> 
-        <span class="td__time_time">{{ shortTimeDateString }}</span>
+        <span class="td__time_time td__short_time">{{ shortTimeDateString }}</span>
       </div>
       
    </div>  
@@ -58,6 +58,7 @@ const ampm = computed(() => {
 
 const shortTimeDateString = computed(() => {
   // return date formatted as Oct 3 9:00 AM
+  const year = props.date.getFullYear();
   const month = props.date.toLocaleString('default', { month: 'short' });
   const day = props.date.getDate();
   const h = props.date.getHours() % 12;
@@ -65,7 +66,7 @@ const shortTimeDateString = computed(() => {
   const minute = pad(props.date.getMinutes());
   const ampm = props.date.getHours() >= 12 ? 'PM' : 'AM';
   const tz =  props.timezone;
-  return `${month} ${day} ${hour}:${minute} ${ampm}` + (props.showTimezone ? ` ${tz}` : '');
+  return `${month} ${day} ${year} ${hour}:${minute} ${ampm}` + (props.showTimezone ? ` ${tz}` : '');
 });
 
 

@@ -155,8 +155,8 @@
         <span tabindex="0" id="my-location-label" class="elevation-1" @click="showLocationSelector=true" @keyup.enter="showLocationSelector=true">{{ xSmallSize ? 'Location' : 'Current location'}}: {{ selectedLocationText != '' ? selectedLocationText : 'Cambridge, MA (default)' }}</span>
       </div>
       <div id="right-buttons">
-        <div id="controls" class="control-icon-wrapper">
-          <div id="controls-top-row">
+        <div id="controls" class="collapsable-control control-icon-wrapper">
+          <div class="controls-top-row">
             <font-awesome-icon
               size="lg"
               class="tab-focusable"
@@ -179,6 +179,31 @@
               <v-checkbox :color="accentColor" v-model="showConstellations" @keyup.enter="showConstellations = !showConstellations"
               label="Constellations" hide-details />
 
+          </div>
+        </div>
+        
+        <div id="planet-visibility-box" class="collapsable-control control-icon-wrapper">
+          <div class="controls-top-row planet-visibility">
+            <div class="planet-visibility-title">Above Horizon</div>
+            <font-awesome-icon
+              size="lg"
+              class="tab-focusable"
+              :color="accentColor"
+              :icon="showPlanetVisiblity ? `chevron-down` : `chevron-up`"
+              @click="showPlanetVisiblity = !showPlanetVisiblity" 
+              @keyup.enter="showPlanetVisiblity = !showPlanetVisiblity"
+              tabindex="0" />
+          </div>
+          <!-- {{ planetIsVisible(SolarSystemObjects.sun, dateTime,  selectedLocation) }} -->
+          <div v-if="showPlanetVisiblity" id="planet-visibility-label">
+            <p :class="['planet-label','sun', sunVis ? '' : 'not-visible' ]"><v-icon>mdi-weather-sunny</v-icon> Sun</p>
+            <p :class="['planet-label', mercuryVis ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Mercury</p>
+            <p :class="['planet-label', venusVis   ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Venus</p>
+            <p :class="['planet-label', marsVis    ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Mars</p>
+            <p :class="['planet-label', jupiterVis ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Jupiter</p>
+            <p :class="['planet-label', saturnVis  ? '' : 'not-visible' ]"><v-icon>mdi-eye-outline</v-icon> Saturn</p>
+            <p :class="['planet-label', uranusVis  ? '' : 'not-visible' ]"><v-icon>mdi-binoculars</v-icon> Uranus</p>
+            <p :class="['planet-label', neptuneVis ? '' : 'not-visible' ]"><v-icon>mdi-telescope</v-icon> Neptune</p>
           </div>
         </div>
       </div>
@@ -208,7 +233,7 @@
             tabindex="0"
             @keyup.enter="props.onClick"
             >
-            <time-display class="bsn__time" :date="localSelectedDate" ampm :short-time-date="smAndDown" show-timezone :timezone="shortTimezone" />
+            <time-display class="bsn__time" :date="localSelectedDate" ampm :short-time-date="true" show-timezone :timezone="shortTimezone" />
             <v-icon v-if="!(smAndDown || mobile)" class="td__icon"  >mdi-cursor-default-click</v-icon>
           </v-card>
         </template>
@@ -535,7 +560,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, markRaw, onMounted, nextTick, watch } from "vue";
-import { Color, Grids, Planets, Settings, WWTControl } from "@wwtelescope/engine";
+import { Color, Grids, Planets, Settings, WWTControl, AstroCalc } from "@wwtelescope/engine";
 import { SolarSystemObjects } from "@wwtelescope/engine-types";
 import { engineStore } from "@wwtelescope/engine-pinia";
 import { BackgroundImageset, LocationDeg, skyBackgroundImagesets, supportsTouchscreen, blurActiveElement, useWWTKeyboardControls, API_BASE_URL, D2R } from "@cosmicds/vue-toolkit";
@@ -543,7 +568,7 @@ import { useDisplay } from "vuetify";
 import { v4 } from "uuid";
 
 import { useTimezone } from "./timezones";
-import { horizontalToEquatorial, skyOpacityForSunAlt } from "./utils";
+import { horizontalToEquatorial, skyOpacityForSunAlt, getJulian, equatorialToHorizontal } from "./utils";
 import { resetAltAzGridText, makeAltAzGridText, drawPlanets, renderOneFrame, drawEcliptic, drawSkyOverlays } from "./wwt-hacks";
 import { MapBoxFeature, MapBoxFeatureCollection, geocodingInfoForSearch, textForLocation } from "@cosmicds/vue-toolkit/src/mapbox";
 // import { useGeolocation } from "@cosmicds/vue-toolkit";
@@ -613,6 +638,7 @@ const inIntro = ref(false);
 const showPrivacyDialog = ref(false);
 const datePickerOpen = ref(false);
 const skipIntroChecked = ref(skipIntroContent);
+const showPlanetVisiblity = ref(true);
 
 const wwtStats = markRaw({
   timeResetCount: 0,
@@ -738,6 +764,25 @@ function doWWTModifications() {
   WWTControl.singleton.set_zoomMax(maxFOV * 6);
 
 }
+
+
+function planetIsVisible(planetName, date: Date, location: LocationDeg) {
+  // Get planet position
+  const planetPos = AstroCalc.getPlanet(getJulian(date), planetName, location.latitudeDeg * D2R, location.longitudeDeg * D2R, 0);
+  // Convert to horizontal
+  const altAz = equatorialToHorizontal(planetPos.RA * 15 * D2R, planetPos.dec * D2R, location.latitudeDeg * D2R, location.longitudeDeg * D2R, date);
+  // Check if planet is above minimum altitude
+  return altAz.altRad > 0;
+}
+
+const sunVis = computed(() => planetIsVisible(SolarSystemObjects.sun, dateTime.value, selectedLocation.value));
+const mercuryVis = computed(() => planetIsVisible(SolarSystemObjects.mercury, dateTime.value, selectedLocation.value));
+const venusVis = computed(() => planetIsVisible(SolarSystemObjects.venus, dateTime.value, selectedLocation.value));
+const marsVis = computed(() => planetIsVisible(SolarSystemObjects.mars, dateTime.value, selectedLocation.value));
+const jupiterVis = computed(() => planetIsVisible(SolarSystemObjects.jupiter, dateTime.value, selectedLocation.value));
+const saturnVis = computed(() => planetIsVisible(SolarSystemObjects.saturn, dateTime.value, selectedLocation.value));
+const uranusVis = computed(() => planetIsVisible(SolarSystemObjects.uranus, dateTime.value, selectedLocation.value));
+const neptuneVis = computed(() => planetIsVisible(SolarSystemObjects.neptune, dateTime.value, selectedLocation.value));
 
 onMounted(() => {
   store.waitForReady().then(async () => {
@@ -1341,7 +1386,7 @@ li {
   height: auto;
 }
 
-#controls {
+.collapsable-control {
   pointer-events: auto;
 
   background: black;
@@ -1404,12 +1449,48 @@ li {
     }
   }
   
-  #controls-top-row {
+  .controls-top-row {
     padding-left: 0.5em;
     display: flex;
     width: 100%;
     flex-direction: row;
     justify-content: flex-end;
+  }
+}
+
+#planet-visibility-box {
+  color: var(--accent-color);
+  font-size: calc(1.1 * var(--default-font-size));
+  
+  .controls-top-row.planet-visibility {
+    justify-content: space-between;
+  }
+  
+  .planet-visibility-title {
+    // flex-basis: 12ch;
+    line-height: calc(1 * var(--default-line-height));
+    margin-bottom: 5px;
+    margin-right: 5px;
+  }
+  
+  #planet-visibility-label {
+      
+    p.planet-label {
+      font-size: var(--default-font-size);
+      margin: 0;
+      margin-left: 0.5em;
+      line-height: calc(1 * var(--default-line-height));
+      transition: color 0.3s;
+    }
+    
+    .sun {
+      color: rgb(232, 232, 59);
+      font-weight: bold;
+    }
+
+    p.planet-label.not-visible {
+      color: #333;
+    }
   }
 }
 
@@ -1423,6 +1504,7 @@ li {
   pointer-events: none;
   align-items: center;
   gap: 5px;
+  justify-content: center;
 }
 
 // vuetify smAndDown
@@ -1775,13 +1857,16 @@ video {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-left: 1rem;
+  margin-top: 2px;
 
   @media (max-width: 600px) {
-    margin: 0;
+    // margin: 0;
+    // margin-left: 1rem;
   }
 
   @media (min-width: 601px) {
-    margin: 1rem;
+    // margin: 1rem;
   }
 
 }
@@ -1804,7 +1889,7 @@ video {
 }
 
 .td__card {
-  border: 1px solid var(--accent-color);
+  border: 2px solid var(--accent-color);
   text-align: right;
   position: relative;
   overflow: visible;
@@ -1820,6 +1905,14 @@ video {
 .bsn__time .td__time_time {
   font-size: var(--default-font-size);
 }
+
+@media (min-width: 960px) {
+  .bsn__time .td__time_time.td__short_time {
+    font-size: calc(1.2 * var(--default-font-size));
+  }
+}
+
+
 
 .bsn__time .td__date_date {
   font-size: calc(0.85 * var(--default-font-size));
