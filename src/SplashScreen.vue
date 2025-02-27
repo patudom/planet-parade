@@ -44,8 +44,9 @@
       </div>
     
       <div id="splash-screen-acknowledgements">
+        <span>
         Brought to you by <a href="https://www.cosmicds.cfa.harvard.edu/" target="_blank" rel="noopener noreferrer">Cosmic Data Stories</a> and <a href="https://www.worldwidetelescope.org/home/" target="_blank" rel="noopener noreferrer">WorldWide Telescope</a>.
-        
+        </span>
         <div id="splash-screen-logos">
           <credit-logos/>
         </div>
@@ -100,6 +101,7 @@ function closeSplashScreen() {
   align-items: center;
   justify-content: center;
   font-size: min(8vw, 7vh);
+  transition: width 0.5s, height 0.5s;
 }
 
 #splash-screen {
@@ -180,8 +182,8 @@ function closeSplashScreen() {
   .splash-get-started {
     border: 2px solid white;
     font-size: calc(1.8 * var(--default-font-size));
-    margin-top: 5%;
-    margin-bottom: 2%;
+    // margin-top: 5%;
+    // margin-bottom: 2%;
     font-weight: bold !important;
   }
 
@@ -202,7 +204,8 @@ function closeSplashScreen() {
   }
 
   #splash-screen-acknowledgements {
-    margin-top: 3rem;
+    // margin-top: 3rem;
+    margin: clamp(0.5rem, 3vh, 3rem) auto;
     font-size: calc(1.7 * var(--default-font-size));
     line-height: calc(1.5 * var(--default-line-height));
     width: 60%; 
@@ -227,6 +230,42 @@ function closeSplashScreen() {
       vertical-align: middle;
       height: 24px;
     }
+  }
+}
+
+@media (max-height: 500px) {
+  #splash-screen {
+    // display: flex;
+    // flex-direction: column;
+    // max-width: 200vh;
+    // justify-content: center;
+    // align-items: center;
+    // gap: calc(0.5 * var(--default-line-height));
+    overflow: hidden;
+  
+  #splash-screen-text {
+    line-height: 75%;
+  }
+  
+  .splash-get-started {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  #splash-screen-acknowledgements {
+    font-size: calc(1.5 * var(--default-font-size));
+  }
+}
+  
+}
+
+@media (max-height: 310px) {
+  #splash-screen {
+    width: 50vw;
+    padding-block: 10px;
+  }
+  #splash-screen-acknowledgements  {
+    display: none;
   }
 }
 
