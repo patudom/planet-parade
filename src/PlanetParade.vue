@@ -796,7 +796,7 @@ onMounted(() => {
       selectedTime.value = altTime;
     }
     wwtStats.startTime = selectedTime.value;
-    setTimeout(() => resetCamera().then(() => positionSet.value = true), 100);
+    setTimeout(() => resetCamera().then(() => positionSet.value = true), 200);
 
     store.applySetting(["localHorizonMode", true]);
     store.applySetting(["altAzGridColor", Color.fromArgb(180, 133, 201, 254)]);
