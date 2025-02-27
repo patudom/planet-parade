@@ -241,7 +241,7 @@ function closeSplashScreen() {
     // justify-content: center;
     // align-items: center;
     // gap: calc(0.5 * var(--default-line-height));
-
+    overflow: hidden;
   
   #splash-screen-text {
     line-height: 75%;
