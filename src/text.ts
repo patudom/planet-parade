@@ -33,12 +33,12 @@ const a = gMax - b * maxFOV;
 
 const planetTextOffsetsY = [
   115,  // Sun
-  -60,  // Mercury
+  -100,  // Mercury
   85,  // Venus
   100,  // Mars
-  100,  // Jupiter
-  120,  // Saturn
-  90,  // Uranus
+  150,  // Jupiter
+  320,  // Saturn
+ 300,  // Uranus
   90,  // Neptune
   100,  // Pluto
   -70,  // Moon
@@ -46,15 +46,15 @@ const planetTextOffsetsY = [
 
 const planetTextOffsetsX = [
   85,  // Sun
-  -275,  // Mercury
-  0,  // Venus
+  10000,  // Mercury
+  10000,  // Venus
   0,  // Mars
-  0,  // Jupiter
-  0,  // Saturn
-  0,  // Uranus
-  0,  // Neptune
+  10000,  // Jupiter
+  10000,  // Saturn
+  10000,  // Uranus
+  10000,  // Neptune
   0,  // Pluto
-  0,  // Moon
+  10000,  // Moon
 ];
 
 function textOverlayForSolarSystemObject(renderContext: RenderContext, object: SolarSystemObjects, text: string, glyphHeight: number): Text3d {

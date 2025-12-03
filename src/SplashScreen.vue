@@ -1,5 +1,6 @@
 <template>
   <v-overlay
+    v-show="false"
     :model-value="showSplashScreen"
     absolute
     opacity="0.6"
@@ -85,7 +86,7 @@ const cssVars = computed(() => {
 
 const emits = defineEmits(['close']);
 
-const showSplashScreen = defineModel({ default: true });
+const showSplashScreen = (false);
 
 
 function closeSplashScreen() {

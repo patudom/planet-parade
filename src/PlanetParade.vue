@@ -14,6 +14,7 @@
     <!-- This contains the splash screen content -->
 
     <splash-screen 
+      v-show="false"
       title="Planetary Parade" 
       :cssVars="cssVars" 
       @close="closeSplashScreen"
@@ -143,6 +144,7 @@
 
 
         <icon-button
+          v-if="false"
           v-model="showTextSheet"
           fa-icon="info"
           :color="buttonColor"
@@ -151,6 +153,7 @@
         >
         </icon-button>
         <icon-button
+          v-if="false"
           v-model="showVideoSheet"
           fa-icon="video"
           :color="buttonColor"
@@ -188,7 +191,7 @@
           </div>
         </div>
         
-        <div id="planet-visibility-box" class="collapsable-control control-icon-wrapper">
+        <div v-show="false" id="planet-visibility-box" class="collapsable-control control-icon-wrapper">
           <div class="controls-top-row planet-visibility">
             <div class="planet-visibility-title">Risen</div>
             <font-awesome-icon
@@ -294,6 +297,7 @@
         />
       <div id="change-flags">
         <icon-button
+          v-if="false"
           md-icon="mdi-information-outline"
           @activate="() => inIntro = true"
           :color="accentColor"
@@ -306,6 +310,7 @@
         >
         </icon-button>
         <icon-button
+          v-if="false"
           md-icon="mdi-lock"
           @activate="() => showPrivacyDialog = true"
           :color="accentColor"
@@ -665,9 +670,7 @@ const _props = withDefaults(defineProps<PlanetParadeProps>(), {
   wwtNamespace: "planet-parade",
 });
 
-const queryHideSplash = new URLSearchParams(window.location.search).get("splash")?.toLowerCase() === "false";
-const splash = !(queryHideSplash || skipIntroContent);
-const showSplashScreen = ref(splash);
+const showSplashScreen = false;
 const backgroundImagesets = reactive<BackgroundImageset[]>([]);
 const sheet = ref<SheetType | null>(null);
 const layersLoaded = ref(false);
@@ -676,8 +679,8 @@ const accentColor = ref("#f4ba3e");
 const accentColor2 = ref("#6793ff");
 const buttonColor = ref("#f4ba3e");
 const tab = ref(0);
-const showHorizon = ref(true);
-const showAltAzGrid = ref(true);
+const showHorizon = ref(false);
+const showAltAzGrid = ref(false);
 const showEcliptic = ref(true);
 const showLocationSelector = ref(false);
 const playing = ref(false);
@@ -711,8 +714,8 @@ const geocodingOptions = {
 };
 
 const selectedLocation = ref<LocationDeg>({
-  longitudeDeg: -71.1056,
-  latitudeDeg: 42.3581,
+  longitudeDeg: -97.03,
+  latitudeDeg: 47.92,
 });
 const selectedLocationText = ref("");
 updateSelectedLocationText();
@@ -791,16 +794,16 @@ function doWWTModifications() {
 
   const originalUpdatePlanetLocations = Planets.updatePlanetLocations;
   const planetScales = [
-    8,  // Sun
-    1.25,  // Mercury
-    1.25,  // Venus
+    1,  // Sun
+    2.5,  // Mercury
+    3.5,  // Venus
     1.25,  // Mars
-    2.5,  // Jupiter
-    4.5,  // Saturn
-    2,  // Uranus
-    2,  // Neptune
+    6,  // Jupiter
+    20,  // Saturn
+    15,  // Uranus
+    0,  // Neptune
     1,  // Pluto
-    1.25,  // Moon
+    0,  // Moon
   ];
   function newUpdatePlanetLocations(threeD: boolean) {
     originalUpdatePlanetLocations(threeD);
@@ -812,9 +815,9 @@ function doWWTModifications() {
   Planets.drawPlanets = drawPlanets;
 
   // Recall that zoom = 6 * FOV, in WWT
-  const maxFOV = 90;
+  const maxFOV = 180;
   WWTControl.singleton.set_zoomMax(maxFOV * 6);
-
+ 
 }
 
 
